@@ -1,0 +1,20 @@
+.input {
+    height: 30px;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+.inputContainer {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    bottom: 0px;
+}
+
+.sendBtn {
+    background-color: royalblue;
+    color: white;
+    height: 30px;
+    width: 100px;
+    /* border: 0; */
+}

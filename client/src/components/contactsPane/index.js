@@ -4,8 +4,9 @@ import styles from "./contactsPane.module.css";
 
 function ContactsPane() {
     return (
-        <div></div>
+        <div className={styles.contactsPaneContainer}>
+        </div>
     )
 }
-
+ 
 export default ContactsPane;

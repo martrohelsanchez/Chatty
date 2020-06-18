@@ -1,0 +1,5 @@
+.messagePaneContainer {
+    background-color: rgb(235, 235, 235);
+    flex-grow: 2;
+    position: relative;
+}
