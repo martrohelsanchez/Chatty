@@ -8,12 +8,10 @@ function Messages() {
     const [messages, setMessages] = useState([]);
 
     socket.on('receive message', message => {
-        setMessages(prev => {
-            return [
-                ...prev,
-                message
-            ]
-        })
+        setMessages([
+            ...messages,
+            message
+        ])
     })
 
     const renderMessages = messages.map(message => {
