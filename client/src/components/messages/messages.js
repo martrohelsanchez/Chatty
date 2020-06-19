@@ -1,12 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, {useState, useEffect } from 'react';
 
 import styles from './messages.module.css';
 import Message from './message/Message';
-import { SocketContext } from '../../App';
+import { socket } from '../../App';
 
 function Messages() {
     const [messages, setMessages] = useState([]);
-    const socket = useContext(SocketContext);
 
     socket.on('receive message', message => {
         setMessages(prev => {
@@ -23,8 +22,7 @@ function Messages() {
 
     return (
         <div>
-            <Message from="zaira" message="pasado ka sa pup!"/>
-            <Message from="rohel" message="Hala weh!"/>
+            {renderMessages}
         </div>
     )
 }

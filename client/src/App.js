@@ -7,14 +7,14 @@ import ContactsPane from './components/contactsPane';
 import MessagePane from './components/messagesPane';
 import SignUp from './components/signUp/signUp'
 
-export const SocketContext = React.createContext(undefined);
-const socket = io('http://localhost:5000/');
+export const UserContext = React.createContext(undefined);
+export const socket = io('http://localhost:5000/');
 
 function App() {
   const [user, setUser] = useState('');
 
   return (
-    <SocketContext.Provider value={socket}>
+    <UserContext.Provider value={user}>
       <Router>
         <div className={styles.chatAppContainer}>
           <Switch>
@@ -29,7 +29,7 @@ function App() {
           </Switch>
         </div>
       </Router>
-    </SocketContext.Provider>
+    </UserContext.Provider>
   );
 }
 

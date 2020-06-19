@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import io from "socket.io-client";
 
 import styles from './inputBar.module.css';
-import {SocketContext} from '../../App';
+import {socket, UserContext} from '../../App';
 
 function Input() {
   const [chatInput, setChatInput] = useState("");
-  const socket = useContext(SocketContext);
+  const user = useContext(UserContext)
 
-  function onSend(e) {
-      socket.emit('sendMessage', chatInput);
-      setChatInput('')
+  function send(e) {
+    socket.emit('sendMessage', {
+      from: user,
+      message: chatInput
+    });
+    setChatInput('')
   }
 
   function onInputChange(e) {
@@ -25,11 +28,9 @@ function Input() {
         placeholder="Type a message"
         value={chatInput}
         onChange={onInputChange}
+        onKeyDown={({key}) => key === 'Enter' ? send() : null }
       />
-      <div>
-          {chatInput}
-      </div>
-      <button className={styles.sendBtn} onClick={onSend}>
+      <button className={styles.sendBtn} onClick={send}>
         Send
       </button>
     </div>
