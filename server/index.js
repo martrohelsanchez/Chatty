@@ -14,6 +14,9 @@ app.get('/', (req, res, next) => {
 
 io.on("connection", (socket) => {
   console.log("a user just connected");
+  socket.on('sendMessage', message => {
+      console.log(message)
+  })
 });
 
 server.listen(5000);
