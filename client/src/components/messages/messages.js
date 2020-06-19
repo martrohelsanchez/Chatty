@@ -8,16 +8,14 @@ function Messages() {
     const [messages, setMessages] = useState([]);
     const socket = useContext(SocketContext);
 
-    useEffect
-
-    // socket.on('receive message', message => {
-    //     setMessages(prev => {
-    //         return [
-    //             ...prev,
-    //             message
-    //         ]
-    //     })
-    // })
+    socket.on('receive message', message => {
+        setMessages(prev => {
+            return [
+                ...prev,
+                message
+            ]
+        })
+    })
 
     const renderMessages = messages.map(message => {
         return <Message from={message.from} message={message.message}/>
