@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 
 import styles from './signUp.module.css';
 
 function SignUp({setUser}) {
     const [input, setInput] = useState('');
+    const history = useHistory();
 
     function onClick(e) {
         setInput('')
         setUser(input);
+        history.push('/chat')
     }
 
     function onInputChange(e) {
@@ -23,11 +25,10 @@ function SignUp({setUser}) {
                 type="input"
                 value={input}
                 onChange={onInputChange}
+                onKeyDown={({ key }) => key === 'Enter' ? onClick() : null}
             />
                 <button className={styles.signUpBtn} onClick={onClick}>
-                    <Link to='/chat' onClick={e => input == '' ? e.preventDefault() : null}>
-                        Sign Up
-                    </Link>
+                    Sign Up
                 </button>
         </div>
     )
