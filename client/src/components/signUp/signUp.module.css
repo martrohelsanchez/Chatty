@@ -19,3 +19,8 @@
     margin: auto;
     display: block;
 }
+
+.userTaken {
+    color: firebrick;
+    text-align: center;
+}

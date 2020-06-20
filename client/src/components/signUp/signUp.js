@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import {Link, useHistory} from 'react-router-dom';
+import axios from 'axios';
 
 import styles from './signUp.module.css';
 
 function SignUp({setUser}) {
     const [input, setInput] = useState('');
+    const [err, setErr] = useState(null);
     const history = useHistory();
+    const isUserTaken = false;
 
-    function onClick(e) {
-        setInput('')
-        setUser(input);
-        history.push('/chat')
+    function signUp(e) {
+        axios.post('http://localhost:5000/signUp', {
+            username: input
+        })
+            .then(res => {
+                if (! res.data.isUsernameTaken) {
+                    setInput('')
+                    setUser(input);
+                    history.push('/chat')
+                } else {
+                    setErr('User already exists')
+                }
+            })
+            .catch(err => {
+                setErr('Sorry, something went wrong. Please try again later')
+            })
+        setErr(null)
     }
 
     function onInputChange(e) {
@@ -25,11 +41,12 @@ function SignUp({setUser}) {
                 type="input"
                 value={input}
                 onChange={onInputChange}
-                onKeyDown={({ key }) => key === 'Enter' ? onClick() : null}
+                onKeyDown={({ key }) => key === 'Enter' ? signUp() : null}
             />
-                <button className={styles.signUpBtn} onClick={onClick}>
-                    Sign Up
-                </button>
+            {<div className={styles.userTaken}>{err}</div>}
+            <button className={styles.signUpBtn} onClick={signUp}>
+                Sign Up
+            </button>
         </div>
     )
 }
