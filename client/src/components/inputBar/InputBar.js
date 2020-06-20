@@ -9,11 +9,13 @@ function Input() {
   const user = useContext(UserContext);
 
   function send(e) {
-    socket.emit('sendMessage', {
-      from: user,
-      message: chatInput
-    });
-    setChatInput('')
+    if (chatInput) {
+      socket.emit("sendMessage", {
+        from: user,
+        message: chatInput,
+      });
+      setChatInput("");
+    }
   }
 
   function onInputChange(e) {
