@@ -11,25 +11,22 @@ function SignUp({setUser}) {
     const isUserTaken = false;
 
     function signUp(e) {
-        // axios.post('http://localhost:5000/signUp', {
-        //     username: input
-        // })
-        //     .then(res => {
-        //         if (! res.data.isUsernameTaken) {
-        //             setInput('')
-        //             setUser(input);
-        //             history.push('/chat')
-        //         } else {
-        //             setErr('User already exists')
-        //         }
-        //     })
-        //     .catch(err => {
-        //         setErr('Sorry, something went wrong. Please try again later')
-        //     })
-        // setErr(null)
-        setInput('')
-        setUser(input);
-        history.push('/chat')
+        axios.post('http://localhost:5000/signUp', {
+            username: input
+        })
+            .then(res => {
+                if (! res.data.isUsernameTaken) {
+                    setInput('')
+                    setUser(input);
+                    history.push('/chat')
+                } else {
+                    setErr('User already exists')
+                }
+            })
+            .catch(err => {
+                setErr('Sorry, something went wrong. Please try again later')
+            })
+        setErr(null)
     }
 
     function onInputChange(e) {

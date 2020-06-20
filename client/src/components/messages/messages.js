@@ -16,7 +16,7 @@ function Messages() {
     }, [])
 
     const renderMessages = messages.map(message => {
-        return <Message from={message.from} message={message.message}/>
+        return <Message key={message.id} from={message.from} message={message.message}/>
     })
 
     return (

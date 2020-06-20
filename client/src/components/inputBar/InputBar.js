@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import io from "socket.io-client";
+import uniqid from 'uniqid';
 
 import styles from './inputBar.module.css';
 import {socket, UserContext} from '../../App';
@@ -11,6 +12,7 @@ function Input() {
   function send(e) {
     if (chatInput) {
       socket.emit("sendMessage", {
+        id: uniqid(),
         from: user,
         message: chatInput,
       });
