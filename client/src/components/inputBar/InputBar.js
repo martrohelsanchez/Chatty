@@ -6,7 +6,7 @@ import {socket, UserContext} from '../../App';
 
 function Input() {
   const [chatInput, setChatInput] = useState("");
-  const user = useContext(UserContext)
+  const user = useContext(UserContext);
 
   function send(e) {
     socket.emit('sendMessage', {

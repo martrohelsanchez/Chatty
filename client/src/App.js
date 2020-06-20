@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import styles from "./index.module.css";
 import ContactsPane from './components/contactsPane';
 import MessagePane from './components/messagesPane';
-import SignUp from './components/signUp/signUp'
+import SignUp from './components/signUp/signUp';
 
 export const UserContext = React.createContext(undefined);
 export const socket = io('http://localhost:5000/');
