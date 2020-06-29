@@ -1,0 +1,26 @@
+.logInContainer {
+    margin: auto;
+    width: 100%;
+    height: 100%;
+}
+
+.promptNickname {
+    text-align: center;
+}
+
+.nicknameInput {
+    margin: auto;
+    display: block;
+}
+
+.logInBtn {
+    background-color: dodgerblue;
+    color: white;
+    margin: auto;
+    display: block;
+}
+
+.err {
+    color: firebrick;
+    text-align: center;
+}

@@ -3,29 +3,30 @@ import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom'
 import io from 'socket.io-client';
 
 import styles from "./index.module.css";
-import ContactsPane from './components/contactsPane';
-import MessagePane from './components/messagesPane';
 import SignUp from './components/signUp/signUp';
+import Chat from './components/chat/Chat';
+import LogIn from './components/logIn/logIn';
 
 export const UserContext = React.createContext(undefined);
 export const socket = io('http://localhost:5000/');
 
 function App() {
-  const [user, setUser] = useState('');
+  const [userInfo, setUserInfo] = useState('');
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={userInfo}>
       <Router>
         <div className={styles.chatAppContainer}>
           <Switch>
-            <Route path="/chat">
-              <ContactsPane />
-              <MessagePane />
+            <Route exact path="/chat">
+              <Chat userInfo={userInfo} setUserInfo/>
             </Route>
-            <Route path="/">
-                <SignUp setUser={setUser}/>
+            <Route exact path="/signUp">
+              <SignUp setUserInfo={setUserInfo}/>
             </Route>
-            <Route path="/logIn"></Route>
+            <Route exact path="/logIn">
+              <LogIn setUserInfo={setUserInfo}/>
+            </Route>
           </Switch>
         </div>
       </Router>

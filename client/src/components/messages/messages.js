@@ -4,7 +4,7 @@ import styles from './messages.module.css';
 import Message from './message/Message';
 import { socket } from '../../App';
 
-function Messages() {
+function Messages({userInfo}) {
     const [messages, setMessages] = useState([]);
 
     useEffect(()=> {

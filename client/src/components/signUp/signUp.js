@@ -8,16 +8,15 @@ function SignUp({setUser}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const history = useHistory();
-    const isUserTaken = false;
 
     function signUp(e) {
         axios.post('http://localhost:5000/signUp', {
             username: input
         })
-            .then(res => {
-                if (! res.data.isUsernameTaken) {
+            .then(({data}) => {
+                if (! data.isUsernameTaken) {
                     setInput('')
-                    setUser(input);
+                    setUser(data);
                     history.push('/chat')
                 } else {
                     setErr('User already exists')

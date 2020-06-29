@@ -4,7 +4,6 @@ const User = require('../model/user');
 
 router.post('/', (req, res, next) => {
     User.findOne({username: req.body.username})
-        .select('username')
         .exec()
         .then(user => {
             if (!user) {
@@ -12,11 +11,13 @@ router.post('/', (req, res, next) => {
                 User.create({
                     username: req.body.username
                 })
-                    .then(
+                    .then(user => {
                         res.status(200).json({
-                            isUsernameTaken: false
-                        })
-                    )
+                          username: user.username,
+                          conversations: user.conversations,
+                          isUsernameTaken: false,
+                        });
+                    })
             } else {
                 //user is already taken
                 res.status(200).json({

@@ -4,10 +4,10 @@ import styles from './messagesPane.module.css'
 import InputBar from '../inputBar/InputBar'
 import Messages from '../messages/messages'
 
-function MessagePane() {
+function MessagePane({userInfo}) {
     return (
         <div className={styles.messagePaneContainer}>
-            <Messages />
+            <Messages userInfo={userInfo}/>
             <InputBar />
         </div>
     )

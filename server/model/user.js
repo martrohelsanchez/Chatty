@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
     username: {type: String, required: true},
-    recentMessages: [
+    conversations: [
         {
             kausap: {type: String},
             messages: [

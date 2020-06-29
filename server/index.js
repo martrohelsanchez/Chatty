@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const signUpRoute = require('./route/signUp');
 const logInRoute = require('./route/logIn');
+const chatRoute = require('./route/chat');
 
 mongoose.connect(
   "mongodb+srv://martrohel:mongodb@cluster0-sutr8.gcp.mongodb.net/chatApp?retryWrites=true&w=majority",
@@ -18,7 +19,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 app.get('/', (req, res, next) => {
-    console.log("get req")
     res.status(200).json({
         message: "get request succeffully made"
     });
@@ -34,5 +34,6 @@ io.on("connection", (socket) => {
 
 app.use("/signUp", signUpRoute);
 app.use('/logIn', logInRoute);
+app.use('/chat', chatRoute);
 
 server.listen(5000);
