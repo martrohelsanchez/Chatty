@@ -33,9 +33,9 @@ router.post('/search', (req, res, next) => {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     };
 
-    const regex = new RegExp(escapeRegex(req.body.searchInput, 'gi'));
+    const searchRegex = new RegExp(escapeRegex(req.body.searchInput), "gi");
 
-    User.find({ username: regex })
+    User.find({ username: searchRegex})
       .select("username")
       .exec()
       .then((users) => {
