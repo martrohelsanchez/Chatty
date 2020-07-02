@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Redirect} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane';
 
 function Chat({ userInfo, setUserInfo}) {
-    // const [userInfo, setUserInfo] = useState();
+    const history = useHistory();
 
-    // useEffect(() => {
-    //     console.log('username: ', username.username)
-    //     axios.post("http://localhost:5000/chat", {
-    //         username: username.username
-    //     })
-    //         .then(({data}) => {
-    //             console.log(data)
-    //             if (data.isAuth) {
-    //                 setUserInfo(data);
-    //             }
-    //         })
-    //         .catch(err => {
-    //             console.log('not authorized')
-    //         })
-    // }, []);
+    if (!userInfo) {
+        history.push('/logIn');
+        //returning null to prevent returning the ContactsPane and MessagePane components
+        return null;
+    }
 
     return (
         <>

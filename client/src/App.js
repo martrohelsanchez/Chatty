@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom'
+import React, { useState } from 'react';
+import {Switch, Route} from 'react-router-dom'
 import io from 'socket.io-client';
 
 import styles from "./index.module.css";
@@ -11,15 +11,13 @@ export const UserContext = React.createContext(undefined);
 export const socket = io('http://localhost:5000/');
 
 function App() {
-  const [userInfo, setUserInfo] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
 
   return (
-    <UserContext.Provider value={userInfo}>
-      <Router>
         <div className={styles.chatAppContainer}>
           <Switch>
             <Route exact path="/chat">
-              <Chat userInfo={userInfo} setUserInfo/>
+              <Chat userInfo={userInfo} setUserInfo={setUserInfo}/>
             </Route>
             <Route exact path="/signUp">
               <SignUp setUserInfo={setUserInfo}/>
@@ -29,8 +27,6 @@ function App() {
             </Route>
           </Switch>
         </div>
-      </Router>
-    </UserContext.Provider>
   );
 }
 

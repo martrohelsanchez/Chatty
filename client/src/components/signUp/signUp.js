@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Link, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './signUp.module.css';
@@ -32,6 +32,10 @@ function SignUp({setUser}) {
         setInput(e.target.value);
     }
 
+    function directToLogIn() {
+        history.push('/logIn')
+    }
+
     return (
         <div className={styles.signUpContainer}>
             <h3 className={styles.promptNickname}>What's your nickname?</h3>
@@ -45,6 +49,13 @@ function SignUp({setUser}) {
             {<div className={styles.userTaken}>{err}</div>}
             <button className={styles.signUpBtn} onClick={signUp}>
                 Sign Up
+            </button>
+            <br />
+            <p style={{textAlign: 'center'}}>
+                Already have an account?
+            </p>
+            <button className={styles.logInBtn} onClick={directToLogIn}>
+                Log In
             </button>
         </div>
     )

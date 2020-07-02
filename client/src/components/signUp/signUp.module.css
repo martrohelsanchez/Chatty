@@ -24,3 +24,10 @@
     color: firebrick;
     text-align: center;
 }
+
+.logInBtn {
+    background-color: dodgerblue;
+    color: white;
+    margin: auto;
+    display: block;
+}

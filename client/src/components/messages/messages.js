@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
 
-import styles from './messages.module.css';
+// import styles from './messages.module.css';
 import Message from './message/Message';
 import { socket } from '../../App';
 

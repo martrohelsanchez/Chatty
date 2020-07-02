@@ -35,6 +35,10 @@ function LogIn({ setUserInfo}) {
         setInput(e.target.value);
     }
 
+    function directToSignUp() {
+        history.push('/signUp')
+    }
+
     return (
         <div className={styles.logInContainer}>
             <h3 className={styles.promptNickname}>Log In</h3>
@@ -49,6 +53,13 @@ function LogIn({ setUserInfo}) {
             {<div className={styles.err}>{err}</div>}
             <button className={styles.logInBtn} onClick={logIn}>
                 Log In
+            </button>
+            <br />
+            <p style={{textAlign: 'center'}}>
+                Doesn't have an account yet?
+            </p>
+            <button className={styles.signUpBtn} onClick={directToSignUp}>
+                Sign Up
             </button>
         </div>
     )
