@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import styles from './signUp.module.css';
 
-function SignUp({setUser}) {
+function SignUp({setUserInfo}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const history = useHistory();
@@ -16,7 +16,7 @@ function SignUp({setUser}) {
             .then(({data}) => {
                 if (! data.isUsernameTaken) {
                     setInput('')
-                    setUser(data);
+                    setUserInfo(data);
                     history.push('/chat')
                 } else {
                     setErr('User already exists')

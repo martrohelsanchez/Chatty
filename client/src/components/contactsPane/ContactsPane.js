@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 import styles from "./contactsPane.module.css";
 import searchIcon from "../../images/search-icon.svg";
