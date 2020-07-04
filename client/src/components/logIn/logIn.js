@@ -47,6 +47,7 @@ function LogIn({ setUserInfo}) {
                 className={styles.nicknameInput} 
                 type="input"
                 value={input}
+                autoFocus
                 onChange={onInputChange}
                 onKeyDown={({ key }) => key === 'Enter' ? logIn() : null}
             />

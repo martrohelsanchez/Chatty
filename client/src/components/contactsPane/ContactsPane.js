@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import {Switch, Route, useHistory} from 'react-router-dom';
 
 import styles from "./contactsPane.module.css";
 import searchIcon from "../../images/search-icon.svg";
+import Channel from '../channel/Channel';
 
 function ContactsPane({userInfo}) {
     const [isSearching, setIsSearching] = useState(false);
@@ -10,25 +12,14 @@ function ContactsPane({userInfo}) {
     const [intervalId, setIntervalId] = useState(null);
     const [err, setErr] = useState(null);
     const {conversations} = userInfo;
+    const history = useHistory();
 
-    console.log(searchInput)
-    
-    const renderAllConvo = conversations.map(convo => {
-        return (
-            <div>
-                <div>
-                    <b>
-                        {convo.kausap}:
-                    </b>
-                    <span>
-                        {convo.from}
-                    </span>
-                    <span>
-                        {convo.message}
-                    </span>
-                </div>
-            </div>
-        )
+    const renderAllChannel = conversations.map(channel => {
+        const lastMessageIndex = channel.messages.length - 1;
+        return <Channel 
+            lastMessageIndex={lastMessageIndex} 
+            channel={channel}
+        />
     });
 
     const renderSearchedUser = searchedUser.map(user => {
@@ -41,6 +32,7 @@ function ContactsPane({userInfo}) {
 
     //when user leaves the search input
     function handleSearchBlur() {
+        history.push('/chat')
         clearInterval(intervalId);
         setSearchInput(''); //reset the search input field
         setIsSearching(false);
@@ -64,11 +56,8 @@ function ContactsPane({userInfo}) {
         //             })
         //     }, 500)
         // )
+        history.push('/chat/search');
         setIsSearching(true);
-    }
-
-    function searchInputChange({target}) {
-        setSearchInput(target.value);
     }
 
     return (
@@ -80,19 +69,23 @@ function ContactsPane({userInfo}) {
                     className={styles.searchInput}
                     placeholder='Search'
                     value={searchInput}
-                    onChange={searchInputChange}
+                    onChange={e => setSearchInput(e.target.value)}
                     onFocus={handleSearchFocus}
                     onBlur={handleSearchBlur}
                 />
             </div>
-            {/* {
-                isSearching ? 
-                    { renderSearchedUser}
-                :
-                    {renderAllConvo}
-            } */}
+            <Switch>
+                <Route exact path='/chat'>
+                    <div onClick={} className={styles.channelListContainer}>
+                        {renderAllChannel}
+                    </div>
+                </Route>
+                <Route path='/chat/search' >
+                    {renderSearchedUser}
+                </Route>
+            </Switch>
         </div>
     )
 }
- 
+
 export default ContactsPane;

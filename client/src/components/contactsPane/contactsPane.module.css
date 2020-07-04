@@ -27,3 +27,12 @@
 .searchInput:focus {
     outline: none;
 }
+
+.channelListContainer {
+    width: 90%;
+    margin: 30px;
+}
+
+.channelListContainer:hover {
+    cursor: pointer;
+}
