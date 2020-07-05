@@ -10,5 +10,5 @@ module.exports = (req, res, next) => {
         res.status(403).json({
             isAuth: false
         })
-    }asfdasdfasdf
+    }
 };
