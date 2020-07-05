@@ -11,4 +11,5 @@ module.exports = (req, res, next) => {
             isAuth: false
         })
     }
-}
+    asdfasdf
+};
