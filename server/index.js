@@ -10,7 +10,7 @@ const logInRoute = require('./route/logIn');
 const chatRoute = require('./route/chat');
 
 mongoose.connect(
-  "mongodb+srv://martrohel:mongodb@cluster0-sutr8.gcp.mongodb.net/chatApp?retryWrites=true&w=majority",
+  `mongodb+srv://martrohel:${process.env.mongodbPass}@cluster0-sutr8.gcp.mongodb.net/chatApp?retryWrites=true&w=majority`,
   { useUnifiedTopology: true, useNewUrlParser: true }
 );
 
@@ -36,4 +36,6 @@ app.use("/signUp", signUpRoute);
 app.use('/logIn', logInRoute);
 app.use('/chat', chatRoute);
 
-server.listen(5000);
+const port = process.env.PORT || 5000;
+
+server.listen(port, () => console.log(`The server is running on port ${port}`));

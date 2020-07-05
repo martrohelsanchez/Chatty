@@ -13,6 +13,7 @@ function ContactsPane({userInfo}) {
     const [err, setErr] = useState(null);
     const {conversations} = userInfo;
     const history = useHistory();
+    const [currentConvo, setCurrentConvo] = useState(null);
 
     const renderAllChannel = conversations.map(channel => {
         const lastMessageIndex = channel.messages.length - 1;
@@ -60,6 +61,10 @@ function ContactsPane({userInfo}) {
         setIsSearching(true);
     }
 
+    function changeConvo() {
+        return null
+    }
+
     return (
         <div className={styles.contactsPaneContainer}>
             <div className={styles.searchContainer}>
@@ -76,7 +81,7 @@ function ContactsPane({userInfo}) {
             </div>
             <Switch>
                 <Route exact path='/chat'>
-                    <div onClick={} className={styles.channelListContainer}>
+                    <div onClick={changeConvo} className={styles.channelListContainer}>
                         {renderAllChannel}
                     </div>
                 </Route>

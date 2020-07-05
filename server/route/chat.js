@@ -1,9 +1,10 @@
 const router = require('express')();
 
 const User = require('../model/user');
+const Conversation = require('../model/conversation');
+const checkAuth = require('../middleware/check-auth');
 
-router.post('/', (req, res, next) => {
-    console.log(req.body)
+router.post('/', checkAuth, (req, res, next) => {
     User.findOne({username: req.body.username})
         .select('_id username conversations')
         .exec()
@@ -48,6 +49,37 @@ router.post('/search', (req, res, next) => {
           err,
         });
       });
+});
+
+router.get('/:userId/conversations', async (req, res, next) => {
+    try {
+        const query = req.query;
+        const before = query.before ? query.before : Date.now();
+        const conversations = 
+            await Conversation.find({
+                members: req.params.userId,
+                last_updated: {
+                    $lt: before
+                }
+            })
+                .sort({
+                    last_updated: -1
+                })
+                .limit(query.limit)
+                .exec();
+        
+        res.status(200).json({
+            conversations
+        })
+    } catch (err) {
+        res.status(500).json({
+            err
+        })
+    }
 })
+
+router.post('/:userId/conversations', (req, res, next) => {
+
+});
 
 module.exports = router;

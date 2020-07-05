@@ -21,7 +21,6 @@ function LogIn({ setUserInfo}) {
                 } // if isAuth is false, server send 401 status
             })
             .catch(({response}) => {
-                console.dir(err)
                 if (response.status === 401) {
                     setErr('Wrong nickname or password');
                 } else {

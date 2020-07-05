@@ -8,6 +8,7 @@ const messageSchema = new Schema({
     ],
     is_sent: {type: Boolean},
     is_delivered: {type: Boolean},
+    date_sent: {type: Number}
 });
 
 module.exports = model('Message', messageSchema);
