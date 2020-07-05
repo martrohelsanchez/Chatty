@@ -32,7 +32,7 @@ router.post('/', checkAuth, (req, res, next) => {
 router.post('/search', (req, res, next) => {
     function escapeRegex(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    };
+    };sdfasdf
 
     const searchRegex = new RegExp(escapeRegex(req.body.searchInput), "gi");
 
