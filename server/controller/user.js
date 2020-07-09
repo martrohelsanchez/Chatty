@@ -4,22 +4,27 @@ const User = require("../model/user");
 
 async function userSignUp(req, res) {
     try {
-        const user = 
-            await User.findOne({ username: req.body.username })
+        const findUser = await User.findOne({ username: req.body.username })
                 .exec()
+        const isUserTaken = findUser === null ? false : true;
 
-        if (!user) {
-            //User doesn't exist yet
-            User.create({
+        if (!isUserTaken) {
+            const user = await User.create({
                 username: req.body.username
             })
-                .then(user => {
-                    res.status(200).json({
-                        username: user.username,
-                        conversations: user.conversations,
-                        isUsernameTaken: false,
-                    });
-                })
+
+            const token = jwt.sign({
+                userId: user._id
+            },
+                process.env.JWT_KEY
+            );
+
+            res.status(200).json({
+                username: user.username,
+                conversations: user.conversations,
+                isUsernameTaken: false,
+                token
+            })
         } else {
             //user is already taken
             res.status(200).json({
