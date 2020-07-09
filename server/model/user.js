@@ -18,10 +18,10 @@ const {Schema, model} = require('mongoose');
 const userSchema = Schema({
     email: {type: String},
     username: {type: String},
-    password: {type: String},
-    conversations: [
-        {type: Schema.Types.ObjectId, ref: 'User'}
-    ]
+    password: {type: String}
+    // conversations: [
+    //     {type: Schema.Types.ObjectId, ref: 'User'}
+    // ]
 });
 
 module.exports = model('User', userSchema);
