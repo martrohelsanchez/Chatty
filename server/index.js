@@ -5,8 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const signUpRoute = require('./route/signUp');
-const logInRoute = require('./route/logIn');
+const userRoute = require('./route/user');
 const chatRoute = require('./route/chat');
 
 mongoose.connect(
@@ -32,8 +31,7 @@ io.on("connection", (socket) => {
   })
 });
 
-app.use("/signUp", signUpRoute);
-app.use('/logIn', logInRoute);
+app.use('/user', userRoute);
 app.use('/chat', chatRoute);
 
 const port = process.env.PORT || 5000;
