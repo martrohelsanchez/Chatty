@@ -2,34 +2,36 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../model/user");
 
-function userSignUp(req, res) {
-    User.findOne({ username: req.body.username })
-        .exec()
-        .then(user => {
-            if (!user) {
-                //User doesn't exist yet
-                User.create({
-                    username: req.body.username
-                })
-                    .then(user => {
-                        res.status(200).json({
-                            username: user.username,
-                            conversations: user.conversations,
-                            isUsernameTaken: false,
-                        });
-                    })
-            } else {
-                //user is already taken
-                res.status(200).json({
-                    isUsernameTaken: true
-                })
-            }
-        })
-        .catch(err => {
-            res.status(500).json({
-                err: err
+async function userSignUp(req, res) {
+    try {
+        const user = 
+            await User.findOne({ username: req.body.username })
+                .exec()
+
+        if (!user) {
+            //User doesn't exist yet
+            User.create({
+                username: req.body.username
             })
+                .then(user => {
+                    res.status(200).json({
+                        username: user.username,
+                        conversations: user.conversations,
+                        isUsernameTaken: false,
+                    });
+                })
+        } else {
+            //user is already taken
+            res.status(200).json({
+                isUsernameTaken: true
+            })
+        }
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
         })
+    }
 }
 
 async function userLogIn(req, res) {
@@ -58,8 +60,9 @@ async function userLogIn(req, res) {
             });
         }
     } catch (err) {
-        res.status(200).json({
-            err
+        console.error(err)
+        res.status(500).json({
+            err: err.message
         })
     }
 }
