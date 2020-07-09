@@ -1,13 +1,12 @@
-const router = require('express')();
 const mongoose = require('mongoose');
 
-const checkAuth = require('../middleware/check-auth');
 const User = require('../model/user');
 const Conversation = require('../model/conversation');
 const Message = require('../model/message');
 
 //search users
-router.post('/search', (req, res, next) => {
+// /search
+function searchUsers (req, res) {
     function escapeRegex(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     };
@@ -27,10 +26,10 @@ router.post('/search', (req, res, next) => {
                 err,
             });
         });
-});
+};
 
 //getting conversations 
-router.get('/conversations', checkAuth, async (req, res, next) => {
+async function getConversations (req, res) {
     try {
         const query = req.query;
         const before = query.before || Date.now();
@@ -56,10 +55,10 @@ router.get('/conversations', checkAuth, async (req, res, next) => {
             err
         })
     }
-})
+}
 
 //creating a new conversation
-router.post('/conversations', checkAuth, async (req, res, next) => {
+async function createConversation (req, res) {
     try {
         const { decodedJwt, body } = req;
 
@@ -83,11 +82,12 @@ router.post('/conversations', checkAuth, async (req, res, next) => {
             err: err.message
         });
     }
-});
+};
 
 //Getting the messages of a conversation
-router.get('/conversations/:conversationId/messages', checkAuth, async (req, res) => {
+async function getMessages(req, res) {
     try {
+        console.log(req.params)
         const { limit } = req.query;
         const before = req.query.before || Date.now();
         const conversationId = req.params.conversationId;
@@ -101,7 +101,7 @@ router.get('/conversations/:conversationId/messages', checkAuth, async (req, res
                 .sort({
                     date_sent: -1
                 })
-                .limit(limit)
+                .limit(Number(limit))
                 .exec();
 
         res.status(200).json({
@@ -113,16 +113,16 @@ router.get('/conversations/:conversationId/messages', checkAuth, async (req, res
             err: err.message
         })
     }
-});
+};
 
 //Sending a message
-router.post('/conversations/:conversationId/messages', checkAuth, async (req, res) => {
+async function sendMessage(req, res) {
     try {
         const conversationId = req.params.conversationId;
         const decodedJwt = req.decodedJwt;
         const { messageBody } = req.body
 
-        const message = Message.create({
+        const message = await Message.create({
             _id: new mongoose.Types.ObjectId,
             conversation_id: conversationId,
             sender: decodedJwt.userId,
@@ -142,6 +142,12 @@ router.post('/conversations/:conversationId/messages', checkAuth, async (req, re
             err: err.message
         })
     }
-})
+};
 
-module.exports = router;
+module.exports = {
+    searchUsers,
+    getConversations,
+    createConversation,
+    getMessages,
+    sendMessage
+};
