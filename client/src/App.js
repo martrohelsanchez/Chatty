@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {Switch, Route} from 'react-router-dom'
 import io from 'socket.io-client';
+import axios from 'axios';
 
 import styles from "./index.module.css";
 import SignUp from './components/signUp/signUp';
@@ -12,6 +13,13 @@ export const socket = io('http://localhost:5000/');
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
+  const [jwtToken, setjwtToken] = useState('');
+  
+  axios.defaults.baseURL = 'http://localhost:5000';
+  axios.interceptors.request.use(config => {
+    config.headers.common['Authorization'] = 'Bearer' + jwtToken;
+    return config;
+  });
 
   return (
         <div className={styles.chatAppContainer}>
@@ -23,7 +31,7 @@ function App() {
               <SignUp setUserInfo={setUserInfo}/>
             </Route>
             <Route exact path="/logIn">
-              <LogIn setUserInfo={setUserInfo}/>
+              <LogIn setjwtToken={setjwtToken} setUserInfo={setUserInfo}/>
             </Route>
           </Switch>
         </div>

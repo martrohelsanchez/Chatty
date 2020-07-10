@@ -4,19 +4,27 @@ import axios from 'axios';
 
 import styles from './logIn.module.css';
 
-function LogIn({ setUserInfo}) {
+function LogIn({setjwtToken, setUserInfo}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const history = useHistory();
 
     function logIn(e) {
-        axios.post('http://localhost:5000/user/logIn', {
+        axios.post('/user/logIn', {
             username: input.trim()
         })
-            .then(({data}) => {
+            .then(res => {
+                const data = res.data
+                const {jwtToken, _id, username} = data
+                console.log(res)
+
                 if (data.isAuth) {
                     setInput('');
-                    setUserInfo(data);
+                    setUserInfo({
+                        userId: _id,
+                        username
+                    });
+                    setjwtToken(jwtToken)
                     history.push('/chat');
                 } // if isAuth is false, server send 401 status
             })

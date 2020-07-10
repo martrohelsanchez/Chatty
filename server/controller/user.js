@@ -13,7 +13,7 @@ async function userSignUp(req, res) {
                 username: req.body.username
             })
 
-            const token = jwt.sign({
+            const jwtToken = jwt.sign({
                 userId: user._id
             },
                 process.env.JWT_KEY
@@ -21,9 +21,8 @@ async function userSignUp(req, res) {
 
             res.status(200).json({
                 username: user.username,
-                conversations: user.conversations,
                 isUsernameTaken: false,
-                token
+                jwtToken
             })
         } else {
             //user is already taken
@@ -46,7 +45,7 @@ async function userLogIn(req, res) {
             .exec();
 
         if (user) {
-            const token = jwt.sign({
+            const jwtToken = jwt.sign({
                 userId: user._id
             },
                 process.env.JWT_KEY
@@ -55,9 +54,8 @@ async function userLogIn(req, res) {
             res.status(200).json({
                 _id: user._id,
                 username: user.username,
-                conversations: user.conversations,
                 isAuth: true,
-                token
+                jwtToken
             });
         } else {
             res.status(401).json({
