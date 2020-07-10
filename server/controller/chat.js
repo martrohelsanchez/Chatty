@@ -44,7 +44,7 @@ async function getConversations (req, res) {
                 .sort({
                     last_updated: -1
                 })
-                .limit(limit)
+                .limit(Number(limit))
                 .exec();
 
         res.status(200).json({
@@ -95,7 +95,7 @@ async function getMessages(req, res) {
         const messages =
             await Message.find({
                 conversation_id: conversationId,
-                before: { $lt: before }
+                date_sent: { $lt: before }
             })
                 .select('-__v')
                 .sort({

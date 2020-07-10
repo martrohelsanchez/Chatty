@@ -9,5 +9,4 @@ router.post('/conversations', checkAuth, chatController.createConversation);
 router.get('/conversations/:conversationId/messages', checkAuth, chatController.getMessages);
 router.post('/conversations/:conversationId/messages', checkAuth, chatController.sendMessage);
 
-
 module.exports = router;
