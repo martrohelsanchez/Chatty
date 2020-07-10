@@ -8,6 +8,10 @@ const conversationSchema = new Schema({
     ],
     messages: {type: Schema.Types.ObjectId, ref: 'Message'},
     conversation_pic: {type: String},
+    last_message: {
+        message_body: {type: String},
+        sender_username: {type: String}
+    },
     created_at: {type: Number},
     last_updated: {type: Number}
 });
