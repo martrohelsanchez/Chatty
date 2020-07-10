@@ -6,12 +6,12 @@ const conversationSchema = new Schema({
     members: [
         {type: Schema.Types.ObjectId, ref: 'User'}
     ],
-    messages: {type: Schema.Types.ObjectId, ref: 'Message'},
     conversation_pic: {type: String},
     last_message: {
         message_body: {type: String},
         sender_username: {type: String}
     },
+    is_chatroom: {type: Boolean},
     created_at: {type: Number},
     last_updated: {type: Number}
 });
