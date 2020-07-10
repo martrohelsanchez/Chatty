@@ -10,7 +10,7 @@ function LogIn({ setUserInfo}) {
     const history = useHistory();
 
     function logIn(e) {
-        axios.post('http://localhost:5000/logIn', {
+        axios.post('http://localhost:5000/user/logIn', {
             username: input.trim()
         })
             .then(({data}) => {
@@ -20,8 +20,10 @@ function LogIn({ setUserInfo}) {
                     history.push('/chat');
                 } // if isAuth is false, server send 401 status
             })
-            .catch(({response}) => {
-                if (response.status === 401) {
+            .catch(err => {
+                console.log(err)
+                const status = err.response.status;
+                if (status === 401) {
                     setErr('Wrong nickname or password');
                 } else {
                     setErr('Sorry, something went wrong. Please try again later')   
