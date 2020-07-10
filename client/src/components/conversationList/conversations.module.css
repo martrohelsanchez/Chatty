@@ -1,0 +1,24 @@
+.conversationContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.profilePicHolder {
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+    background-color: rgb(209, 209, 209);
+}
+
+.senderName {
+    font-size: .8em;
+}
+
+.lastMsgPrev {
+    font-size: .8em;
+}
+
+.msgPrevContainer {
+    margin-left: 10px;
+}

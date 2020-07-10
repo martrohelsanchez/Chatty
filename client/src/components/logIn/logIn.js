@@ -26,11 +26,11 @@ function LogIn({setjwtToken, setUserInfo}) {
                     });
                     setjwtToken(jwtToken)
                     history.push('/chat');
-                } // if isAuth is false, server send 401 status
+                } 
+                // if isAuth is false, server send 401 status
             })
             .catch(err => {
-                console.log(err)
-                const status = err.response.status;
+                const {status} = err.response;
                 if (status === 401) {
                     setErr('Wrong nickname or password');
                 } else {
