@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
+import styles from './conversationList.module.css';
 import Conversation from './conversation/Conversation';
-import Loading from '../loading/loading';
+import Loading from '../loading/Loading';
+import {UserInfoContext} from '../../App';
 
 function ConversationList() {
+    const userInfo = useContext(UserInfoContext);
     const [conversations, setConversations] = useState([]);
     const [err, setErr] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,12 +25,8 @@ function ConversationList() {
         })
             .then(res => {
                 const newConversations = res.data.conversations
-                setConversations(prev => {
-                    return [
-                        ...prev,
-                        ...newConversations
-                    ]
-                });
+                setConversations([...conversations, ...newConversations]);
+                setIsLoading(false)
             })
             .catch(err => {
                 console.error(err.message)
@@ -37,18 +36,14 @@ function ConversationList() {
 
     const renderConversations = conversations.map(conv => {
         return <Conversation conv={conv} />
-    })
+    });
 
     return (
-        <div>
-            {
-                isLoading ? 
-                    <Loading />
-                :
-                    {renderConversations}
-            }
-        </div>
-    )
+      <div className={styles.conversationListContainer}>
+        {isLoading ? <Loading /> : renderConversations}
+        {err}
+      </div>
+    );
 }
 
 export default ConversationList
