@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {Switch, Route, useHistory} from 'react-router-dom';
 
 import styles from "./contactsPane.module.css";
 import searchIcon from "../../images/search-icon.svg";
-import Channel from '../channel/Channel';
+import ConversationList from '../conversationList/ConversationList';
+import {UserInfoContext} from '../../App';
 
-function ContactsPane({userInfo}) {
+function ContactsPane() {
     const [isSearching, setIsSearching] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [searchedUser, setSearchedUser] = useState([]);
     const [intervalId, setIntervalId] = useState(null);
     const [err, setErr] = useState(null);
+    const userInfo = useContext(UserInfoContext);
     const {conversations} = userInfo;
     const history = useHistory();
     const [currentConvo, setCurrentConvo] = useState(null);
-
-    const renderAllChannel = conversations.map(channel => {
-        const lastMessageIndex = channel.messages.length - 1;
-        return <Channel 
-            lastMessageIndex={lastMessageIndex} 
-            channel={channel}
-        />
-    });
 
     const renderSearchedUser = searchedUser.map(user => {
         return (
@@ -81,9 +75,7 @@ function ContactsPane({userInfo}) {
             </div>
             <Switch>
                 <Route exact path='/chat'>
-                    <div onClick={changeConvo} className={styles.channelListContainer}>
-                        {renderAllChannel}
-                    </div>
+                        <ConversationList />
                 </Route>
                 <Route path='/chat/search' >
                     {renderSearchedUser}

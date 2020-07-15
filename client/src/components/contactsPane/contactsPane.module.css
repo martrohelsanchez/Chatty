@@ -33,6 +33,6 @@
     margin: 30px;
 }
 
-.channelListContainer:hover {
+.convoListContainer:hover {
     cursor: pointer;
 }
