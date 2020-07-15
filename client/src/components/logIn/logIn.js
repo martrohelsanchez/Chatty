@@ -16,7 +16,6 @@ function LogIn({setjwtToken, setUserInfo}) {
             .then(res => {
                 const data = res.data
                 const {jwtToken, _id, username} = data
-                console.log(res)
 
                 if (data.isAuth) {
                     setInput('');
