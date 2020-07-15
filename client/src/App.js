@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Switch, Route} from 'react-router-dom'
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -8,24 +8,30 @@ import SignUp from './components/signUp/signUp';
 import Chat from './components/chat/Chat';
 import LogIn from './components/logIn/logIn';
 
-export const UserContext = React.createContext(undefined);
-export const socket = io('http://localhost:5000/');
+export const UserInfoContext = React.createContext(null);
+export const socket = io('http://localhost:5001/');
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [jwtToken, setjwtToken] = useState('');
+
+  axios.defaults.baseURL = "http://localhost:5001";
+  axios.defaults.headers["Authorization"] = "Bearer " + jwtToken;
   
-  axios.defaults.baseURL = 'http://localhost:5000';
-  axios.interceptors.request.use(config => {
-    config.headers.common['Authorization'] = 'Bearer' + jwtToken;
-    return config;
-  });
+  // useEffect(() => {
+  //   axios.interceptors.request.use((config) => {
+  //     config.headers.common['Authorization'] = 'Bearer ' + jwtToken;
+  //     console.log(jwtToken)
+  //     return config;
+  //   });
+  // }, [])
 
   return (
+      <UserInfoContext.Provider value={userInfo}>
         <div className={styles.chatAppContainer}>
           <Switch>
             <Route exact path="/chat">
-              <Chat userInfo={userInfo} setUserInfo={setUserInfo}/>
+              <Chat />
             </Route>
             <Route exact path="/signUp">
               <SignUp setUserInfo={setUserInfo}/>
@@ -35,6 +41,7 @@ function App() {
             </Route>
           </Switch>
         </div>
+    </UserInfoContext.Provider>
   );
 }
 
