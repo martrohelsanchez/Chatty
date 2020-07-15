@@ -3,11 +3,11 @@ import io from "socket.io-client";
 import uniqid from 'uniqid';
 
 import styles from './inputBar.module.css';
-import {socket, UserContext} from '../../App';
+import {socket, UserInfoContext} from '../../App';
 
 function Input() {
   const [chatInput, setChatInput] = useState("");
-  const user = useContext(UserContext);
+  const user = useContext(UserInfoContext);
 
   function send(e) {
     if (chatInput) {
