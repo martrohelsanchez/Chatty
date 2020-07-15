@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {useHistory} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane';
+import {UserInfoContext} from '../../App';
 
-function Chat({ userInfo, setUserInfo}) {
+function Chat() {
+    const userInfo = useContext(UserInfoContext);
     const history = useHistory();
 
     if (!userInfo) {
@@ -15,8 +17,8 @@ function Chat({ userInfo, setUserInfo}) {
 
     return (
         <>
-            <ContactsPane userInfo={userInfo}/>
-            <MessagePane userInfo={userInfo}/>
+            <ContactsPane />
+            <MessagePane />
         </>
     )
 }
