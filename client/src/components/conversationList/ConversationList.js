@@ -34,7 +34,7 @@ function ConversationList() {
                     updateConversations.unshift(updateConversations[convId]);
                     updateConversations.splice(i, 1);
 
-                    setConversations(updateConv);
+                    setConversations(updateConversations);
                 }
 
                 //finds the conversation of the new msg on the database
