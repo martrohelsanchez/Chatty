@@ -1,21 +1,24 @@
 import React, { useState, useContext } from 'react';
-import io from "socket.io-client";
-import uniqid from 'uniqid';
+import axios from 'axios';
 
 import styles from './inputBar.module.css';
-import {socket, UserInfoContext} from '../../App';
+import {UserInfoContext} from '../../App';
+import {CurrConvContext} from '../chat/Chat';
 
 function Input() {
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
+  const [currConv, setCurrConv] = useContext(CurrConvContext);
 
   function send(e) {
+    const currConvId = currConv._id;
+
     if (chatInput) {
-      socket.emit("sendMessage", {
-        id: uniqid(),
-        from: user,
-        message: chatInput,
-      });
+      axios.post(`/chat/conversations/${currConvId}/messages`, {
+        messageBody: chatInput,
+        convMembers: currConv.members
+      })
+
       setChatInput("");
     }
   }
