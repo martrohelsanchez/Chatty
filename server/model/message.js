@@ -8,7 +8,6 @@ const messageSchema = new Schema({
     seen: [
         {type: Schema.Types.ObjectId, ref: 'User'}
     ],
-    is_sent: {type: Boolean},
     is_delivered: {type: Boolean},
     date_sent: {type: Number}
 });
