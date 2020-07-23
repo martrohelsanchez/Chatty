@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,6 +8,11 @@ function LogIn({setjwtToken, setUserInfo}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const history = useHistory();
+    const usernameInputRef = useRef(); 
+    
+    useEffect(() => {
+       usernameInputRef.current.focus(); 
+    });
 
     function logIn(e) {
         axios.post('/user/logIn', {
@@ -53,6 +58,7 @@ function LogIn({setjwtToken, setUserInfo}) {
             <h3 className={styles.promptNickname}>Enter your nickname?</h3>
             <input 
                 className={styles.nicknameInput} 
+                ref={usernameInputRef}
                 type="input"
                 value={input}
                 autoFocus
