@@ -15,7 +15,6 @@ function ContactsPane() {
     const userInfo = useContext(UserInfoContext);
     const {conversations} = userInfo;
     const history = useHistory();
-    const [currentConvo, setCurrentConvo] = useState(null);
 
     const renderSearchedUser = searchedUser.map(user => {
         return (
