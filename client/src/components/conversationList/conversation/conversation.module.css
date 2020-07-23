@@ -5,6 +5,10 @@
     margin: 10px;
 }
 
+.conversationContainer:hover {
+    cursor: pointer;
+}
+
 .profilePicHolder {
     height: 50px;
     width: 50px;
