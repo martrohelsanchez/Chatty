@@ -1,6 +1,6 @@
 const app = require('express')();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('./websocket').connect(server);
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -22,14 +22,6 @@ app.get('/', (req, res, next) => {
         message: "get request succeffully made"
     });
 })
-
-io.on("connection", (socket) => {
-  console.log("a user just connected");
-  socket.on('sendMessage', message => {
-      io.emit('receive message', message)
-      console.log(message)
-  })
-});
 
 app.use('/user', userRoute);
 app.use('/chat', chatRoute);
