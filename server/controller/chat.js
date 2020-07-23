@@ -33,7 +33,8 @@ async function getConversations (req, res) {
     try {
         const query = req.query;
         const before = query.before || Date.now();
-        const limit = query.limit;
+        const limit = Number(query.limit);
+
         const conversations =
             await Conversation.find({
                 members: req.decodedJwt.userId,
@@ -44,7 +45,7 @@ async function getConversations (req, res) {
                 .sort({
                     last_updated: -1
                 })
-                .limit(Number(limit))
+                .limit(limit)
                 .exec();
 
         res.status(200).json({
@@ -52,7 +53,29 @@ async function getConversations (req, res) {
         })
     } catch (err) {
         res.status(500).json({
-            err
+            err: err.message
+        })
+    }
+}
+
+//getting a conversation
+async function getOneConversation(req, res) {
+    try {
+        const {conversationId} = req.params;
+
+        const conversation = 
+            await Conversation.findOne({_id: conversationId})
+            .select('-__v')
+            .exec();
+
+        res.status(200).json({
+            ...conversation._doc
+        })
+
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({
+            err: err.message
         })
     }
 }
@@ -87,7 +110,6 @@ async function createConversation (req, res) {
 //Getting the messages of a conversation
 async function getMessages(req, res) {
     try {
-        console.log(req.params)
         const { limit } = req.query;
         const before = req.query.before || Date.now();
         const conversationId = req.params.conversationId;
@@ -102,6 +124,7 @@ async function getMessages(req, res) {
                     date_sent: -1
                 })
                 .limit(Number(limit))
+                .populate('sender', '-__v')
                 .exec();
 
         res.status(200).json({
@@ -120,7 +143,7 @@ async function sendMessage(req, res) {
     try {
         const conversationId = req.params.conversationId;
         const decodedJwt = req.decodedJwt;
-        const { messageBody } = req.body
+        const { messageBody, convMembers } = req.body
 
         const message = await Message.create({
             _id: new mongoose.Types.ObjectId,
@@ -132,9 +155,30 @@ async function sendMessage(req, res) {
             is_delivered: false,
             date_sent: Date.now()
         });
+        delete message._doc.__v;
+
+        const socket = require('../websocket').getSocket();
+
+        for (let userId of convMembers) {
+            if (userId !== decodedJwt.userId) {
+                message._doc.sender_username = decodedJwt.userId
+
+                socket.to(userId).emit('sendMsg', message._doc)
+            }
+        }
 
         res.status(200).json({
             ...message._doc
+        });
+
+        const conversation = await Conversation.updateOne({_id: conversationId}, {
+            $set: {
+                last_message: {
+                    message_body: messageBody,
+                    sender_username: decodedJwt.username
+                },
+                last_updated: message.date_sent
+            }
         })
     } catch (err) {
         console.error(err);
@@ -147,6 +191,7 @@ async function sendMessage(req, res) {
 module.exports = {
     searchUsers,
     getConversations,
+    getOneConversation,
     createConversation,
     getMessages,
     sendMessage
