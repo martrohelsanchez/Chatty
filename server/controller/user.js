@@ -46,7 +46,8 @@ async function userLogIn(req, res) {
 
         if (user) {
             const jwtToken = jwt.sign({
-                userId: user._id
+                userId: user._id,
+                username: user.username
             },
                 process.env.JWT_KEY
             );
