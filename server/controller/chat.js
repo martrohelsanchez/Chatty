@@ -110,7 +110,7 @@ async function createConversation (req, res) {
 //Getting the messages of a conversation
 async function getMessages(req, res) {
     try {
-        const { limit } = req.query;
+        const limit = Number(req.query.limit);
         const before = req.query.before || Date.now();
         const conversationId = req.params.conversationId;
 
@@ -123,7 +123,7 @@ async function getMessages(req, res) {
                 .sort({
                     date_sent: 1
                 })
-                .limit(Number(limit))
+                .limit(limit)
                 .populate('sender', '-__v')
                 .exec();
 
