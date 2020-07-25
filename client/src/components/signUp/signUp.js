@@ -10,14 +10,14 @@ function SignUp({setUserInfo}) {
     const history = useHistory();
 
     function signUp(e) {
-        axios.post('http://localhost:5000/signUp', {
-            username: input
+        axios.post('/user/signUp', {
+            username: input.trim()
         })
             .then(({data}) => {
                 if (! data.isUsernameTaken) {
                     setInput('')
-                    setUserInfo(data);
-                    history.push('/chat')
+                    // setUserInfo(data);
+                    history.push('/logIn')
                 } else {
                     setErr('User already exists')
                 }
