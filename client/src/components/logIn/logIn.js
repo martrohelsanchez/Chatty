@@ -34,7 +34,12 @@ function LogIn({setjwtToken, setUserInfo}) {
                 // if isAuth is false, server send 401 status
             })
             .catch(err => {
+                if (!err.response) {
+                    console.error(err)
+                    return null
+                }
                 const {status} = err.response;
+                
                 if (status === 401) {
                     setErr('Wrong nickname or password');
                 } else {
