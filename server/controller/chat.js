@@ -121,7 +121,7 @@ async function getMessages(req, res) {
             })
                 .select('-__v')
                 .sort({
-                    date_sent: -1
+                    date_sent: 1
                 })
                 .limit(Number(limit))
                 .populate('sender', '-__v')
