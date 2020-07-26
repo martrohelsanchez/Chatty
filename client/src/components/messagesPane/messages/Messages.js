@@ -9,8 +9,8 @@ import { socket } from '../../../App';
 import {useDispatch, useSelector} from 'react-redux';
 import {setInitialMsg, addNewMsg} from '../../../redux/actions/messagesActions';
 
-function Messages({userInfo}) {
-    const currConv = useSelector(state => state.currConv)
+function Messages() {
+    const currConv = useSelector(state => state.currConv);
     const {messages} = useSelector(state => state.messages.find(conv => conv.convId === state.currConv._id)) || [];
     const dispatch = useDispatch();
     const [err, setErr] = useState(null);
