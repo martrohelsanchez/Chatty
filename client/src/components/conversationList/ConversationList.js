@@ -4,15 +4,16 @@ import axios from 'axios';
 import styles from './conversationList.module.css';
 import Conversation from './conversation/Conversation';
 import Loading from '../loading/Loading';
-import {CurrConvContext} from '../chat/Chat';
 import {socket} from '../../App';
+
+import {useDispatch} from 'react-redux';
+import {setCurrConv} from '../../redux/actions/currConvActions';
 
 function ConversationList() {
     const [conversations, setConversations] = useState([]);
     const [err, setErr] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [isInitialRender, setIsInitialRender] = useState(true);
-    const [currConv, setCurrConv] = useContext(CurrConvContext);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         getConversations();
@@ -61,15 +62,20 @@ function ConversationList() {
             .then(res => {
                 const newConversations = res.data.conversations
                 if (isInitialRender) {
-                    setCurrConv(newConversations[0])
+                    dispatch(setCurrConv(newConversations[0]));
                 }
                 setConversations([...conversations, ...newConversations]);
-                setIsLoading(false)
             })
             .catch(err => {
                 console.error(err.message)
                 setErr('Something went wrong')
             })
+    }
+
+    if (conversations.length === 0) {
+        return <Loading />
+    } else if (err) {
+        return <div>{err}</div>
     }
 
     const renderConversations = conversations.map(conv => {
@@ -78,8 +84,7 @@ function ConversationList() {
 
     return (
       <div className={styles.conversationListContainer}>
-        {isLoading ? <Loading /> : renderConversations}
-        {err}
+        {renderConversations}
       </div>
     );
 }

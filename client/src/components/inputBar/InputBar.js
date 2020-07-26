@@ -1,14 +1,18 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import uniqid from 'uniqid';
 
 import styles from './inputBar.module.css';
 import {UserInfoContext} from '../../App';
-import {CurrConvContext} from '../chat/Chat';
+
+import {useSelector, useDispatch} from 'react-redux';
+import {addNewMsg} from '../../redux/actions/messagesActions';
 
 function Input() {
+  const currConv = useSelector(state => state.currConv);
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
-  const [currConv, setCurrConv] = useContext(CurrConvContext);
+  const dispatch = useDispatch();
 
   function send(e) {
     const currConvId = currConv._id;
@@ -19,6 +23,19 @@ function Input() {
         convMembers: currConv.members
       })
 
+      dispatch(addNewMsg(currConvId, 
+        {
+          _id: uniqid(),
+          conversation_id: currConvId,
+          sender: {
+            username: user.username,
+            _id: user._id
+          },
+          message_body: chatInput,
+          is_delivered: false,
+          date_sent: Date.now()
+        }
+      ))
       setChatInput("");
     }
   }

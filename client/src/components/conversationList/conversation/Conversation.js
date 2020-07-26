@@ -2,17 +2,20 @@ import React, { useContext } from 'react';
 
 import styles from './conversation.module.css';
 import {UserInfoContext} from '../../../App';
-import {CurrConvContext} from '../../chat/Chat';
+
+import {useDispatch} from 'react-redux';
+import {setCurrConv} from '../../../redux/actions/currConvActions';
 
 function Conversation({conv}) {
     const userInfo = useContext(UserInfoContext);
-    const [currConv, setCurrConv] = useContext(CurrConvContext);
+    const dispatch = useDispatch();
     const {last_message, is_chatroom} = conv;
     // const senderIsMe = last_message.sender_username === userInfo.username ? true : false;
     // const senderUsernamePrev = senderIsMe ? 'You' : last_message.sender_username;
 
     function handleOpenConvo() {
-        setCurrConv(conv);
+        dispatch(setCurrConv(conv))
+        // setCurrConv(conv);
     }
 
     return (

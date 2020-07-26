@@ -5,8 +5,6 @@ import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
 import {UserInfoContext} from '../../App';
 
-export const CurrConvContext = React.createContext(null);
-
 function Chat() {
     const [currConv, setCurrConv] = useState('');
     const userInfo = useContext(UserInfoContext);
@@ -19,10 +17,10 @@ function Chat() {
     }
 
     return (
-        <CurrConvContext.Provider value={[currConv, setCurrConv]}>
+        <>
             <ContactsPane />
             <MessagePane />
-        </CurrConvContext.Provider>    
+        </>
     )
 }
 
