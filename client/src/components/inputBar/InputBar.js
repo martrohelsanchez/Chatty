@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
 import uniqid from 'uniqid';
 
@@ -13,6 +13,11 @@ function Input() {
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
   const dispatch = useDispatch();
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus()
+  }) 
 
   function send(e) {
     const currConvId = currConv._id;
@@ -48,6 +53,7 @@ function Input() {
     <div className={styles.inputContainer}>
       <input
         className={styles.input}
+        ref={inputRef}
         type="text"
         placeholder="Type a message"
         value={chatInput}
