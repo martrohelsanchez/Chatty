@@ -9,13 +9,17 @@ import Chat from './components/chat/Chat';
 import LogIn from './components/logIn/logIn';
 
 export const UserInfoContext = React.createContext(null);
-export const socket = io('http://localhost:5001/');
+export const socket = io('http://localhost:5000/');
+
+socket.on('error', err => {
+  console.err(err)
+})
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [jwtToken, setjwtToken] = useState('');
 
-  axios.defaults.baseURL = "http://localhost:5001";
+  axios.defaults.baseURL = "http://localhost:5000";
   axios.defaults.headers["Authorization"] = "Bearer " + jwtToken;
   
   // useEffect(() => {
