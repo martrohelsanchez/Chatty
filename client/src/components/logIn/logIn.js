@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './logIn.module.css';
+import {socket} from '../../App';
 
 function LogIn({setjwtToken, setUserInfo}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
-    const history = useHistory();
     const usernameInputRef = useRef(); 
+    const history = useHistory();
     
     useEffect(() => {
        usernameInputRef.current.focus(); 
@@ -30,8 +31,9 @@ function LogIn({setjwtToken, setUserInfo}) {
                     });
                     setjwtToken(jwtToken)
                     history.push('/chat');
-                } 
-                // if isAuth is false, server send 401 status
+                } // if isAuth is false, server send 401 status
+
+                socket.emit('join room', _id);
             })
             .catch(err => {
                 if (!err.response) {
