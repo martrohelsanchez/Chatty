@@ -1,11 +1,17 @@
 let io;
-let socket;
 
 function connect(server) {
     io = require('socket.io')(server);
 
-    io.on('connect', ioSocket => {
-        socket = ioSocket;
+    io.on('connect', socket => {
+        socket.on('join room', (roomName) => {
+            console.log('server: ', roomName)
+            socket.join(roomName);
+        })
+
+        socket.on('err', err => {
+            console.error(err)
+        })
     })
 }
 
@@ -13,12 +19,7 @@ function getIo() {
     return io;
 }
 
-function getSocket() {
-    return socket;
-}
-
 module.exports = {
     connect,
-    getIo,
-    getSocket
+    getIo
 }
