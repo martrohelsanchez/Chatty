@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
+const io = require('../websocket').getIo();
 
 const User = require('../model/user');
 const Conversation = require('../model/conversation');
 const Message = require('../model/message');
 
-//search users
-// /search
+//search users /search
 function searchUsers (req, res) {
     function escapeRegex(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -87,10 +87,7 @@ async function createConversation (req, res) {
 
         const conversation = await Conversation.create({
             _id: new mongoose.Types.ObjectId,
-            members: [
-                decodedJwt.userId,
-                ...body.membersId
-            ],
+            members: body.membersId,
             conversation_name: body.conversationName,
             created_at: Date.now(),
             last_updated: Date.now()
@@ -140,6 +137,7 @@ async function getMessages(req, res) {
 
 //Sending a message
 async function sendMessage(req, res) {
+    console.log('someone has sent a message')
     try {
         const conversationId = req.params.conversationId;
         const decodedJwt = req.decodedJwt;
@@ -157,13 +155,13 @@ async function sendMessage(req, res) {
         });
         delete message._doc.__v;
 
-        const socket = require('../websocket').getSocket();
-
+        console.log('members: ', convMembers)
         for (let userId of convMembers) {
             if (userId !== decodedJwt.userId) {
-                message._doc.sender_username = decodedJwt.userId
+                message._doc.sender_username = decodedJwt.userId;
 
-                socket.to(userId).emit('sendMsg', message._doc)
+                io.in(userId).emit('sendMsg', message._doc);
+                io.in('lodi').emit('tangap', message._doc);
             }
         }
 
