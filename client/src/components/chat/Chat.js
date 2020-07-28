@@ -3,10 +3,9 @@ import {useHistory} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
-import {UserInfoContext} from '../../App';
+import {UserInfoContext, socket} from '../../App';
 
 function Chat() {
-    const [currConv, setCurrConv] = useState('');
     const userInfo = useContext(UserInfoContext);
     const history = useHistory();
     
