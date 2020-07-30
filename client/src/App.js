@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {Switch, Route} from 'react-router-dom'
 import io from 'socket.io-client';
 import axios from 'axios';

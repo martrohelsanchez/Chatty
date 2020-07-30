@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 
 import styles from './messages.module.css';
@@ -7,8 +7,7 @@ import Loading from '../../loading/Loading';
 import { socket } from '../../../App';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {setInitialMsg, addNewMsg} from '../../../redux/actions/messagesActions';
-import useListenExecute from '../../../devTools/useListenExecute';
+import {setInitialMsg, addNewMsg, addPrevMsgs} from '../../../redux/actions/messagesActions';
 
 let currConv;
 
@@ -20,6 +19,7 @@ function Messages() {
     const dispatch = useDispatch();
     const messagesContainerRef = useRef({});
     const pxFromBottomRef = useRef(null);
+    const [pendingAxios, setPendingAxios] = useState(false);
 
     useEffect(() => {
         socket.on('sendMsg', newMsg => {
@@ -62,25 +62,34 @@ function Messages() {
                 }
             })
 
+            data.messages.reverse();
+
             if (isInitial) {
                 pxFromBottomRef.current = getPxFromBottom(messagesContainerRef.current);
-                
+
                 setIsLoading(false);
                 dispatch(setInitialMsg(currConvId, data.messages));
             } else {
                 pxFromBottomRef.current = getPxFromBottom(messagesContainerRef.current);
+                // setPendingAxios(false);
+                setIsLoading(false);
+                console.log(data.messages)
 
-                setIsLoading(false)
-                dispatch(addNewMsg(currConvId, data.messages));
+                dispatch(addPrevMsgs(currConvId, data.messages));
             }
         } catch (err) {
             console.error(err);
         }
     }
 
-    const renderMessages = messages.map(message => {
-        return <Message key={message._id} message={message}/>
-    })
+    function handleScrolling(e) {
+        if (e.scrollTop < 50 && !pendingAxios) {
+            console.log('getting more messages')
+            setPendingAxios(true);
+            getMessages(10, messages[0].date_sent, false)
+            setIsLoading(true);
+        }
+    }
 
     function getPxFromBottom(e) {
         return e.scrollHeight - (e.scrollTop + e.clientHeight);
@@ -92,13 +101,20 @@ function Messages() {
         }
     }
 
+    console.log(messages)
+
+    const renderMessages = messages.map(message => {
+        return <Message key={message._id} message={message}/>
+    })
+
     return (
         <div 
             className={`${styles.messagesContainer}`} 
             ref={messagesContainerRef}
+            onScroll={() => handleScrolling(messagesContainerRef.current)}
         >
-            {isLoading && <Loading />}
-            {renderMessages}
+                {isLoading && <Loading />}
+                {renderMessages}
         </div>
     )
 }

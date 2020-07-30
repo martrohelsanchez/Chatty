@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {Switch, Route, useHistory} from 'react-router-dom';
 
 import styles from "./contactsPane.module.css";
 import searchIcon from "../../images/search-icon.svg";
 import ConversationList from '../conversationList/ConversationList';
-import {UserInfoContext} from '../../App';
 
 function ContactsPane() {
     const [isSearching, setIsSearching] = useState(false);
@@ -12,8 +11,6 @@ function ContactsPane() {
     const [searchedUser, setSearchedUser] = useState([]);
     const [intervalId, setIntervalId] = useState(null);
     const [err, setErr] = useState(null);
-    const userInfo = useContext(UserInfoContext);
-    const {conversations} = userInfo;
     const history = useHistory();
 
     const renderSearchedUser = searchedUser.map(user => {
@@ -52,10 +49,6 @@ function ContactsPane() {
         // )
         history.push('/chat/search');
         setIsSearching(true);
-    }
-
-    function changeConvo() {
-        return null
     }
 
     return (

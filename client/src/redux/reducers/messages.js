@@ -33,12 +33,16 @@ export default function(state = [], action) {
                 return conv;
             })
         case 'messages/addedPreviousMessages':
+            console.log('------------------')
+            console.log('messages reducers')
+            console.log(payload.prevMsgs)
+            console.log('--------------------')
             return newState.map(conv => {
                 if (conv.convId === payload.convId) {
                     return {
                         convId: payload.convId,
                         messages: [
-                            payload.prevMsgs,
+                            ...payload.prevMsgs,
                             ...conv.messages
                         ]
                     }

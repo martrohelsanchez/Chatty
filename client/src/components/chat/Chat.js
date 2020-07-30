@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import {useHistory} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
-import {UserInfoContext, socket} from '../../App';
+import {UserInfoContext} from '../../App';
 
 function Chat() {
     const userInfo = useContext(UserInfoContext);
