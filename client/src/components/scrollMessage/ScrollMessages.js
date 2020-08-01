@@ -2,19 +2,17 @@ import React, { useEffect, useRef, useLayoutEffect } from 'react';
 
 import useListenExecute from '../../devTools/useListenExecute';
 
-function ScrollMessages({children, className, messages, ref, onScroll, isLoading, moreAtDb, getMoreMsg}) {
+function ScrollMessages({children, className, messages, onScroll}) {
     const messagesContainer = useRef(null);
     const prevScrollPos = useRef(null);
-    ref = messagesContainer;
 
     useLayoutEffect(() => {
         const prevFromBottom = getPxFromBottom(prevScrollPos.current);
 
-        console.log(prevFromBottom)
         if (prevFromBottom < 100) {
             scrollToBottom(messagesContainer.current);
         } else {
-            //remain previous position
+            //remain from previous position
             goToPrevPos(messagesContainer.current, prevScrollPos.current)
         }
 
@@ -30,11 +28,7 @@ function ScrollMessages({children, className, messages, ref, onScroll, isLoading
 
     function handleScrolling(e) {
         setPrevPos(messagesContainer.current)
-
-        if (e.scrollTop < 50 && !isLoading && moreAtDb.current) {
-            console.log('getting more messages')
-            getMoreMsg();
-        }
+        onScroll(e);
     }
 
     function getPxFromBottom(e) {

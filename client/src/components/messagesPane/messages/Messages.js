@@ -71,9 +71,11 @@ function Messages() {
         }
     }
 
-    function getMoreMsg() {
-        getMessages(10, messages[0].date_sent, false);
-        setIsLoading(true);
+    function handleScroll(pos) {
+        if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current) {
+            getMessages(10, messages[0].date_sent, false);
+            setIsLoading(true)
+        }
     }
 
     const renderMessages = messages.map(message => {
@@ -88,9 +90,7 @@ function Messages() {
         <ScrollMessages 
             className={`${styles.messagesContainer}`}
             messages={messages}
-            isLoading={isLoading}
-            moreAtDb={moreMsgAtDb}
-            getMoreMsg={getMoreMsg}
+            onScroll={handleScroll}
         >
             {isLoading && <Loading />}
             {renderMessages}
