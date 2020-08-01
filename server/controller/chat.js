@@ -137,7 +137,6 @@ async function getMessages(req, res) {
 
 //Sending a message
 async function sendMessage(req, res) {
-    console.log('someone has sent a message')
     try {
         const conversationId = req.params.conversationId;
         const decodedJwt = req.decodedJwt;
@@ -155,7 +154,6 @@ async function sendMessage(req, res) {
         });
         delete message._doc.__v;
 
-        console.log('members: ', convMembers)
         for (let userId of convMembers) {
             if (userId !== decodedJwt.userId) {
                 message._doc.sender_username = decodedJwt.userId;

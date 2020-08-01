@@ -5,7 +5,6 @@ function connect(server) {
 
     io.on('connect', socket => {
         socket.on('join room', (roomName) => {
-            console.log('server: ', roomName)
             socket.join(roomName);
         })
 
