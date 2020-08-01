@@ -8,6 +8,7 @@ import { socket } from '../../../App';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {setInitialMsg, addNewMsg, addPrevMsgs} from '../../../redux/actions/messagesActions';
+import ScrollMessages from '../../scrollMessage/ScrollMessages';
 
 let currConv;
 
@@ -18,8 +19,7 @@ function Messages() {
     const {messages} = useSelector(state => state.messages.find(conv => conv.convId === state.currConv._id)) || {messages: []};
     const dispatch = useDispatch();
     const messagesContainerRef = useRef({});
-    const pxFromBottomRef = useRef(null);
-    const [pendingAxios, setPendingAxios] = useState(false);
+    const moreMsgAtDb = useRef(true);
 
     useEffect(() => {
         socket.on('sendMsg', newMsg => {
@@ -27,7 +27,6 @@ function Messages() {
 
             //dispatch if the newMsg is for the current conversation
             if (currConvId === newMsg.conversation_id) {
-                pxFromBottomRef.current = getPxFromBottom(messagesContainerRef.current); //get the pixels from the bottom before the state updates
                 dispatch(addNewMsg(currConvId, newMsg));
             }
         });
@@ -38,19 +37,11 @@ function Messages() {
             //get the initial messages if there's no messages yet in current conversation
             getMessages(10, null, true);
         }
-    }, [currConv]);
 
-    useEffect(() => {
-        const pxFromBottom = pxFromBottomRef.current;
-
-        if (pxFromBottom < 100) {
-            scrollToBottom(messagesContainerRef.current);
+        return () => {
+            moreMsgAtDb.current = true;
         }
-    }, [messages]);
-
-    if (err) {
-        return <div>{err}</div>
-    }
+    }, [currConv]);
 
     async function getMessages(limit, before, isInitial) {
         try {
@@ -63,18 +54,16 @@ function Messages() {
             })
 
             data.messages.reverse();
+            
+            if (data.messages.length < 10) {
+                moreMsgAtDb.current = false;
+            }
 
             if (isInitial) {
-                pxFromBottomRef.current = getPxFromBottom(messagesContainerRef.current);
-
                 setIsLoading(false);
                 dispatch(setInitialMsg(currConvId, data.messages));
             } else {
-                pxFromBottomRef.current = getPxFromBottom(messagesContainerRef.current);
-                // setPendingAxios(false);
                 setIsLoading(false);
-                console.log(data.messages)
-
                 dispatch(addPrevMsgs(currConvId, data.messages));
             }
         } catch (err) {
@@ -82,40 +71,30 @@ function Messages() {
         }
     }
 
-    function handleScrolling(e) {
-        if (e.scrollTop < 50 && !pendingAxios) {
-            console.log('getting more messages')
-            setPendingAxios(true);
-            getMessages(10, messages[0].date_sent, false)
-            setIsLoading(true);
-        }
+    function getMoreMsg() {
+        getMessages(10, messages[0].date_sent, false);
+        setIsLoading(true);
     }
-
-    function getPxFromBottom(e) {
-        return e.scrollHeight - (e.scrollTop + e.clientHeight);
-    }
-    
-    function scrollToBottom(e) {
-        if (e) {
-            e.scrollTop = e.scrollHeight;
-        }
-    }
-
-    console.log(messages)
 
     const renderMessages = messages.map(message => {
         return <Message key={message._id} message={message}/>
-    })
+    });
+
+    if (err) {
+        return <div>{err}</div>
+    }
 
     return (
-        <div 
-            className={`${styles.messagesContainer}`} 
-            ref={messagesContainerRef}
-            onScroll={() => handleScrolling(messagesContainerRef.current)}
+        <ScrollMessages 
+            className={`${styles.messagesContainer}`}
+            messages={messages}
+            isLoading={isLoading}
+            moreAtDb={moreMsgAtDb}
+            getMoreMsg={getMoreMsg}
         >
-                {isLoading && <Loading />}
-                {renderMessages}
-        </div>
+            {isLoading && <Loading />}
+            {renderMessages}
+        </ScrollMessages>
     )
 }
 
