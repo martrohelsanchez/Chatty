@@ -52,24 +52,25 @@ function ConversationList() {
         })
     }, []);
 
-    function getConversations() {
-        axios.get('/chat/conversations', {
-            params: {
-                // before: ,
-                limit: 10
-            }
-        })
-            .then(res => {
-                const newConversations = res.data.conversations
-                if (isInitialRender) {
-                    dispatch(setCurrConv(newConversations[0]));
+    async function getConversations() {
+        try {
+            const {data} = await axios.get('/chat/conversations', {
+                params: {  
+                    // before: ,
+                    limit: 10
                 }
-                setConversations([...conversations, ...newConversations]);
             })
-            .catch(err => {
-                console.error(err.message)
-                setErr('Something went wrong')
-            })
+
+            console.log(data)
+
+            if (isInitialRender) {
+                dispatch(setCurrConv(data.conversations[0]))
+            }
+            setConversations([...conversations, ...data.conversations])
+        } catch (err) {
+            console.error(err.message)
+            setErr('Something went wrong')
+        }
     }
 
     if (conversations.length === 0) {
