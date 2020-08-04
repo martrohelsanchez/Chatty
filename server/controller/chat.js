@@ -46,6 +46,11 @@ async function getConversations (req, res) {
                     last_updated: -1
                 })
                 .limit(limit)
+                .select('-__v')
+                .populate({
+                    path: 'members',
+                    select: '-password -__v'
+                })
                 .exec();
 
         res.status(200).json({
@@ -58,7 +63,7 @@ async function getConversations (req, res) {
     }
 }
 
-//getting a conversation
+//getting one conversation
 async function getOneConversation(req, res) {
     try {
         const {conversationId} = req.params;
@@ -80,6 +85,50 @@ async function getOneConversation(req, res) {
     }
 }
 
+//
+async function updateSeen (req, res) {
+    try {
+        const {membersId} = req.body;
+        const userId = req.decodedJwt.userId;
+        const convId = req.params.conversationId;
+
+        const conv = 
+            await Conversation.findOneAndUpdate({
+                _id: convId,
+                members_meta: {
+                    $elemMatch: {
+                        user_id: userId
+                    }
+                }
+            }, {
+                $set: {
+                    "members_meta.$.last_seen": Date.now()
+                }
+            }, {
+                new: true
+            })
+
+        res.status(200).json({
+            members_meta: [
+                ...conv.members_meta
+            ]
+        });
+
+        const changedLastSeen = conv.members_meta.find(user => user.user_id === userId).last_seen;
+
+        for (let id of convMembers) {
+            if (id !== userId) {
+                io.in(userId).emit('seen', {user_id: userId, last_seen: changedLastSeen});
+            }
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 //creating a new conversation
 async function createConversation (req, res) {
     try {
@@ -88,7 +137,8 @@ async function createConversation (req, res) {
         const conversation = await Conversation.create({
             _id: new mongoose.Types.ObjectId,
             members: body.membersId,
-            conversation_name: body.conversationName,
+            is_group_chat: body.membersId.length > 2 ? true : false,
+            group_name: body.groupName || null,
             created_at: Date.now(),
             last_updated: Date.now()
         });
@@ -156,10 +206,12 @@ async function sendMessage(req, res) {
 
         for (let userId of convMembers) {
             if (userId !== decodedJwt.userId) {
-                message._doc.sender_username = decodedJwt.userId;
+                message._doc.sender = {
+                    _id: decodedJwt.userId,
+                    username: decodedJwt.username
+                }
 
                 io.in(userId).emit('sendMsg', message._doc);
-                io.in('lodi').emit('tangap', message._doc);
             }
         }
 
@@ -171,7 +223,8 @@ async function sendMessage(req, res) {
             $set: {
                 last_message: {
                     message_body: messageBody,
-                    sender_username: decodedJwt.username
+                    sender_username: decodedJwt.username,
+                    date_sent: message.date_sent
                 },
                 last_updated: message.date_sent
             }
@@ -188,6 +241,7 @@ module.exports = {
     searchUsers,
     getConversations,
     getOneConversation,
+    updateSeen,
     createConversation,
     getMessages,
     sendMessage
