@@ -88,7 +88,7 @@ async function getOneConversation(req, res) {
 //
 async function updateSeen (req, res) {
     try {
-        const {membersId} = req.body;
+        const convMembers = req.body.convMembers || [];
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
 
@@ -118,7 +118,7 @@ async function updateSeen (req, res) {
 
         for (let id of convMembers) {
             if (id !== userId) {
-                io.in(userId).emit('seen', {user_id: userId, last_seen: changedLastSeen});
+                io.in(userId).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
             }
         }
     } catch (err) {
