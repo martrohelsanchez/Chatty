@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import styles from './conversation.module.css';
+import {UserInfoContext} from '../../../App';
 
 import {useDispatch} from 'react-redux';
 import {setCurrConv} from '../../../redux/actions/currConvActions';
 
 function Conversation({conv}) {
+    const {last_message, is_group_chat, group_name, members, members_meta} = conv;
+    const user = useContext(UserInfoContext);
     const dispatch = useDispatch();
+    const isRead = members_meta.find(member => member.user_id === user.userId).last_seen >= last_message.date_sent;
+    const read = isRead ? '' : styles.unread;
+    let conversationName;
+
+    //·
+
+    if (is_group_chat) {
+        conversationName = group_name;
+    } else {
+        conversationName = members.find(member => member._id !== user.userId).username;
+    }
 
     function handleOpenConvo() {
         dispatch(setCurrConv(conv))
@@ -16,14 +30,14 @@ function Conversation({conv}) {
         <div className={styles.conversationContainer} onClick={handleOpenConvo}>
             <div className={styles.profilePicHolder}></div>
             <div className={styles.msgPrevContainer}>
-                <div className={styles.conversationName}>
-                    {conv.conversation_name}
+                <div className={`${styles.conversationName} ${read}`}>
+                    {conversationName}
                 </div>
-                <span className={styles.senderName}>
-                    SenderName:{' '}
+                <span className={`${styles.senderName} ${read}`}>
+                    {last_message.sender_username}:{' '}
                 </span>
-                <span className={styles.lastMsgPrev}>
-                    Message body
+                <span className={`${styles.lastMsgPrev} ${read}`}>
+                    {last_message.message_body}
                 </span>
             </div>
         </div>

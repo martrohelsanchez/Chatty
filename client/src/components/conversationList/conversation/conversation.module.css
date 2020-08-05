@@ -27,3 +27,7 @@
 .msgPrevContainer {
     margin-left: 10px;
 }
+
+.unread {
+    font-weight: 600;
+}
