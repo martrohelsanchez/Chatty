@@ -6,15 +6,15 @@ import styles from './inputBar.module.css';
 import {UserInfoContext} from '../../App';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {addNewMsg} from '../../redux/actions/messagesActions';
+import {addNewMsg} from '../../redux/actions/conversationsActions';
 
 function Input() {
-  const currConv = useSelector(state => state.currConv);
+  const currConv = useSelector(state => state.conversations.find(conv => conv._id === state.currConv._id))
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
-  const dispatch = useDispatch();
   const inputRef = useRef(null);
-
+  const dispatch = useDispatch();
+  
   useEffect(() => {
     inputRef.current.focus()
   }) 
@@ -23,10 +23,7 @@ function Input() {
     const currConvId = currConv._id;
 
     if (chatInput) {
-      axios.post(`/chat/conversations/${currConvId}/messages`, {
-        messageBody: chatInput,
-        convMembers: currConv.members
-      })
+      sendAxios(chatInput, currConv.members.map(members => members._id))
 
       dispatch(addNewMsg(currConvId, 
         {
@@ -42,6 +39,18 @@ function Input() {
         }
       ))
       setChatInput("");
+    }
+  }
+
+  async function sendAxios(messageBody, convMembers) {
+    try {
+      const {data} = await axios.post(`/chat/conversations/${currConvId}/messages`, {
+        messageBody: messageBody,
+        convMembers: convMembers
+      });
+
+    } catch (err) {
+      console.error(err)
     }
   }
 
