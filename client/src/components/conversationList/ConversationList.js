@@ -12,7 +12,6 @@ import {retrieveConversations} from '../../redux/actions/conversationsActions';
 
 function ConversationList() {
     const conversations = useSelector(state => state.conversations);
-    const state = useSelector(state => state);
     const [err, setErr] = useState(null);
     const [isInitialRender, setIsInitialRender] = useState(true);
     const dispatch = useDispatch();
@@ -34,7 +33,6 @@ function ConversationList() {
                 dispatch(setCurrConv(data.conversations[0]))
             }
             dispatch(retrieveConversations(data.conversations))
-            // setConversations([...conversations, ...data.conversations])
         } catch (err) {
             console.error(err.message)
             setErr('Something went wrong')
@@ -46,8 +44,6 @@ function ConversationList() {
     } else if (err) {
         return <div>{err}</div>
     }
-
-    console.log('conversations: ', conversations)
 
     const renderConversations = conversations.map(conv => {
         return <Conversation key={conv._id} conv={conv} />

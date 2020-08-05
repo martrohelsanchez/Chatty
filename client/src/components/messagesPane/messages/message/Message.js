@@ -2,7 +2,7 @@ import React from 'react'
 
 import styles from './message.module.css'
 
-function Message({message}) {
+function Message({message, msgIndex, allMsg}) {
     const {message_body, sender} = message
 
     return (
@@ -24,20 +24,4 @@ function Message({message}) {
         </div>
     )
 }
-
-// function Message({message}) {
-//     const {message_body, sender} = message
-
-//     return (
-//         <div>
-//             <span>
-//                 {sender.username}:{" "}
-//             </span>
-//             <span>
-//                 {message_body}
-//             </span>
-//         </div>
-//     )
-// }
-
 export default Message;
