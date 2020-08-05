@@ -1,54 +1,53 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './logIn.module.css';
 import {socket} from '../../App';
+import Loading from '../loading/Loading';
 
 function LogIn({setjwtToken, setUserInfo}) {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const usernameInputRef = useRef(); 
     const history = useHistory();
+    const [isLoading, setLoading] = useState(false);
     
     useEffect(() => {
        usernameInputRef.current.focus(); 
     });
 
-    function logIn(e) {
-        axios.post('/user/logIn', {
-            username: input.trim()
-        })
-            .then(res => {
-                const data = res.data
-                const {jwtToken, _id, username} = data
+    async function logIn(usernameInput) {
+        try {
+            const {data} = await axios.post('/user/logIn', {
+                username: usernameInput.trim()
+            })
+            const {jwtToken, _id, username, isAuth} = data
 
-                if (data.isAuth) {
-                    setInput('');
-                    setUserInfo({
-                        userId: _id,
-                        username
-                    });
-                    setjwtToken(jwtToken)
-                    history.push('/chat');
-                } // if isAuth is false, server send 401 status
+            if (isAuth) {
+                setInput('');
+                setUserInfo({
+                    userId: _id,
+                    username
+                });
+                setjwtToken(jwtToken);
+                history.push('/chat');
 
                 socket.emit('join room', _id);
-            })
-            .catch(err => {
-                if (!err.response) {
+            } // if isAuth is false, server send 401 status
+        } catch (err) {
+            if (!err.response) {
                     console.error(err)
                     return null
                 }
-                const {status} = err.response;
-                
-                if (status === 401) {
-                    setErr('Wrong nickname or password');
-                } else {
-                    setErr('Sorry, something went wrong. Please try again later')   
-                }
-            })
-        setErr(null)
+            const {status} = err.response;
+            
+            if (status === 401) {
+                setErr('Wrong nickname or password');
+            } else {
+                setErr('Sorry, something went wrong. Please try again later')   
+            }
+        }
     }
 
     function onInputChange(e) {
@@ -70,9 +69,12 @@ function LogIn({setjwtToken, setUserInfo}) {
                 value={input}
                 autoFocus
                 onChange={onInputChange}
-                onKeyDown={({ key }) => key === 'Enter' ? logIn() : null}
+                onKeyDown={({ key }) => key === 'Enter' ? logIn(input) : null}
             />
-            {<div className={styles.err}>{err}</div>}
+            <div className={styles.err}>{err}</div>
+            <div>
+                {isLoading && <Loading />}
+            </div>
             <button className={styles.logInBtn} onClick={logIn}>
                 Log In
             </button>
