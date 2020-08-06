@@ -8,7 +8,7 @@ import {UserInfoContext} from '../../App';
 import {useSelector, useDispatch} from 'react-redux';
 import {addNewMsg} from '../../redux/actions/conversationsActions';
 
-function Input() {
+function Input({setIsSent}) {
   const currConv = useSelector(state => state.conversations.find(conv => conv._id === state.currConv._id))
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
@@ -19,7 +19,7 @@ function Input() {
     inputRef.current.focus()
   }) 
 
-  function send(e) {
+  function handleSend(e) {
     const currConvId = currConv._id;
 
     if (chatInput) {
@@ -44,11 +44,13 @@ function Input() {
 
   async function sendAxios(messageBody, convMembers) {
     try {
+      const currConvId = currConv._id;
       const {data} = await axios.post(`/chat/conversations/${currConvId}/messages`, {
         messageBody: messageBody,
         convMembers: convMembers
       });
 
+      setIsSent(true);
     } catch (err) {
       console.error(err)
     }
@@ -67,9 +69,9 @@ function Input() {
         placeholder="Type a message"
         value={chatInput}
         onChange={onInputChange}
-        onKeyDown={({key}) => key === 'Enter' ? send() : null }
+        onKeyDown={({key}) => key === 'Enter' ? handleSend() : null }
       />
-      <button className={styles.sendBtn} onClick={send}>
+      <button className={styles.sendBtn} onClick={handleSend}>
         Send
       </button>
     </div>
