@@ -11,14 +11,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
 import MsgStatus from '../../msgStatus/MsgStatus';
 
+import findConv from '../../../utilities/findConv';
+import UserIsTyping from '../../userIsTyping/UserIsTyping';
+
 let currConvId;
 
-function findConv(state, select) {
-    const conv = state.conversations.find(conv => conv._id === state.currConv._id);
-    return conv ? conv[select] : []
-};
-
-function MessageList() {
+function MessageList({isDelivered}) {
     currConvId = useSelector(state => state.currConv._id);
     const messages = useSelector(state => findConv(state, 'messages')) || [];
     const membersMeta = useSelector(state => findConv(state, 'members_meta'));
@@ -60,7 +58,6 @@ function MessageList() {
         }
 
         return () => {
-            console.log('change')
             moreMsgAtDb.current = true;
         }
     }, [currConvId]);
@@ -105,7 +102,7 @@ function MessageList() {
         return (
             <div key={message._id}>
                 <Message message={message}/>
-                <MsgStatus allmsg={msgArr} msgIndex={i} currMsg={message} membersMeta={membersMeta} />
+                <MsgStatus allMsg={msgArr} msgIndex={i} currMsg={message} membersMeta={membersMeta} isDelivered={isDelivered}/>
             </div>
         )
     });
@@ -122,6 +119,7 @@ function MessageList() {
         >
             {isLoading && <Loading />}
             {renderMessages}
+            <UserIsTyping />
         </ScrollMessages>
     )
 }
