@@ -28,7 +28,17 @@ function Chat() {
         // socket.on('seen', (convId, seenMeta) => {
         //     dispatch(updateLastSeen(convId, seenMeta));
         // });
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (currConvId) {
+            socket.emit('join room', currConvId);
+        }
+
+        return () => {
+            socket.emit('leave room', currConvId);
+        }
+    }, [currConvId])
 
     if (!userInfo) {
         history.push('/logIn');
