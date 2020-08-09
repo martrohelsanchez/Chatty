@@ -1,6 +1,5 @@
 export default function (state = [], action) {
     const {payload, type} = action;
-    const stateCopy = [...state.slice(0)];
 
     switch (type) {
         case 'conversations/retrievedConversations':
@@ -15,28 +14,27 @@ export default function (state = [], action) {
                 return conv
             })
         case 'conversations/addedANewMessage':
-            for (let i in state) {
-                if (state[i]._id === payload.convId) {
-                    //copy the target conversation and put it on the first index
-                    const newState = [
-                        {
-                            ...state[i],
-                            last_message: {
-                                message_body: payload.newMsg.message_body,
-                                sender_username: payload.newMsg.sender.username,
-                                date_sent: payload.newMsg.date_sent
-                            },
-                            messages: [...state[i].messages, payload.newMsg]
+            const newConversations = [];
+
+            for (let conv of state) {
+                if (conv._id === payload.convId) {
+                    const newConv = {
+                        ...conv, 
+                        last_message: {
+                            message_body: payload.newMsg.message_body,
+                            sender_username: payload.newMsg.sender.username,
+                            date_sent: payload.newMsg.date_sent
                         },
-                        ...state
-                    ];
+                        messages: [...conv.messages, payload.newMsg]
+                    }
 
-                    //delete the original targeted conv, so that the new created conv obj replaces it
-                    delete newState[Number(i) + 1];
-
-                    return newState;
+                    newConversations.unshift(newConv);
+                } else {
+                    newConversations.push(conv);
                 }
             }
+
+            return newConversations;
         case 'conversation/updatedLastSeen':
             return state.map(conv => {
                 if (conv._id === payload.convId) {
@@ -82,6 +80,28 @@ export default function (state = [], action) {
                 }
                 return conv;
             })
+        case 'conversations/msgWasSent':
+            return state.map(conv => {
+                if (conv._id === payload.convId) {
+                    const newMessages = conv.messages.map(msg => {
+                        if (msg._id === payload.msgId) {
+                            return {
+                                ...msg,
+                                is_sent: true,
+                                date_sent: payload.dateSent
+                            }
+                        }
+                        return msg;
+                    })
+
+                    return {
+                        ...conv,
+                        messages: newMessages,
+                        date_sent: payload.newDateSent
+                    }
+                }
+                return conv;
+            });
         default:
             return state;
     }

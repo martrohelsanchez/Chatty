@@ -46,3 +46,15 @@ export function updateDelivered(deliveredMeta, convId) {
         }
     }
 }
+
+export function msgSent(msgId, convId, newDateSent, newMsgId) {
+    return {
+        type: 'conversations/msgWasSent',
+        payload: {
+            msgId,
+            convId,
+            newDateSent,
+            newMsgId
+        }
+    }
+}
