@@ -3,42 +3,55 @@ import axios from 'axios';
 import uniqid from 'uniqid';
 
 import styles from './inputBar.module.css';
-import {UserInfoContext} from '../../App';
+import {UserInfoContext, socket} from '../../App';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {addNewMsg} from '../../redux/actions/conversationsActions';
+import {addNewMsg, msgSent} from '../../redux/actions/conversationsActions';
 
-function Input({setIsSent}) {
+function Input() {
   const currConv = useSelector(state => state.conversations.find(conv => conv._id === state.currConv._id))
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
   const inputRef = useRef(null);
   const dispatch = useDispatch();
+  const lastMsgSent = useRef(null);
+  const typingTimeout = useRef(null);
   
   useEffect(() => {
     inputRef.current.focus()
-  }) 
+  }, []);
 
   function handleSend(e) {
     const currConvId = currConv._id;
 
-    if (chatInput) {
-      sendAxios(chatInput, currConv.members.map(members => members._id))
+    if (typingTimeout.current) {
+      socket.emit('stopTyping', currConvId, user.userId);
+      typingTimeout.current = undefined;
+    }
 
-      dispatch(addNewMsg(currConvId, 
-        {
-          _id: uniqid(),
-          conversation_id: currConvId,
-          sender: {
-            username: user.username,
-            _id: user._id
-          },
-          message_body: chatInput,
-          is_delivered: false,
-          date_sent: Date.now()
-        }
-      ))
+    if (chatInput) {
+      lastMsgSent.current = createMsgObj(user.userId, user.username, chatInput);
+
+      sendAxios(chatInput, currConv.members.map(members => members._id));
+      dispatch(addNewMsg(currConvId, lastMsgSent.current));
       setChatInput("");
+    }
+  }
+
+  function createMsgObj(senderId, username, messageBody) {
+    const currConvId = currConv._id;
+    
+    return {
+      _id: uniqid(),
+      conversation_id: currConvId,
+      sender: {
+        username: username,
+        _id: senderId
+      },
+      message_body: messageBody,
+      is_delivered: false,
+      date_sent: Date.now(),
+      is_sent: false
     }
   }
 
@@ -50,14 +63,27 @@ function Input({setIsSent}) {
         convMembers: convMembers
       });
 
-      setIsSent(true);
+      dispatch(msgSent(lastMsgSent.current._id, currConvId, data.date_sent, data._id));
     } catch (err) {
       console.error(err)
     }
   }
 
+
   function onInputChange(e) {
-      setChatInput(e.target.value);
+    const currConvId = currConv._id;
+
+    setChatInput(e.target.value);
+
+    if (!typingTimeout.current) {
+      socket.emit('startTyping', currConvId, user.userId);
+    }
+
+    clearTimeout(typingTimeout.current);
+    typingTimeout.current = setTimeout(() => {
+      socket.emit('stopTyping', currConvId, user.userId);
+      typingTimeout.current = undefined;
+    }, 5000)
   }
 
   return (
