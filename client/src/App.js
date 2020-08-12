@@ -34,7 +34,7 @@ function App() {
       <UserInfoContext.Provider value={userInfo}>
         <div className={styles.chatAppContainer}>
           <Switch>
-            <Route exact path="/chat">
+            <Route path="/chat">
               <Chat />
             </Route>
             <Route exact path="/signUp">

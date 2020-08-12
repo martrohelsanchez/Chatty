@@ -3,31 +3,6 @@
     flex-grow: 1;
 }
 
-.searchContainer {
-    background-color: rgb(235, 235, 235);
-    border-radius: 20px;
-    width: 90%;
-    height: 30px;
-    margin: auto;
-    margin-top: 15px;
-    display: flex;
-    justify-items: center;
-}
-
-.searchIcon {
-    width: 20px;
-    margin: 0 10px;
-}
-
-.searchInput {
-    background-color: transparent;
-    border: none;
-}
-
-.searchInput:focus {
-    outline: none;
-}
-
 .channelListContainer {
     width: 90%;
     margin: 30px;
