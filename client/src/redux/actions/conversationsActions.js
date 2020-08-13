@@ -25,6 +25,16 @@ export function deleteConv(convId) {
     }
 }
 
+export function patchConv(convId, patch) {
+    return {
+        type: 'conversations/patchedConversation',
+        payload: {
+            convId,
+            patch
+        }
+    }
+}
+
 export function addPrevMsgs(convId, prevMsgs) {
     return {
         type: 'conversations/addedPreviousMessages',

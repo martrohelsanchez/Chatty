@@ -17,6 +17,16 @@ export default function (state = [], action) {
 
             return newConversations;
         }
+        case 'conversations/patchedConversation':
+            return state.map(conv => {
+                if (conv._id === payload.convId) {
+                    return {
+                        ...conv,
+                        ...payload.patch
+                    }
+                }
+                return conv;
+            })
         case 'conversations/addedPreviousMessages':
             return state.map(conv => {
                 if (conv._id === payload.convId) {
@@ -38,7 +48,7 @@ export default function (state = [], action) {
                             sender_username: payload.newMsg.sender.username,
                             date_sent: payload.newMsg.date_sent
                         },
-                        messages: [...conv.messages, payload.newMsg]
+                        messages: [...(conv.messages || []), payload.newMsg]
                     }
 
                     newConversations.unshift(newConv);
