@@ -160,6 +160,12 @@ async function updateSeen (req, res) {
 async function createConversation (req, res) {
     try {
         const { decodedJwt, body } = req;
+        const members_meta = body.membersId.map(id => {
+            return {
+                user_id: id,
+                last_seen: 0
+            }
+        });
 
         const conversation = await Conversation.create({
             _id: new mongoose.Types.ObjectId,
@@ -167,7 +173,8 @@ async function createConversation (req, res) {
             is_group_chat: body.membersId.length > 2 ? true : false,
             group_name: body.groupName || null,
             created_at: Date.now(),
-            last_updated: Date.now()
+            last_updated: Date.now(),
+            members_meta: members_meta
         });
 
         res.status(200).json({
