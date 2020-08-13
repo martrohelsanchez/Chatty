@@ -1,7 +1,9 @@
 let io;
 
 function connect(server) {
-    io = require('socket.io')(server);
+    io = require('socket.io')(server, {
+        pingTimeout: 30000
+    });
 
     io.on('connect', socket => {
         socket.on('join room', (roomName) => {

@@ -2,7 +2,25 @@ export function retrieveConversations(retrieveConv) {
     return {
         type: 'conversations/retrievedConversations',
         payload: {
-            retrieveConv
+            retrieveConv: [...retrieveConv]
+        }
+    }
+}
+
+export function addConv(conv) {
+    return {
+        type: 'conversations/addedAConversation',
+        payload: {
+            conv
+        }
+    }
+}
+
+export function deleteConv(convId) {
+    return {
+        type: 'conversations/deletedAConversation',
+        payload: {
+            convId
         }
     }
 }

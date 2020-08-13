@@ -17,7 +17,9 @@ function ConversationList() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getConversations();
+        if (conversations.length === 0) {
+            getConversations();
+        }
     }, []);
 
     async function getConversations() {

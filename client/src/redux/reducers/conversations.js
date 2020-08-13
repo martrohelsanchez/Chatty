@@ -4,6 +4,19 @@ export default function (state = [], action) {
     switch (type) {
         case 'conversations/retrievedConversations':
             return [...state, ...payload.retrieveConv]    
+        case 'conversations/addedAConversation':
+            return [payload.conv, ...state]
+        case 'conversations/deletedAConversation': {
+            const newConversations = [];
+
+            for (let conv of state) {
+                if (conv._id !== payload.convId) {
+                    newConversations.push(conv);
+                }
+            }
+
+            return newConversations;
+        }
         case 'conversations/addedPreviousMessages':
             return state.map(conv => {
                 if (conv._id === payload.convId) {
@@ -13,7 +26,7 @@ export default function (state = [], action) {
                 }
                 return conv
             })
-        case 'conversations/addedANewMessage':
+        case 'conversations/addedANewMessage': {
             const newConversations = [];
 
             for (let conv of state) {
@@ -35,6 +48,7 @@ export default function (state = [], action) {
             }
 
             return newConversations;
+        }
         case 'conversation/updatedLastSeen':
             return state.map(conv => {
                 if (conv._id === payload.convId) {

@@ -11,21 +11,19 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
 import MsgStatus from '../../msgStatus/MsgStatus';
 
-import findConv from '../../../utilities/findConv';
 import UserIsTyping from '../../userIsTyping/UserIsTyping';
 
-let currConvId;
-
-function MessageList({isDelivered}) {
-    currConvId = useSelector(state => state.currConv._id);
-    const messages = useSelector(state => findConv(state, 'messages')) || [];
-    const membersMeta = useSelector(state => findConv(state, 'members_meta'));
-    const members = useSelector(state => findConv(state, 'members'));
+function MessageList({isDelivered, currConv}) {
+    const currConvId = currConv ? currConv._id : '';
+    const messages = currConv ? currConv.messages || [] : [];
+    const membersMeta = currConv ? currConv.members_meta : [];
+    const members = currConv ? currConv.members : [];
     const user = useContext(UserInfoContext);
     const [err, setErr] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
     const moreMsgAtDb = useRef(true);
+    const [isTyping, setIsTyping] = useState(false);
 
     useEffect(() => {
         // const userMeta = membersMeta.find(userMeta => userMeta.user_id === user.userId);
@@ -52,12 +50,13 @@ function MessageList({isDelivered}) {
     }
 
     useEffect(()=> {
-        if (currConvId && messages.length === 0) {
+        if (currConvId && messages.length === 0 && currConv.convHasCreated !== false) {
             //get the initial messages if there's no messages yet in current conversation
             getMessages(10, null, true);
         }
 
         return () => {
+            setErr(false);
             moreMsgAtDb.current = true;
         }
     }, [currConvId]);
@@ -114,12 +113,13 @@ function MessageList({isDelivered}) {
     return (
         <ScrollMessages 
             className={`${styles.messagesContainer}`}
+            whenChanged ={[messages, isTyping]}
             messages={messages}
             onScroll={handleScroll}
         >
             {isLoading && <Loading />}
             {renderMessages}
-            <UserIsTyping />
+            <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
         </ScrollMessages>
     )
 }

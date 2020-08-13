@@ -7,14 +7,16 @@ import {useDispatch} from 'react-redux';
 import {setCurrConv} from '../../../redux/actions/currConvActions';
 
 function Conversation({conv}) {
-    const {last_message, is_group_chat, group_name, members, members_meta} = conv;
     const user = useContext(UserInfoContext);
     const dispatch = useDispatch();
+    
+    if (conv.convHasCreated === false) return null;
+
+    const {last_message, is_group_chat, group_name, members, members_meta} = conv;
     const isRead = members_meta.find(member => member.user_id === user.userId).last_seen >= last_message.date_sent;
     const read = isRead ? '' : styles.unread;
     let conversationName;
 
-    //·
 
     if (is_group_chat) {
         conversationName = group_name;

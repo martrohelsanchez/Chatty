@@ -6,12 +6,12 @@ import MessagePane from '../messagesPane/messagesPane';
 import {UserInfoContext, socket} from '../../App';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {addNewMsg, updateLastSeen} from '../../redux/actions/conversationsActions';
-
-let currConvId;
+import {addNewMsg, updateLastSeen, deleteConv} from '../../redux/actions/conversationsActions';
 
 function Chat() {
-    currConvId = useSelector(state => state.currConv._id);
+    const currConvId = useSelector(state => state.currConv._id);
+    const currConv = useSelector((state => state.conversations.find(conv => conv._id === state.currConv._id))) || {};
+    const state = useSelector(state => state);
     const userInfo = useContext(UserInfoContext);
     const history = useHistory();
     const dispatch = useDispatch();
@@ -39,6 +39,15 @@ function Chat() {
             socket.emit('leave room', currConvId);
         }
     }, [currConvId])
+
+    useEffect(() => {
+        return () => {
+            if (currConv.convHasCreated === false) {
+                console.log('deleted: ', currConvId);
+                dispatch(deleteConv(currConvId));
+            }
+        }
+    }, [currConvId]);
 
     if (!userInfo) {
         history.push('/logIn');

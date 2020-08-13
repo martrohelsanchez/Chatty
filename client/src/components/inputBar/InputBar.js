@@ -10,6 +10,7 @@ import {addNewMsg, msgSent} from '../../redux/actions/conversationsActions';
 
 function Input() {
   const currConv = useSelector(state => state.conversations.find(conv => conv._id === state.currConv._id))
+  const convHasCreated = useSelector(({currConv}) => currConv.convHasCreated === undefined ? true : currConv.convHasCreated); //if undefined means the conversation doc exists
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
   const inputRef = useRef(null);
@@ -29,10 +30,14 @@ function Input() {
       typingTimeout.current = undefined;
     }
 
+    if (!convHasCreated) {
+      createConvDoc([])
+    }
+
     if (chatInput) {
       lastMsgSent.current = createMsgObj(user.userId, user.username, chatInput);
 
-      sendAxios(chatInput, currConv.members.map(members => members._id));
+      sendMsgReq(chatInput, currConv.members.map(members => members._id));
       dispatch(addNewMsg(currConvId, lastMsgSent.current));
       setChatInput("");
     }
@@ -55,7 +60,7 @@ function Input() {
     }
   }
 
-  async function sendAxios(messageBody, convMembers) {
+  async function sendMsgReq(messageBody, convMembers) {
     try {
       const currConvId = currConv._id;
       const {data} = await axios.post(`/chat/conversations/${currConvId}/messages`, {
@@ -66,6 +71,18 @@ function Input() {
       dispatch(msgSent(lastMsgSent.current._id, currConvId, data.date_sent, data._id));
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  async function createConvDoc(membersId) {
+    try {
+      const {data} = await axios.post('/chat/conversations', {
+        membersId: [...membersId]
+      });
+
+      return data;
+    } catch (err) {
+      console.error(err);
     }
   }
 

@@ -6,27 +6,53 @@ const Conversation = require('../model/conversation');
 const Message = require('../model/message');
 
 //search users /search
-function searchUsers (req, res) {
-    function escapeRegex(text) {
-        return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    };
+async function searchUsers (req, res) {
+    try {
+        const searchInput = req.query.searchInput;
+        const searchRegex = new RegExp(escapeRegex(searchInput), "gi");
+        const userId =  req.decodedJwt.userId;
+        const users = await User.find({$and: [{_id: {$ne: userId}}, {username: searchRegex}]})
+            .select("username")
+            .exec()
 
-    const searchRegex = new RegExp(escapeRegex(req.body.searchInput), "gi");
+        function escapeRegex(text) {
+            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        };
 
-    User.find({ username: searchRegex })
-        .select("username")
-        .exec()
-        .then((users) => {
-            res.status(200).json({
-                users,
-            });
+        res.status(200).json({
+            users
         })
-        .catch((err) => {
-            res.status(500).json({
-                err,
-            });
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({
+            err: err.message
         });
+    }
 };
+
+async function getOneConversation(req, res) {
+    try {
+        const query = req.query;
+        const conversation = await Conversation.find({
+            members: {$all: [...query.members]}
+        })
+            .select('-__v')
+            .populate({
+                path: 'members',
+                select: '-password -__v'
+            })
+            .exec();
+
+        res.status(200).json({
+            conversation: conversation
+        })
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({
+            err: err.message
+        });
+    }
+}
 
 //getting conversations 
 async function getConversations (req, res) {
@@ -57,6 +83,7 @@ async function getConversations (req, res) {
             conversations
         })
     } catch (err) {
+        console.error(err.message)
         res.status(500).json({
             err: err.message
         })
@@ -64,7 +91,7 @@ async function getConversations (req, res) {
 }
 
 //getting one conversation
-async function getOneConversation(req, res) {
+async function getTheConversation(req, res) {
     try {
         const {conversationId} = req.params;
 
@@ -239,8 +266,9 @@ async function sendMessage(req, res) {
 
 module.exports = {
     searchUsers,
-    getConversations,
     getOneConversation,
+    getConversations,
+    getTheConversation,
     updateSeen,
     createConversation,
     getMessages,

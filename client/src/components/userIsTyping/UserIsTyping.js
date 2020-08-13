@@ -7,9 +7,8 @@ import { useSelector } from 'react-redux';
 
 // import findConv from '../../utilities/findConv';
 
-function UserIsTyping() {
+function UserIsTyping({isTyping, setIsTyping}) {
     const currConvId = useSelector(state => state.currConv._id);
-    const [isTyping, setIsTyping] = useState(false);
     const [numOfTyping, setNumOfTyping] = useState(0);
 
     useEffect(() => {

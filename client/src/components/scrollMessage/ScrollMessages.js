@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useLayoutEffect } from 'react';
+import React, {useRef, useLayoutEffect} from 'react';
 
-import useListenExecute from '../../devTools/useListenExecute';
-
-function ScrollMessages({children, className, messages, onScroll}) {
+function ScrollMessages({children, className, whenChanged, onScroll}) {
     const messagesContainer = useRef(null);
     const prevScrollPos = useRef(null);
 
@@ -16,7 +14,7 @@ function ScrollMessages({children, className, messages, onScroll}) {
             goToPrevPos(messagesContainer.current, prevScrollPos.current)
         }
 
-    }, [messages]);
+    }, [...whenChanged]);
 
     function setPrevPos(e) {
         prevScrollPos.current = {

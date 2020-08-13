@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px;
+}
+
+.container:hover {
+    cursor: pointer;
+}
+
+.profilePicHolder {
+    height: 30px;
+    width: 30px;
+    border-radius: 100%;
+    background-color: rgb(209, 209, 209);
+}
+
+.username {
+    margin-left: 10px;
+}

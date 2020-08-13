@@ -2,11 +2,11 @@ const router = require('express').Router();
 
 const chatController = require('../controller/chat');
 const checkAuth = require('../middleware/check-auth');
-const { route } = require('./user');
 
-router.post('/search', chatController.searchUsers);
+router.get('/search', checkAuth, chatController.searchUsers);
 router.get('/conversations', checkAuth, chatController.getConversations);
-router.get('/conversations/:conversationId', checkAuth, chatController.getOneConversation);
+router.get('/conversations/:conversationId', checkAuth, chatController.getTheConversation);
+router.get('/conversation', checkAuth, chatController.getOneConversation);
 router.patch('/conversations/:conversationId/seen', checkAuth, chatController.updateSeen);
 router.post('/conversations', checkAuth, chatController.createConversation);
 router.get('/conversations/:conversationId/messages', checkAuth, chatController.getMessages);
