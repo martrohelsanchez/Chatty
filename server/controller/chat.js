@@ -98,6 +98,10 @@ async function getTheConversation(req, res) {
         const conversation = 
             await Conversation.findOne({_id: conversationId})
             .select('-__v')
+            .populate({
+                path: 'members',
+                select: '-password -__v'
+            })
             .exec();
 
         res.status(200).json({
