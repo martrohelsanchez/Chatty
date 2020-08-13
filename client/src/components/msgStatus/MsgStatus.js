@@ -11,7 +11,7 @@ import seen from '../../images/seen.svg';
 function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
     const user = useContext(UserInfoContext);
     
-    if (allMsg === undefined) return null;
+    if (allMsg === undefined || membersMeta === undefined) return null;
     
     const nextMsg = allMsg[Number(msgIndex) + 1] || {};
     const isLastMsg = allMsg.length - 1 === msgIndex;
