@@ -4,6 +4,7 @@ const io = require('./websocket').connect(server);
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const userRoute = require('./route/user');
 const chatRoute = require('./route/chat');
@@ -13,7 +14,11 @@ mongoose.connect(
   { useUnifiedTopology: true, useNewUrlParser: true }
 );
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 

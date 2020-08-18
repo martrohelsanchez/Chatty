@@ -15,20 +15,19 @@ socket.on('error', err => {
   console.err(err)
 })
 
+axios.interceptors.request.use((config) => {
+  config.baseURL = 'http://localhost:5000';
+  config.headers['csrf-token'] = window.localStorage.getItem('csrfToken');
+  config.withCredentials = true;
+
+  return config;
+}, (err) => {
+  console.error(err);
+  return Promise.reject(err);
+})
+
 function App() {
   const [userInfo, setUserInfo] = useState(null);
-  const [jwtToken, setjwtToken] = useState('');
-
-  axios.defaults.baseURL = "http://localhost:5000";
-  axios.defaults.headers["Authorization"] = "Bearer " + jwtToken;
-  
-  // useEffect(() => {
-  //   axios.interceptors.request.use((config) => {
-  //     config.headers.common['Authorization'] = 'Bearer ' + jwtToken;
-  //     console.log(jwtToken)
-  //     return config;
-  //   });
-  // }, [])
 
   return (
       <UserInfoContext.Provider value={userInfo}>
@@ -41,7 +40,7 @@ function App() {
               <SignUp setUserInfo={setUserInfo}/>
             </Route>
             <Route exact path="/logIn">
-              <LogIn setjwtToken={setjwtToken} setUserInfo={setUserInfo}/>
+              <LogIn setUserInfo={setUserInfo}/>
             </Route>
           </Switch>
         </div>

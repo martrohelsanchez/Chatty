@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
+const CsrfTokenGen = require('csrf');
 
 const User = require("../model/user");
+
+const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 
 async function userSignUp(req, res) {
     try {
@@ -11,18 +14,22 @@ async function userSignUp(req, res) {
         if (!isUserTaken) {
             const user = await User.create({
                 username: req.body.username
-            })
-
+            });
+            const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
-                userId: user._id
+                userId: user._id,
+                csrfToken: csrfToken
             },
                 process.env.JWT_KEY
             );
 
+            res.cookie('jwt', jwtToken, {
+                httpOnly: true
+            });
             res.status(200).json({
                 username: user.username,
                 isUsernameTaken: false,
-                jwtToken
+                csrfToken: csrfToken
             })
         } else {
             //user is already taken
@@ -45,18 +52,23 @@ async function userLogIn(req, res) {
             .exec();
 
         if (user) {
+            const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
                 userId: user._id,
-                username: user.username
+                username: user.username,
+                csrfToken: csrfToken
             },
                 process.env.JWT_KEY
             );
 
+            res.cookie('jwt', jwtToken, {
+                httpOnly: true
+            });
             res.status(200).json({
                 _id: user._id,
                 username: user.username,
                 isAuth: true,
-                jwtToken
+                csrfToken: csrfToken
             });
         } else {
             res.status(401).json({

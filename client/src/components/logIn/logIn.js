@@ -21,8 +21,10 @@ function LogIn({setjwtToken, setUserInfo}) {
         try {
             const {data} = await axios.post('/user/logIn', {
                 username: usernameInput.trim()
-            })
-            const {jwtToken, _id, username, isAuth} = data
+            }, {
+                withCredentials: true
+            });
+            const {csrfToken, _id, username, isAuth} = data
 
             if (isAuth) {
                 setInput('');
@@ -30,7 +32,9 @@ function LogIn({setjwtToken, setUserInfo}) {
                     userId: _id,
                     username
                 });
-                setjwtToken(jwtToken);
+
+                window.localStorage.setItem('csrfToken', csrfToken);
+                
                 history.push('/chat');
 
                 socket.emit('join room', _id);
