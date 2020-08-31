@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
-import styles from './search.module.css';
 import searchIcon from '../../images/search-icon.svg';
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
@@ -12,20 +12,32 @@ function Search({setSearchedUsers, setIsSearching}) {
 
     useEffect(() => {
         document.addEventListener('click', handleSearchClose);
+        return () => {
+            document.removeEventListener('click', handleSearchClose);
+        }
     }, []);
 
     function handleSearchClose(e) {
-        if (e.target.className === styles.searchInput) {
+        let fromSearch;
+
+        for (let className of e.target.classList) {
+            if (className === 'search-input') {
+                fromSearch = true;
+                break;
+            } else {
+                fromSearch = false;
+            }
+        }
+
+        if (fromSearch) {
             return null;
         }
-        // history.push('/chat')
         setSearchInput(''); //reset the search input field
         setIsSearching(false);
     }
 
     //when user focuses on the search input
     function handleSearchFocus(e) {
-        history.push('/chat/search');
         setIsSearching(true);
     }
 
@@ -45,18 +57,37 @@ function Search({setSearchedUsers, setIsSearching}) {
     }
 
     return (
-        <div className={styles.searchContainer}>
-            <img className={styles.searchIcon} src={searchIcon} />
-            <input
-                type='input'
-                className={styles.searchInput}
-                placeholder='Search'
-                value={searchInput}
-                onChange={handleSearchInput}
-                onFocus={handleSearchFocus}
-            />
-        </div>
+        <>
+            {/* <StyledSearch className={styles.searchContainer}> */}
+                {/* <img className={styles.searchIcon} src={searchIcon} /> */}
+                <StyledSearch
+                    type='input'
+                    className='search-input'
+                    placeholder='     Search'
+                    value={searchInput}
+                    onChange={handleSearchInput}
+                    onFocus={handleSearchFocus}
+                />
+            {/* </StyledSearch> */}
+        </>
     )
 }
+
+const StyledSearch = styled.input`
+    display: block;
+    background-color: ${({theme}) => theme.dark.secondary};
+    border-radius: 20px;
+    width: 90%;
+    height: 40px;
+    margin: 50px auto;
+    /* display: flex;
+    justify-items: center;  */
+    border: none;
+    color: white;
+
+    &:focus {
+        outline: none;
+    }
+`;
 
 export default Search;

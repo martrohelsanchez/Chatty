@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+const { schema } = require('./message');
 
 const conversationSchema = new Schema({
     _id: {type: Schema.Types.ObjectId},
@@ -11,7 +12,9 @@ const conversationSchema = new Schema({
     last_message: {
         message_body: {type: String},
         sender_username: {type: String},
-        date_sent: {type: Number}
+        date_sent: {type: Number},
+        sender_id: {type: Schema.Types.ObjectId},
+        is_delivered: {type: Boolean}
     },
     is_chatroom: {type: Boolean},
     created_at: {type: Number},

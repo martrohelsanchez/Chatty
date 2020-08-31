@@ -1,4 +1,5 @@
 import React, {useRef, useLayoutEffect} from 'react';
+import styled from 'styled-components';
 
 function ScrollMessages({children, className, whenChanged, onScroll}) {
     const messagesContainer = useRef(null);

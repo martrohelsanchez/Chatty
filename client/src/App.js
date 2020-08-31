@@ -1,50 +1,36 @@
-import React, {useState} from 'react';
-import {Switch, Route} from 'react-router-dom'
+import React from 'react';
 import io from 'socket.io-client';
-import axios from 'axios';
+import {ThemeProvider} from 'styled-components';
+import {Reset} from 'styled-reset';
+import GlobalCss from './global.css';
 
+import './api/axios';
 import styles from "./index.module.css";
-import SignUp from './components/signUp/signUp';
-import Chat from './components/chat/Chat';
-import LogIn from './components/logIn/logIn';
+import AppRoute from './pages/AppRoute';
+import theme from './theme/theme';
+
+import { useSelector } from 'react-redux';
 
 export const UserInfoContext = React.createContext(null);
 export const socket = io('http://localhost:5000/');
 
 socket.on('error', err => {
-  console.err(err)
-})
-
-axios.interceptors.request.use((config) => {
-  config.baseURL = 'http://localhost:5000';
-  config.headers['csrf-token'] = window.localStorage.getItem('csrfToken');
-  config.withCredentials = true;
-
-  return config;
-}, (err) => {
-  console.error(err);
-  return Promise.reject(err);
+  console.error(err)
 })
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
+  const userInfo = useSelector(state => state.userInfo); //Refractor
 
   return (
+    <ThemeProvider theme={theme}>
       <UserInfoContext.Provider value={userInfo}>
+        <Reset />
+        <GlobalCss />
         <div className={styles.chatAppContainer}>
-          <Switch>
-            <Route path="/chat">
-              <Chat />
-            </Route>
-            <Route exact path="/signUp">
-              <SignUp setUserInfo={setUserInfo}/>
-            </Route>
-            <Route exact path="/logIn">
-              <LogIn setUserInfo={setUserInfo}/>
-            </Route>
-          </Switch>
+          <AppRoute />
         </div>
-    </UserInfoContext.Provider>
+      </UserInfoContext.Provider>
+    </ThemeProvider>
   );
 }
 

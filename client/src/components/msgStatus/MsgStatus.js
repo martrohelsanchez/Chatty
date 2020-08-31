@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { useRouteMatch } from 'react-router-dom';
 
 import { UserInfoContext } from '../../App';
 import styles from './msgStatus.module.css';
@@ -10,6 +12,8 @@ import seen from '../../images/seen.svg';
 
 function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
     const user = useContext(UserInfoContext);
+    const match = useRouteMatch();
+    const lastMessage = useSelector(state => state.conversations.find(conv => conv._id === match.params.convId));
     
     if (allMsg === undefined || membersMeta === undefined) return null;
     
@@ -17,6 +21,7 @@ function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
     const isLastMsg = allMsg.length - 1 === msgIndex;
     let lastSeenMembers = [];
     
+    //know how many users has seen the message.
     for (let member of membersMeta) {
         const notFromUser = user.userId !== currMsg.sender._id;
         const afterCurrMsg = member.last_seen >= currMsg.date_sent;
@@ -29,7 +34,8 @@ function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
     }
 
     let seenHeads = [];
-
+    
+    //show how many users has seen the message.
     if (lastSeenMembers.length > 0) {
         seenHeads = lastSeenMembers.map(member => {
             return (
@@ -43,8 +49,11 @@ function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
         )
     }
 
+    /* if our message hasn't read by anyone, show if the
+    message is sending, has sent, or has delivered. */
     if (user.userId === currMsg.sender._id && isLastMsg) {
         const isSent = currMsg.is_sent === undefined ? true : currMsg.is_sent;
+        const isDelivered = lastMessage.is_delivered;
 
         if (!isSent) {
             return (

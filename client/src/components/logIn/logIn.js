@@ -6,38 +6,38 @@ import styles from './logIn.module.css';
 import {socket} from '../../App';
 import Loading from '../loading/Loading';
 
-function LogIn({setjwtToken, setUserInfo}) {
+import { useDispatch } from 'react-redux';
+import {setUserInfo} from '../../redux/actions/userInfoActions';
+import { logInReq } from '../../api/APIUtils';
+
+function LogIn() {
     const [input, setInput] = useState('');
     const [err, setErr] = useState(null);
     const usernameInputRef = useRef(); 
     const history = useHistory();
     const [isLoading, setLoading] = useState(false);
+    const dispatch = useDispatch();
     
     useEffect(() => {
        usernameInputRef.current.focus(); 
     });
 
-    async function logIn(usernameInput) {
+    async function handleLogIn(usernameInput) {
         try {
-            const {data} = await axios.post('/user/logIn', {
-                username: usernameInput.trim()
-            }, {
-                withCredentials: true
-            });
+            const data = await logInReq(usernameInput);
             const {csrfToken, _id, username, isAuth} = data
 
             if (isAuth) {
                 setInput('');
-                setUserInfo({
+
+                dispatch(setUserInfo({
                     userId: _id,
                     username
-                });
+                }));
 
                 window.localStorage.setItem('csrfToken', csrfToken);
-                
-                history.push('/chat');
 
-                socket.emit('join room', _id);
+                history.push('/chat');
             } // if isAuth is false, server send 401 status
         } catch (err) {
             if (!err.response) {
@@ -73,13 +73,13 @@ function LogIn({setjwtToken, setUserInfo}) {
                 value={input}
                 autoFocus
                 onChange={onInputChange}
-                onKeyDown={({ key }) => key === 'Enter' ? logIn(input) : null}
+                onKeyDown={({ key }) => key === 'Enter' ? handleLogIn(input) : null}
             />
             <div className={styles.err}>{err}</div>
             <div>
                 {isLoading && <Loading />}
             </div>
-            <button className={styles.logInBtn} onClick={logIn}>
+            <button className={styles.logInBtn} onClick={handleLogIn}>
                 Log In
             </button>
             <br />

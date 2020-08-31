@@ -5,6 +5,7 @@ const User = require("../model/user");
 
 const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 
+// POST /user/signUp
 async function userSignUp(req, res) {
     try {
         const findUser = await User.findOne({ username: req.body.username })
@@ -27,6 +28,7 @@ async function userSignUp(req, res) {
                 httpOnly: true
             });
             res.status(200).json({
+                userId: user._id,
                 username: user.username,
                 isUsernameTaken: false,
                 csrfToken: csrfToken
@@ -45,6 +47,7 @@ async function userSignUp(req, res) {
     }
 }
 
+// POST /user/logIn
 async function userLogIn(req, res) {
     try {
         const user = await User.findOne({ username: req.body.username })
@@ -62,7 +65,8 @@ async function userLogIn(req, res) {
             );
 
             res.cookie('jwt', jwtToken, {
-                httpOnly: true
+                httpOnly: true,
+                sameSite: true
             });
             res.status(200).json({
                 _id: user._id,
@@ -83,7 +87,53 @@ async function userLogIn(req, res) {
     }
 }
 
+// POST /user/reAuth
+async function reAuthUser(req, res) {
+    try {
+        const jwtToken = req.cookies.jwt;
+        const decoded = jwt.verify(jwtToken, process.env.JWT_KEY);
+        const csrfToken = req.headers['csrf-token'];
+        
+        //Verify if the csrf token was generated from the server
+        if (!csrfTokenGen.verify(process.env.CSRF_TOKEN_KEY, csrfToken)) {
+            throw new Error();
+        }
+        
+        //The csrf token from req header must be the same from the token inside the jwt
+        if (decoded.csrfToken !== csrfToken) {
+            throw new Error();
+        }
+
+        //Generate new csrf and jwt token
+        const newCsrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
+        const newJwtToken = jwt.sign({
+            userId: decoded.userId,
+            username: decoded.username,
+            csrfToken: newCsrfToken
+        },
+            process.env.JWT_KEY
+        );
+
+        res.cookie('jwt', newJwtToken, {
+            httpOnly: true,
+            sameSite: true
+        });
+        res.status(200).json({
+            _id: decoded.userId,
+            username: decoded.username,
+            isAuth: true,
+            csrfToken: newCsrfToken
+        });
+    } catch (err) {
+        console.error(err)
+        res.status(403).json({
+            isAuth: false
+        })
+    }
+}
+
 module.exports = {
     userSignUp,
-    userLogIn
+    userLogIn,
+    reAuthUser
 }

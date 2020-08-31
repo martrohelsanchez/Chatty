@@ -59,19 +59,29 @@ export default function (state = [], action) {
 
             return newConversations;
         }
+        case 'conversation/updatedMembersMeta':
+            return state.map(conv => {
+                if (conv._id === payload.convId) {
+                    return {
+                        ...conv,
+                        members_meta: payload.newMembersMeta
+                    }
+                }
+
+                return conv;
+            })
         case 'conversation/updatedLastSeen':
             return state.map(conv => {
                 if (conv._id === payload.convId) {
-                    const newMembersMeta = conv.members_meta.map(user => {
-                        for (let seenMeta of payload.seenMeta) {
-                            if (user.user_id === seenMeta.user_id) {
-                                return {
-                                    ...user,
-                                    last_seen: seenMeta.last_seen
-                                }
+                    const newMembersMeta = conv.members_meta.map(memberMeta => {
+                        if (memberMeta.user_id === payload.userId) {
+                            return {
+                                ...memberMeta,
+                                last_seen: payload.newSeen
                             }
                         }
-                        return user;
+
+                        return memberMeta;
                     });
 
                     return {
@@ -79,6 +89,7 @@ export default function (state = [], action) {
                         members_meta: newMembersMeta
                     }
                 }
+
                 return conv;
             })
         case 'conversations/updatedDelivered':

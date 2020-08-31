@@ -2,7 +2,7 @@ export function retrieveConversations(retrieveConv) {
     return {
         type: 'conversations/retrievedConversations',
         payload: {
-            retrieveConv: [...retrieveConv]
+            retrieveConv
         }
     }
 }
@@ -49,18 +49,29 @@ export function addNewMsg(convId, newMsg) {
     return {
         type: 'conversations/addedANewMessage',
         payload: {
-            newMsg: newMsg,
+            newMsg,
             convId
         }
     }
 }
 
-export function updateLastSeen(seenMeta, convId) {
+export function updateMembersMeta(newMembersMeta, convId) {
+    return {
+        type: 'conversation/updatedMembersMeta', 
+        payload: {
+            newMembersMeta,
+            convId
+        }
+    }
+}
+
+export function updateLastSeen(convId, userId, newSeen) {
     return {
         type: 'conversation/updatedLastSeen', 
         payload: {
-            seenMeta,
-            convId
+            convId,
+            userId,
+            newSeen
         }
     }
 }

@@ -116,12 +116,13 @@ async function getTheConversation(req, res) {
     }
 }
 
-//
+// patch /conversations/:conversationId/seen
 async function updateSeen (req, res) {
     try {
         const convMembers = req.body.convMembers || [];
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
+        const setDate = Date.now();
 
         const conv = 
             await Conversation.findOneAndUpdate({
@@ -133,7 +134,7 @@ async function updateSeen (req, res) {
                 }
             }, {
                 $set: {
-                    "members_meta.$.last_seen": Date.now()
+                    "members_meta.$.last_seen": setDate
                 }
             }, {
                 new: true
@@ -145,13 +146,43 @@ async function updateSeen (req, res) {
             ]
         });
 
-        const changedLastSeen = conv.members_meta.find(user => user.user_id === userId).last_seen;
+        const changedLastSeen = conv.members_meta.find(user => user.user_id == userId).last_seen;
 
-        for (let id of convMembers) {
-            if (id !== userId) {
-                io.in(userId).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
+        // for (let member of convMembers) {
+        //     if (member._id !== userId) {
+        //         io.in(member.id).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
+        //     }
+        // }
+
+        // io.in(conv._id).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
+        io.in(conv._id).emit('seen', convId, userId, setDate);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+// patch /conversations/:conversationId/deliver
+async function updateIsDelivered(req, res) {
+    try {
+        const convId = req.params.conversationId;
+        const senderId = req.body.senderId;
+
+        const conv = await Conversation.findOneAndUpdate({
+            _id: convId
+        }, {
+            $set: {
+                "last_message.is_delivered": true
             }
-        }
+        }, {
+            new: true
+        });
+
+        io.in(senderId).emit('msgDelivered', convId);
+
+        res.status(200).end();
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
@@ -235,9 +266,6 @@ async function sendMessage(req, res) {
             conversation_id: conversationId,
             sender: decodedJwt.userId,
             message_body: messageBody,
-            seen: [],
-            is_sent: true,
-            is_delivered: false,
             date_sent: Date.now()
         });
         delete message._doc.__v;
@@ -262,7 +290,9 @@ async function sendMessage(req, res) {
                 last_message: {
                     message_body: messageBody,
                     sender_username: decodedJwt.username,
-                    date_sent: message.date_sent
+                    sender_id: decodedJwt.userId,
+                    date_sent: message.date_sent,
+                    is_delivered: false
                 },
                 last_updated: message.date_sent
             }
@@ -281,6 +311,7 @@ module.exports = {
     getConversations,
     getTheConversation,
     updateSeen,
+    updateIsDelivered,
     createConversation,
     getMessages,
     sendMessage

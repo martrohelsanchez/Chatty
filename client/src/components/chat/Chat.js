@@ -1,33 +1,44 @@
-import React, { useContext, useEffect } from 'react';
-import {useHistory} from 'react-router-dom';
+import React, {useEffect, useContext} from 'react';
+import styled from 'styled-components';
+import { useRouteMatch } from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
-import {UserInfoContext, socket} from '../../App';
+import InfoPane from '../infoPane/InfoPane'; 
+import {socket, UserInfoContext} from '../../App';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {addNewMsg, updateLastSeen, deleteConv} from '../../redux/actions/conversationsActions';
+import {addNewMsg, deleteConv, updateLastSeen} from '../../redux/actions/conversationsActions';
+
+const StyledChat = styled.div`
+    display: flex;
+    background-color: #ffffff;
+    width: 100vw;
+    height: 100vh;
+    font-family: ${({theme}) => theme.font.primary};
+    color: white;
+`
 
 function Chat() {
-    const currConvId = useSelector(state => state.currConv._id);
+    const match = useRouteMatch('/chat/:convId');
+    const currConvId = match ? match.params.convId : null;
     const currConv = useSelector((state => state.conversations.find(conv => conv._id === state.currConv._id))) || {};
-    const state = useSelector(state => state);
-    const userInfo = useContext(UserInfoContext);
-    const history = useHistory();
     const dispatch = useDispatch();
+    const user = useContext(UserInfoContext);
 
     useEffect(() => {
+        socket.emit('join room', user.userId);
+
         socket.on('sendMsg', newMsg => {
-            //dispatch if the newMsg is for the current conversation
-            console.log('received a message')
-            if (currConvId === newMsg.conversation_id) {
-                dispatch(addNewMsg(currConvId, newMsg));
-            }
+            dispatch(addNewMsg(newMsg.conversation_id, newMsg));
         });
 
-        // socket.on('seen', (convId, seenMeta) => {
-        //     dispatch(updateLastSeen(convId, seenMeta));
-        // });
+        socket.on('seen', (convId, userId, newSeen) => {
+            if (userId !== user.userId) {
+                //The seen must not came from the current user
+                dispatch(updateLastSeen(convId, userId, newSeen));
+            }
+        });
     }, []);
 
     useEffect(() => {
@@ -49,17 +60,12 @@ function Chat() {
         }
     }, [currConvId]);
 
-    if (!userInfo) {
-        history.push('/logIn');
-        //returning null to prevent returning the ContactsPane and MessagePane components
-        return null;
-    }
-
     return (
-        <>
+        <StyledChat>
             <ContactsPane />
             <MessagePane />
-        </>
+            <InfoPane />
+        </StyledChat>
     )
 }
 

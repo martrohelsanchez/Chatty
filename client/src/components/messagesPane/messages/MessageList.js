@@ -1,56 +1,63 @@
 import React, {useState, useEffect, useRef, useContext} from 'react';
 import axios from 'axios';
+import { useRouteMatch } from 'react-router-dom';
+import styled from 'styled-components';
 
 import styles from './messages.module.css';
 import Message from './message/Message';
 import Loading from '../../loading/Loading';
 import ScrollMessages from '../../scrollMessage/ScrollMessages';
 import { socket, UserInfoContext } from '../../../App';
+import UserIsTyping from '../../userIsTyping/UserIsTyping';
+import MsgStatus from '../../msgStatus/MsgStatus';
+import {seenConvReq} from '../../../api/APIUtils';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
-import MsgStatus from '../../msgStatus/MsgStatus';
+import {addPrevMsgs, updateMembersMeta} from '../../../redux/actions/conversationsActions';
 
-import UserIsTyping from '../../userIsTyping/UserIsTyping';
 
-function MessageList({isDelivered, currConv}) {
-    const currConvId = currConv ? currConv._id : '';
-    const messages = currConv ? currConv.messages || [] : [];
-    const membersMeta = currConv ? currConv.members_meta : [];
-    const members = currConv ? currConv.members : [];
+function MessageList({isDelivered}) {
+    const match = useRouteMatch();
     const user = useContext(UserInfoContext);
     const [err, setErr] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
     const moreMsgAtDb = useRef(true);
     const [isTyping, setIsTyping] = useState(false);
+    const {
+        currConvId,
+        messages,
+        membersMeta,
+        members,
+        convHasCreated,
+        lastMessage
+    } = useSelector(state => {
+        const conv = state.conversations.find(conv => conv._id === match.params.convId) || {};
+        return {
+            currConvId: conv._id,
+            messages: conv.messages,
+            membersMeta: conv.members_meta,
+            members: conv.members,
+            convHasCreated: conv.convHasCreated,
+            lastMessage: conv.last_message
+        }
+    });
+    const msgLength = messages ? messages.length : 0;
 
     useEffect(() => {
-        // const userMeta = membersMeta.find(userMeta => userMeta.user_id === user.userId);
-        // const lastMessage = messages[messages.length - 1];
-
-        // if (userMeta.last_seen < lastMessage.date_sent) {
-        //     seenMsg(members._id);
-        // }
-    }, [messages]);
-
-    async function seenMsg(convMembers) {
-        try {
-            const res = await axios.patch(`/chat/conversations/${currConvId}/seen`, {
-                params: {
-                    convMembers: convMembers
-                }
+        //Sends a req to server when user visits a conversation to update the last_seen field
+        if (messages !== undefined) {
+            seenConvReq(currConvId, members, data => {
+                dispatch(updateMembersMeta(data.members_meta, currConvId));
+            }, err => {
+                console.log(err);
+                setErr('Sorry, something went wrong');
             });
-
-            //redux
-        } catch (err) {
-            console.error(err);
-            setErr('Sorry, something went wrong');
         }
-    }
+    }, [msgLength]);
 
     useEffect(()=> {
-        if (currConvId && messages.length === 0 && currConv.convHasCreated !== false) {
+        if (currConvId && messages === undefined && convHasCreated !== false) {
             //get the initial messages if there's no messages yet in current conversation
             getMessages(10, null, true);
         }
@@ -92,19 +99,21 @@ function MessageList({isDelivered, currConv}) {
 
     function handleScroll(pos) {
         //when the user scroll to the top to get the previous msgs
-        if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current && messages.length !== 0) {
+        if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
             getMessages(10, messages[0].date_sent, false);
         }
     }
 
-    const renderMessages = messages.map((message, i, msgArr) => {
-        return (
-            <div key={message._id}>
-                <Message message={message}/>
-                <MsgStatus allMsg={msgArr} msgIndex={i} currMsg={message} membersMeta={membersMeta} isDelivered={isDelivered}/>
-            </div>
-        )
-    });
+    if (messages) {
+        var renderMessagesWithStatus = messages.map((message, i, msgArr) => {
+            return (
+                <div key={message._id}>
+                    <Message message={message} allMsg={msgArr} msgIndex={i} membersMeta={membersMeta} />
+                    {/* <MsgStatus allMsg={msgArr} msgIndex={i} currMsg={message} membersMeta={membersMeta} isDelivered={isDelivered}/> */}
+                </div>
+            )
+        });
+    }
 
     if (err) {
         return <div>{err}</div>
@@ -118,7 +127,7 @@ function MessageList({isDelivered, currConv}) {
             onScroll={handleScroll}
         >
             {isLoading && <Loading />}
-            {renderMessages}
+            {renderMessagesWithStatus}
             <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
         </ScrollMessages>
     )

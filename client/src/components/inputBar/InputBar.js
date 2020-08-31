@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
 import uniqid from 'uniqid';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import styles from './inputBar.module.css';
 import {UserInfoContext, socket} from '../../App';
@@ -10,7 +11,8 @@ import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsAc
 import { setCurrConv } from '../../redux/actions/currConvActions';
 
 function Input() {
-  const currConv = useSelector(state => state.conversations.find(conv => conv._id === state.currConv._id)) || {}
+  const match = useRouteMatch();
+  const currConv = useSelector(state => state.conversations.find(conv => conv._id === match.params.convId)) || {}
   const convHasCreated = useSelector(({currConv}) => currConv.convHasCreated === undefined ? true : currConv.convHasCreated); //if undefined means the conversation doc exists
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
@@ -18,6 +20,7 @@ function Input() {
   const dispatch = useDispatch();
   const lastMsgSent = useRef(null);
   const typingTimeout = useRef(null);
+  const history = useHistory();
   
   useEffect(() => {
     inputRef.current.focus()
@@ -49,6 +52,7 @@ function Input() {
 
           dispatch(setCurrConv(conv));
           dispatch(patchConv(currConvId, {...conv, convHasCreated: true}));
+          history.push(`/chat/${conv._id}`);
         })
       });
     }

@@ -1,10 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 
 import styles from './conversationList.module.css';
 import Conversation from './conversation/Conversation';
 import Loading from '../loading/Loading';
-import {socket} from '../../App';
+import { getConversationsReq, updateMsgIsDeliveredReq } from '../../api/APIUtils';
+import { UserInfoContext } from '../../App';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {setCurrConv} from '../../redux/actions/currConvActions';
@@ -13,31 +14,31 @@ import {retrieveConversations} from '../../redux/actions/conversationsActions';
 function ConversationList() {
     const conversations = useSelector(state => state.conversations);
     const [err, setErr] = useState(null);
-    const [isInitialRender, setIsInitialRender] = useState(true);
     const dispatch = useDispatch();
+    const user = useContext(UserInfoContext);
 
     useEffect(() => {
         if (conversations.length === 0) {
-            getConversations();
+            getConversationsReq(10, null, data => {
+                dispatch(retrieveConversations(data.conversations));
+                checkDeliver(data);
+            }, err => {
+                console.error(err.message)
+                setErr('Something went wrong')
+            })
         }
     }, []);
 
-    async function getConversations() {
-        try {
-            const {data} = await axios.get('/chat/conversations', {
-                params: {  
-                    // before: ,
-                    limit: 10
-                }
-            })
+    //Check if the last message of a conversation hasn't been delivered
+    function checkDeliver(data) {
+        const conversations = data.conversations;
 
-            if (isInitialRender) {
-                dispatch(setCurrConv(data.conversations[0]))
+        for (let conversation of conversations) {
+            const {last_message, _id} = conversation;
+
+            if (last_message.sender_id !== user.userId && !last_message.is_delivered) {
+                updateMsgIsDeliveredReq(_id, last_message.sender_id);
             }
-            dispatch(retrieveConversations(data.conversations))
-        } catch (err) {
-            console.error(err.message)
-            setErr('Something went wrong')
         }
     }
 
