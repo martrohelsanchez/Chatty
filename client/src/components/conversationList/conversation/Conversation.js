@@ -5,7 +5,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import {UserInfoContext} from '../../../App';
 
 import {useDispatch} from 'react-redux';
-import {setCurrConv} from '../../../redux/actions/currConvActions';
 
 function Conversation({conv}) {               
     const user = useContext(UserInfoContext);
@@ -32,7 +31,6 @@ function Conversation({conv}) {
     }
 
     function handleOpenConvo() {
-        dispatch(setCurrConv(conv));
         history.push(`/chat/${conv._id}`);
     }
  

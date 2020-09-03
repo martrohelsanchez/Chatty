@@ -8,7 +8,6 @@ import {UserInfoContext, socket} from '../../App';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsActions';
-import { setCurrConv } from '../../redux/actions/currConvActions';
 
 function Input() {
   const match = useRouteMatch();
@@ -50,7 +49,6 @@ function Input() {
         getTheConvDoc(conv._id, (conv) => {
           delete conv.last_message;
 
-          dispatch(setCurrConv(conv));
           dispatch(patchConv(currConvId, {...conv, convHasCreated: true}));
           history.push(`/chat/${conv._id}`);
         })

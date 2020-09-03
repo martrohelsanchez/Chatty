@@ -8,7 +8,6 @@ import { getConversationsReq, updateMsgIsDeliveredReq } from '../../api/APIUtils
 import { UserInfoContext } from '../../App';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {setCurrConv} from '../../redux/actions/currConvActions';
 import {retrieveConversations} from '../../redux/actions/conversationsActions';
 
 function ConversationList() {

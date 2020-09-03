@@ -6,7 +6,6 @@ import styles from './searchedUser.module.css';
 import {UserInfoContext} from '../../../App';
 
 import {useDispatch} from 'react-redux';
-import { setCurrConv } from '../../../redux/actions/currConvActions';
 import { addConv } from '../../../redux/actions/conversationsActions';
 
 function SearchedUser({searchedUser}) {
@@ -25,14 +24,13 @@ function SearchedUser({searchedUser}) {
         });
 
         if (data.conversation.length !== 0) {
-            dispatch(setCurrConv(data.conversation[0]));
+            // dispatch(addConv(data.conversation[0]));
             return null;
         }
 
         const convObj = createConvObj(searchedUser);
 
         dispatch(addConv(convObj));
-        dispatch(setCurrConv(convObj));
     }
 
     function createConvObj(searchedUser) {
