@@ -22,7 +22,7 @@ const StyledChat = styled.div`
 function Chat() {
     const match = useRouteMatch('/chat/:convId');
     const currConvId = match ? match.params.convId : null;
-    const currConv = useSelector((state => state.conversations.find(conv => conv._id === state.currConv._id))) || {};
+    const currConv = useSelector((state => state.conversations.find(conv => conv._id === currConvId))) || {};
     const dispatch = useDispatch();
     const user = useContext(UserInfoContext);
 
