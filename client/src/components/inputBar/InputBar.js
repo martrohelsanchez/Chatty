@@ -12,7 +12,8 @@ import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsAc
 function Input() {
   const match = useRouteMatch();
   const currConv = useSelector(state => state.conversations.find(conv => conv._id === match.params.convId)) || {}
-  const convHasCreated = useSelector(({currConv}) => currConv.convHasCreated === undefined ? true : currConv.convHasCreated); //if undefined means the conversation doc exists
+  // const convHasCreated = undefined;
+  // const convHasCreated = useSelector(({currConv}) => currConv.convHasCreated === undefined ? true : currConv.convHasCreated); //if undefined means the conversation doc exists
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
   const inputRef = useRef(null);
@@ -27,6 +28,7 @@ function Input() {
 
   function handleSend(e) {
     const currConvId = currConv._id;
+    const convHasCreated = currConv.convHasCreated;
     const currConvMembers = currConv.members.map(members => members._id);
     lastMsgSent.current = createMsgObj(user.userId, user.username, chatInput);
 

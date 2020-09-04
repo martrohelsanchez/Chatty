@@ -1,15 +1,13 @@
 import React, {useState, useEffect, useRef, useContext} from 'react';
 import axios from 'axios';
-import { useRouteMatch } from 'react-router-dom';
-import styled from 'styled-components';
+import {useRouteMatch} from 'react-router-dom';
 
 import styles from './messages.module.css';
 import Message from './message/Message';
 import Loading from '../../loading/Loading';
 import ScrollMessages from '../../scrollMessage/ScrollMessages';
-import { socket, UserInfoContext } from '../../../App';
+import {UserInfoContext} from '../../../App';
 import UserIsTyping from '../../userIsTyping/UserIsTyping';
-import MsgStatus from '../../msgStatus/MsgStatus';
 import {seenConvReq} from '../../../api/APIUtils';
 
 import {useDispatch, useSelector} from 'react-redux';
@@ -48,7 +46,8 @@ function MessageList({isDelivered}) {
         //Sends a req to server when user visits a conversation to update the last_seen field
         if (messages !== undefined) {
             seenConvReq(currConvId, members, data => {
-                dispatch(updateMembersMeta(data.members_meta, currConvId));
+                dispatch(updateMembersMeta(currConvId, data.members_meta))
+                // dispatch(updateMembersMeta(data.members_meta, currConvId));
             }, err => {
                 console.log(err);
                 setErr('Sorry, something went wrong');
