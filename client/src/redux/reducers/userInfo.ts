@@ -1,10 +1,12 @@
-export default function (state = null, action) {
-    const {payload, type} = action;
+import {UserInfoActionTypes, UserInfo} from '../actions/userInfoActions';
 
-    switch (type) {
+type UserInfoState = UserInfo | null;
+
+export default (state: UserInfoState = null, action: UserInfoActionTypes) =>  {
+    switch (action.type) {
         case 'userInfo/setUserInfo':
-            return payload.userInfo
+            return action.userInfo;
         default:
-            return state
+            return state;
     }
 }

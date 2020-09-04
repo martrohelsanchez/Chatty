@@ -1,99 +1,150 @@
-export function retrieveConversations(retrieveConv) {
+import {Conversation, ConversationPopulateMembers, MessagePopulateSender} from '../../shared/types/dbSchema';
+
+interface RetrieveConversationsAction {
+    type: 'conversations/retrievedConversations';
+    retrieveConv: ConversationPopulateMembers[];
+}
+
+interface AddConvAction {
+    type: 'conversations/addedAConversation';
+    conv: ConversationPopulateMembers
+}
+
+interface DeleteConvAction {
+    type: 'conversations/deletedAConversation';
+    convId: string;
+}
+
+interface PatchConvAction {
+    type: 'conversations/patchedConversation';
+    convId: string;
+    patch: Partial<ConversationPopulateMembers>;
+}
+
+interface AddPrevMsgsAction {
+    type: 'conversations/addedPreviousMessages';
+    prevMsgs: MessagePopulateSender[];
+    convId: string;
+}
+
+interface AddNewMsgAction {
+    type: 'conversations/addedANewMessage';
+    newMsg: MessagePopulateSender;
+    convId: string
+}
+
+interface UpdateMembersMetaAction {
+    type: 'conversation/updatedMembersMeta';
+    newMembersMeta: Pick<Conversation, 'members_meta'>['members_meta'];
+    convId: string;
+}
+
+interface UpdateLastSeenAction {
+    type: 'conversation/updatedLastSeen';
+    convId: string;
+    userId: string;
+    newSeen: number;
+}
+
+interface MsgSentAction {
+    type: 'conversations/msgHasSent';
+    msgId: string;
+    convId: string;
+    newDateSent: number;
+    newMsgId: string
+}
+
+export type ConversationActionTypes = 
+    | RetrieveConversationsAction
+    | AddConvAction
+    | DeleteConvAction
+    | PatchConvAction
+    | AddPrevMsgsAction
+    | AddNewMsgAction
+    | UpdateMembersMetaAction
+    | UpdateLastSeenAction
+    | MsgSentAction
+
+//------------------------------------------------
+
+export const retrieveConversations = (retrieveConv: ConversationPopulateMembers[]): RetrieveConversationsAction => {
     return {
         type: 'conversations/retrievedConversations',
-        payload: {
-            retrieveConv
-        }
+        retrieveConv
     }
 }
 
-export function addConv(conv) {
+export const addConv = (conv: ConversationPopulateMembers): AddConvAction => {
     return {
         type: 'conversations/addedAConversation',
-        payload: {
-            conv
-        }
+        conv
     }
 }
 
-export function deleteConv(convId) {
+export const deleteConv = (convId: string): DeleteConvAction => {
     return {
         type: 'conversations/deletedAConversation',
-        payload: {
-            convId
-        }
+        convId
     }
 }
 
-export function patchConv(convId, patch) {
+export const patchConv = (convId: string, patch: Partial<ConversationPopulateMembers>): PatchConvAction => {
     return {
         type: 'conversations/patchedConversation',
-        payload: {
-            convId,
-            patch
-        }
+        convId,
+        patch
     }
 }
 
-export function addPrevMsgs(convId, prevMsgs) {
+export const addPrevMsgs = (convId: string, prevMsgs: MessagePopulateSender[]): AddPrevMsgsAction => {
     return {
         type: 'conversations/addedPreviousMessages',
-        payload: {
-            prevMsgs,
-            convId
-        }
+        prevMsgs,
+        convId
     }
 }
 
-export function addNewMsg(convId, newMsg) {
+export const addNewMsg = (convId: string, newMsg: MessagePopulateSender): AddNewMsgAction => {
     return {
         type: 'conversations/addedANewMessage',
-        payload: {
-            newMsg,
-            convId
-        }
+        newMsg,
+        convId
     }
 }
 
-export function updateMembersMeta(newMembersMeta, convId) {
+export const updateMembersMeta = (convId: string, newMembersMeta: Pick<Conversation, 'members_meta'>['members_meta']): UpdateMembersMetaAction => {
     return {
         type: 'conversation/updatedMembersMeta', 
-        payload: {
-            newMembersMeta,
-            convId
-        }
+        newMembersMeta,
+        convId
     }
 }
 
-export function updateLastSeen(convId, userId, newSeen) {
+export const updateLastSeen = (convId: string, userId: string, newSeen: number): UpdateLastSeenAction => {
     return {
         type: 'conversation/updatedLastSeen', 
-        payload: {
-            convId,
-            userId,
-            newSeen
-        }
+        convId,
+        userId,
+        newSeen
     }
 }
 
-export function updateDelivered(deliveredMeta, convId) {
-    return {
-        type: 'conversations/updatedDelivered',
-        payload: {
-            deliveredMeta,
-            convId
-        }
-    }
-}
+// export function updateDelivered(convId: string, deliveredMeta: ) {
+//     return {
+//         type: 'conversations/updatedDelivered',
+//         payload: {
+//             deliveredMeta,
+//             convId
+//         }
+//     }
+// }
 
-export function msgSent(msgId, convId, newDateSent, newMsgId) {
+export const msgSent = (msgId: string, convId: string, newDateSent: number, newMsgId: string) => {
     return {
-        type: 'conversations/msgWasSent',
-        payload: {
-            msgId,
-            convId,
-            newDateSent,
-            newMsgId
-        }
+        type: 'conversations/msgHasSent',
+        msgId,
+        convId,
+        newDateSent,
+        newMsgId
     }
 }
