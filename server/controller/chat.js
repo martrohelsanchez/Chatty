@@ -30,10 +30,12 @@ async function searchUsers (req, res) {
     }
 };
 
+//GET /chat/conversation
+//Get a conversation where the members are exactly on query.members
 async function getOneConversation(req, res) {
     try {
         const query = req.query;
-        const conversation = await Conversation.find({
+        const conversation = await Conversation.findOne({
             members: {$all: [...query.members]}
         })
             .select('-__v')
@@ -54,7 +56,7 @@ async function getOneConversation(req, res) {
     }
 }
 
-//getting conversations 
+// GET /chat/conversations
 async function getConversations (req, res) {
     try {
         const query = req.query;
@@ -240,7 +242,7 @@ async function getMessages(req, res) {
                     date_sent: -1
                 })
                 .limit(limit)
-                .populate('sender', '-__v')
+                // .populate('sender', '-__v -password')
                 .exec();
 
         res.status(200).json({
