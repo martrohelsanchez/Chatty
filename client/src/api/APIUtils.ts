@@ -104,3 +104,26 @@ export async function updateMsgIsDeliveredReq(convId, senderId, cb, errCb) {
         }
     }
 }
+
+//Get one conversation where the members are exactly what was given
+export async function getConversationByMembersReq(convMembers: string[], cb, errCb) {
+    try {
+        const {data} = await axios.get('/chat/conversation', {
+            params: {
+                members: convMembers
+            }
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
