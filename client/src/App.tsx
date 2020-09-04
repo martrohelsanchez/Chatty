@@ -10,8 +10,9 @@ import AppRoute from './pages/AppRoute';
 import theme from './theme/theme';
 
 import { useSelector } from 'react-redux';
+import {rootState} from './redux/store';
 
-export const UserInfoContext = React.createContext(null);
+export const UserInfoContext = React.createContext<rootState['userInfo']>(null);
 export const socket = io('http://localhost:5000/');
 
 socket.on('error', err => {
@@ -19,7 +20,7 @@ socket.on('error', err => {
 })
 
 function App() {
-  const userInfo = useSelector(state => state.userInfo); //Refractor
+  const userInfo = useSelector((state: rootState) => state.userInfo);
 
   return (
     <ThemeProvider theme={theme}>
