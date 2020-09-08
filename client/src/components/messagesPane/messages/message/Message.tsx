@@ -6,7 +6,7 @@ import MsgStatus from '../../../msgStatus/MsgStatus';
 
 import {Message as MessageType, MembersMeta, User} from '../../../../shared/types/dbSchema';
 import { ConvWithMsgs } from '../../../../redux/reducers/conversations';
-import { ConvDecoy } from '../../../../redux/actions/conversationsActions/types';
+import {ConvDecoy} from "../../../../shared/types/dbSchema";
 
 interface MessageProps {
     message: MessageType;
