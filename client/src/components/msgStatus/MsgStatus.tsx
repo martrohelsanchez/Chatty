@@ -25,20 +25,20 @@ interface MsgStatusProps {
 const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgStatusProps) => {
     const user = useContext(UserInfoContext);
     const match = useRouteMatch<{convId: string}>();
-    const lastMessage = useSelector((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId));
+    // const lastMessage = useSelector((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId));
     const nextMsg = allMsg[msgIndex + 1] || {};
     const isLastMsg = allMsg.length - 1 === msgIndex;
     let lastSeenMembers: string[] = [];
     
     //Know how many users is the last seen of the message
     for (let member of membersMeta) {
-        if (user.userId !== currMsg.sender) {
+        if (user.userId === member.user_id) {
             continue
         }
 
-        const afterCurrMsg = member.last_seen >= currMsg.date_sent;
-        const beforeNextMsg = member.last_seen < nextMsg.date_sent;
-        const userLastSeenMsg = isLastMsg ? afterCurrMsg : afterCurrMsg && beforeNextMsg;
+        const seenCurrMsg = member.last_seen >= currMsg.date_sent;
+        const seenNextMsg = member.last_seen > nextMsg.date_sent;
+        const userLastSeenMsg = isLastMsg ? seenCurrMsg : seenCurrMsg && !seenNextMsg;
 
         if (userLastSeenMsg) {
             lastSeenMembers.push(member.user_id);
