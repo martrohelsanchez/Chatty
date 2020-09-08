@@ -6,7 +6,7 @@ import {UserInfoContext} from '../../../App';
 import {getConversationByMembersReq} from '../../../api/APIUtils';
 import {useHistory} from 'react-router';
 
-import {User} from '../../../shared/types/dbSchema';
+import {User, ConvDecoy} from '../../../shared/types/dbSchema';
 import {rootState} from '../../../redux/store';
 import {UserInfo} from '../../../redux/actions/userInfoActions';
 
@@ -63,10 +63,9 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
         );
     }
 
-    const createConvObj = (searchedUser: (User | UserInfo)[]) => {
-        const id: string = uniqid();
+    const createConvObj = (searchedUser: (User | UserInfo)[]): ConvDecoy => {
         return {
-            _id: id,
+            _id: uniqid() as string,
             convHasCreated: false,
             is_group_chat: false,
             members: searchedUser.map(user => 'userId' in user ? (
