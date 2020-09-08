@@ -264,11 +264,8 @@ async function sendMessage(req, res) {
         delete message._doc.__v;
 
         for (let userId of convMembers) {
+            //Emit an event to all the members of the conversation except the sender
             if (userId !== decodedJwt.userId) {
-                // message._doc.sender = {
-                //     _id: decodedJwt.userId,
-                //     username: decodedJwt.username
-                // }
 
                 io.in(userId).emit('sendMsg', message);
             }
