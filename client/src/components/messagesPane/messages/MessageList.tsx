@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 
 import styles from './messages.module.css';
-import MessageComp from './message/Message';
+import Message from './message/Message';
 import Loading from '../../loading/Loading';
 import ScrollRetract from '../../scrollRetract/ScrollRetract';
 import UserIsTyping from '../../userIsTyping/UserIsTyping';
@@ -97,7 +97,7 @@ const MessageList = ({currConv}: MessageListProps) => {
     if (messages) {
         renderMessages = messages.map((message, i, msgArr) => {
             return (
-                <MessageComp 
+                <Message 
                     key={message._id} 
                     message={message} 
                     allMsg={msgArr} 
