@@ -1,15 +1,19 @@
 import React from 'react';
 
-import styles from './searchedUser.module.css';
 import SearchedUser from './searchedUser/SearchedUser';
+import {User} from '../../shared/types/dbSchema';
 
-function SearchedUserList({searchedUsers}) {
+interface SearchedUserListProps {
+    searchedUsers: User[];
+}
+
+const SearchedUserList = ({searchedUsers}: SearchedUserListProps) => {
 
     const renderSearchedUsers = searchedUsers.map(searchedUser => {
         return (
-            <SearchedUser searchedUser={searchedUser} />
+            <SearchedUser key={searchedUser._id} searchedUser={searchedUser} />
         )
-    })
+    }) 
 
     return (
         <div>

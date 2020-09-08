@@ -1,14 +1,15 @@
 import React, {useEffect, useContext} from 'react';
 import styled from 'styled-components';
-import { useRouteMatch } from 'react-router-dom';
+import {useRouteMatch} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
 import InfoPane from '../infoPane/InfoPane'; 
 import {socket, UserInfoContext} from '../../App';
 
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {addNewMsg, deleteConv, updateLastSeen} from '../../redux/actions/conversationsActions';
+import {rootState} from '../../redux/store';
 
 const StyledChat = styled.div`
     display: flex;
@@ -19,10 +20,10 @@ const StyledChat = styled.div`
     color: white;
 `
 
-function Chat() {
-    const match = useRouteMatch('/chat/:convId');
+const Chat = () => {
+    const match = useRouteMatch<{convId: string}>('/chat/:convId');
     const currConvId = match ? match.params.convId : null;
-    const currConv = useSelector((state => state.conversations.find(conv => conv._id === currConvId))) || {};
+    const currConv = useSelector(((state: rootState) => state.conversations.find(conv => conv._id === currConvId)));
     const dispatch = useDispatch();
     const user = useContext(UserInfoContext);
 
@@ -30,7 +31,7 @@ function Chat() {
         socket.emit('join room', user.userId);
 
         socket.on('sendMsg', newMsg => {
-            dispatch(addNewMsg(newMsg.conversation_id, newMsg));
+            dispatch(addNewMsg(newMsg.conversation_id, newMsg, true));
         });
 
         socket.on('seen', (convId, userId, newSeen) => {
@@ -51,11 +52,14 @@ function Chat() {
         }
     }, [currConvId])
 
+    /* 
+        Before the user switches to other conversation, 
+        delete the conversation if it doesn't exist in DB
+    */
     useEffect(() => {
         return () => {
-            if (currConv.convHasCreated === false) {
-                console.log('deleted: ', currConvId);
-                dispatch(deleteConv(currConvId));
+            if (currConv?.convHasCreated === false) {
+                dispatch(deleteConv(currConv._id));
             }
         }
     }, [currConvId]);

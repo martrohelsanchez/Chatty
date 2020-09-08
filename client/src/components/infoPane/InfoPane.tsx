@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useRouteMatch, Route } from 'react-router-dom';
 
-const StyledInfoPane = styled.div`
+const StyledInfoPane = styled.div<{showInMobile: boolean}>`
     background-color: ${({theme}) => theme.dark.primary};
     flex: 1.2 1 0;
 
@@ -13,7 +13,7 @@ const StyledInfoPane = styled.div`
     }
 `
 
-function InfoPane() {
+const InfoPane = () => {
     const infoPaneMatchRoute = useRouteMatch('/chat/:convId/info');
     const showInMobile = infoPaneMatchRoute ? infoPaneMatchRoute.isExact : false;
 

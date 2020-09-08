@@ -8,52 +8,60 @@ import styles from './msgStatus.module.css';
 import delivered from '../../images/delivered.svg';
 import sending from '../../images/sending.svg';
 import sent from '../../images/sent.svg';
-import seen from '../../images/seen.svg';
+import seen from '../../images/seen.svg'; 
 
-function MsgStatus({allMsg, msgIndex, membersMeta, currMsg, isDelivered}) {
+import { rootState } from '../../redux/store';
+import { Message, MembersMeta } from '../../shared/types/dbSchema';
+import { ConvWithMsgs } from '../../redux/reducers/conversations';
+
+interface MsgStatusProps {
+    allMsg: Message[];
+    msgIndex: number;
+    membersMeta: MembersMeta;
+    currMsg: ConvWithMsgs['messages'][0];
+    isDelivered: boolean;
+}
+
+const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgStatusProps) => {
     const user = useContext(UserInfoContext);
-    const match = useRouteMatch();
-    const lastMessage = useSelector(state => state.conversations.find(conv => conv._id === match.params.convId));
-    
-    if (allMsg === undefined || membersMeta === undefined) return null;
-    
-    const nextMsg = allMsg[Number(msgIndex) + 1] || {};
+    const match = useRouteMatch<{convId: string}>();
+    const lastMessage = useSelector((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId));
+    const nextMsg = allMsg[msgIndex + 1] || {};
     const isLastMsg = allMsg.length - 1 === msgIndex;
-    let lastSeenMembers = [];
+    let lastSeenMembers: string[] = [];
     
-    //know how many users has seen the message.
+    //Know how many users is the last seen of the message
     for (let member of membersMeta) {
-        const notFromUser = user.userId !== currMsg.sender._id;
+        if (user.userId !== currMsg.sender) {
+            continue
+        }
+
         const afterCurrMsg = member.last_seen >= currMsg.date_sent;
         const beforeNextMsg = member.last_seen < nextMsg.date_sent;
         const userLastSeenMsg = isLastMsg ? afterCurrMsg : afterCurrMsg && beforeNextMsg;
 
-        if (userLastSeenMsg && notFromUser) {
+        if (userLastSeenMsg) {
             lastSeenMembers.push(member.user_id);
         }
     }
 
     let seenHeads = [];
-    
-    //show how many users has seen the message.
+
+    //show users who are the last seen of the message
     if (lastSeenMembers.length > 0) {
-        seenHeads = lastSeenMembers.map(member => {
-            return (
-                <img key={member} className={styles.status} src={seen} />
-            )
-        })
         return (
             <div>
-                {seenHeads}
+                {lastSeenMembers.map(user => 
+                    <img key={user} className={styles.status} src={seen} />
+                )}
             </div>
         )
     }
 
-    /* if our message hasn't read by anyone, show if the
+    /* if our message hasn't yet seen by anyone, show if the
     message is sending, has sent, or has delivered. */
-    if (user.userId === currMsg.sender._id && isLastMsg) {
+    if (user.userId === currMsg.sender && isLastMsg) {
         const isSent = currMsg.is_sent === undefined ? true : currMsg.is_sent;
-        const isDelivered = lastMessage.is_delivered;
 
         if (!isSent) {
             return (

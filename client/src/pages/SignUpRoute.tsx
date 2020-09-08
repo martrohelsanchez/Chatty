@@ -1,11 +1,13 @@
 import React from 'react';
 
 import SignUp from '../components/signUp/signUp';
-import { useSelector } from 'react-redux';
-import { useHistory, Redirect } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {Redirect} from 'react-router-dom';
+
+import {rootState} from "../redux/store";
 
 function SignUpRoute() {
-    const userInfo = useSelector(state => state.userInfo);
+    const userInfo = useSelector((state: rootState) => state.userInfo);
 
     return (
         <>

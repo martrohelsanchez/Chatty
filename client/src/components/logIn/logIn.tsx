@@ -1,37 +1,39 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {useHistory} from 'react-router-dom';
-import axios from 'axios';
 
 import styles from './logIn.module.css';
-import {socket} from '../../App';
 import Loading from '../loading/Loading';
 
 import { useDispatch } from 'react-redux';
 import {setUserInfo} from '../../redux/actions/userInfoActions';
-import { logInReq } from '../../api/APIUtils';
+import { logInReq, UserAuthRes } from '../../api/APIUtils';
 
-function LogIn() {
+const LogIn = () => {
     const [input, setInput] = useState('');
-    const [err, setErr] = useState(null);
-    const usernameInputRef = useRef(); 
+    const [err, setErr] = useState<string | null>(null);
+    const usernameInputRef = useRef<HTMLInputElement>(null); 
     const history = useHistory();
     const [isLoading, setLoading] = useState(false);
     const dispatch = useDispatch();
-    
+
     useEffect(() => {
-       usernameInputRef.current.focus(); 
+        usernameInputRef.current?.focus()
     });
 
-    async function handleLogIn(usernameInput) {
+    const handleLogIn = (usernameInput: string) => {
+        logIn(usernameInput);
+    }
+
+    const logIn = async (usernameInput: string) => {
         try {
             const data = await logInReq(usernameInput);
-            const {csrfToken, _id, username, isAuth} = data
+            const {csrfToken, userId, username, isAuth} = data as UserAuthRes;
 
             if (isAuth) {
                 setInput('');
 
                 dispatch(setUserInfo({
-                    userId: _id,
+                    userId: userId,
                     username
                 }));
 
@@ -79,7 +81,7 @@ function LogIn() {
             <div>
                 {isLoading && <Loading />}
             </div>
-            <button className={styles.logInBtn} onClick={handleLogIn}>
+            <button className={styles.logInBtn} onClick={e => handleLogIn(input)}>
                 Log In
             </button>
             <br />

@@ -6,43 +6,50 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import styles from './inputBar.module.css';
 import {UserInfoContext, socket} from '../../App';
 
+import {Message, Conversation, User} from "../../shared/types/dbSchema";
+
 import {useSelector, useDispatch} from 'react-redux';
 import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsActions';
+import {rootState} from '../../redux/store';
 
-function Input() {
-  const match = useRouteMatch();
-  const currConv = useSelector(state => state.conversations.find(conv => conv._id === match.params.convId)) || {}
-  // const convHasCreated = undefined;
-  // const convHasCreated = useSelector(({currConv}) => currConv.convHasCreated === undefined ? true : currConv.convHasCreated); //if undefined means the conversation doc exists
+const Input = () => {
+  const match = useRouteMatch<{convId: string}>();
+  const currConv = useSelector(((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId)));
   const [chatInput, setChatInput] = useState("");
   const user = useContext(UserInfoContext);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null!);
   const dispatch = useDispatch();
-  const lastMsgSent = useRef(null);
-  const typingTimeout = useRef(null);
+  const lastMsgSent = useRef<Message>(null!);
+  const typingTimeout = useRef<number | undefined>(undefined);
   const history = useHistory();
-  
-  useEffect(() => {
-    inputRef.current.focus()
-  }, [currConv._id]);
 
-  function handleSend(e) {
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [currConv?._id]);
+
+  if (currConv === undefined) {
+    return null;
+  }
+
+  const handleSend = () => {
     const currConvId = currConv._id;
     const convHasCreated = currConv.convHasCreated;
-    const currConvMembers = currConv.members.map(members => members._id);
-    lastMsgSent.current = createMsgObj(user.userId, user.username, chatInput);
+    const currConvMembers = (currConv.members as User[]).map(members => members._id);
+    lastMsgSent.current = createMsgObj(user.userId, chatInput);
 
     if (typingTimeout.current) {
       socket.emit('stopTyping', currConvId, user.userId);
       typingTimeout.current = undefined;
     }
 
-    dispatch(addNewMsg(currConvId, lastMsgSent.current));
+    dispatch(addNewMsg(currConvId, lastMsgSent.current, false));
 
     if (convHasCreated) {
       sendMsgReq(chatInput, currConvMembers, currConvId);
     } else {
-      const membersId = currConv.members.map(user => user._id);
+      //The conversation doesn't exist yet in the DB
+      let membersId: string[] = [];
+      currConv.members.forEach(user => membersId.push(user._id))
 
       createConvDoc(membersId, (conv) => {
         sendMsgReq(chatInput, currConvMembers, conv._id);
@@ -60,23 +67,19 @@ function Input() {
     setChatInput('');
   }
 
-  function createMsgObj(senderId, username, messageBody) {
+  const createMsgObj = (senderId: string, messageBody: string) => {
     const currConvId = currConv._id;
     return {
-      _id: uniqid(),
+      _id: uniqid() as string,
       conversation_id: currConvId,
-      sender: {
-        username: username,
-        _id: senderId
-      },
+      sender: senderId,
       message_body: messageBody,
-      is_delivered: false,
       date_sent: Date.now(),
       is_sent: false
     }
   }
 
-  async function sendMsgReq(messageBody, convMembers, convId) {
+  const sendMsgReq = async (messageBody: string, convMembers: string[], convId: string) => {
     try {
       const {data} = await axios.post(`/chat/conversations/${convId}/messages`, {
         messageBody: messageBody,
@@ -89,9 +92,9 @@ function Input() {
     }
   }
 
-  async function createConvDoc(membersId, callback) {
+  const createConvDoc = async (membersId: string[], callback: (data: Conversation) => void) => {
     try {
-      const {data} = await axios.post('/chat/conversations', {
+      const {data} = await axios.post<Conversation>('/chat/conversations', {
         membersId: membersId
       });
 
@@ -101,17 +104,17 @@ function Input() {
     }
   }
 
-  async function getTheConvDoc(convId, callback) {
+  const getTheConvDoc = async (convId: string, callback) => {
     try {
       const {data} = await axios.get(`chat/conversations/${convId}`);
 
-      callback(data);
+      callback(data.conversation);
     } catch (err) {
-      console.err(err);
+      console.error(err);
     }
   }
 
-  function onInputChange(e) {
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currConvId = currConv._id;
 
     setChatInput(e.target.value);
@@ -144,5 +147,4 @@ function Input() {
     </div>
   );
 }
-
 export default Input;

@@ -4,9 +4,12 @@ import styled from 'styled-components';
 import InputBar from '../inputBar/InputBar'
 import MessageList from './messages/MessageList'
 
-import {Route, useRouteMatch} from 'react-router-dom';
+import { rootState } from '../../redux/store';
 
-const StyledMessagePane = styled.div`
+import {Route, useRouteMatch} from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+const StyledMessagePane = styled.div<{showInMobile: boolean}>`
     background-color: ${({theme}) => theme.dark.secondary};
     flex: 3 1 0;
     position: relative;
@@ -18,16 +21,22 @@ const StyledMessagePane = styled.div`
     }
 `
 
-function MessagePane() {
-    const [isDelivered, setIsDelivered] = useState(false);
-    const messagesMatchRoute = useRouteMatch('/chat/:convId');
+const MessagePane = () => {
+    const messagesMatchRoute = useRouteMatch<{convId: string}>('/chat/:convId');
+    const currConv = useSelector((state: rootState) => state.conversations.find(conv => conv._id === messagesMatchRoute?.params.convId));
     const showInMobile = messagesMatchRoute ? messagesMatchRoute.isExact : false;
 
     return (
         <StyledMessagePane showInMobile={showInMobile}>
             <Route path='/chat/:convId'>
-                <MessageList isDelivered={isDelivered} />
-                <InputBar />
+                {currConv ? (
+                    <>
+                        <MessageList currConv={currConv} />
+                        <InputBar />
+                    </>
+                ) : (
+                    null
+                )}
             </Route>
         </StyledMessagePane>
     )

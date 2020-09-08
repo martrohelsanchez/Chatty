@@ -3,24 +3,32 @@ import uniqid from 'uniqid';
 
 import styles from './searchedUser.module.css';
 import {UserInfoContext} from '../../../App';
-import { getConversationByMembersReq } from '../../../api/APIUtils';
+import {getConversationByMembersReq} from '../../../api/APIUtils';
+import {useHistory} from 'react-router';
+
+import {User} from '../../../shared/types/dbSchema';
+import {rootState} from '../../../redux/store';
+import {UserInfo} from '../../../redux/actions/userInfoActions';
 
 import {useDispatch, useSelector} from 'react-redux';
-import { addConv } from '../../../redux/actions/conversationsActions';
-import { useHistory } from 'react-router';
+import {addConv} from '../../../redux/actions/conversationsActions';
 
-function SearchedUser({searchedUser}) {
+interface SearchedUserProps {
+    searchedUser: User
+}
+
+const SearchedUser = ({searchedUser}: SearchedUserProps) => {
     const user = useContext(UserInfoContext)
-    const conversations = useSelector(state => state.conversations);
+    const conversations = useSelector((state: rootState) => state.conversations);
     const dispatch = useDispatch();
     const history = useHistory();
 
-    function handleClick() {
+    const handleClick = () => {
         console.log('clicked')
         findConv([searchedUser._id, user.userId]);
     }
 
-    function findConv(members) {
+    const findConv = (members) => {
         const foundConvFromRedux = findConvInRedux(members);
 
         if (foundConvFromRedux !== undefined) {
@@ -31,11 +39,14 @@ function SearchedUser({searchedUser}) {
         const foundConvFromDb = getConversationByMembersReq(members, data => {
             const convFromDb = data.conversation;
             if (convFromDb) {
-                dispatch(addConv(data.conversation));
+                dispatch(addConv({
+                    ...convFromDb,
+                    convHasCreated: true
+                }));
                 history.push(`/chat/${convFromDb._id}`);
             } else {
                 //If the conversation doesn't exist in DB, just create the conv obj decoy
-                const convObj = createConvObj(searchedUser);
+                const convObj = createConvObj([searchedUser, user]);
 
                 dispatch(addConv(convObj));
                 history.push(`/chat/${convObj._id}`);
@@ -46,28 +57,32 @@ function SearchedUser({searchedUser}) {
         });
     }
 
-    function findConvInRedux(targetMembers) {
+    const findConvInRedux = (targetMembers) => {
         return conversations.find(conv => 
             conv.members.every(member => targetMembers.includes(member._id))
         );
     }
 
-    function createConvObj(searchedUser) {
+    const createConvObj = (searchedUser: (User | UserInfo)[]) => {
+        const id: string = uniqid();
         return {
-            _id: uniqid(),
+            _id: id,
             convHasCreated: false,
-            members: [
-                searchedUser,
+            is_group_chat: false,
+            members: searchedUser.map(user => 'userId' in user ? (
                 {
+                    ...user,
                     _id: user.userId
                 }
-            ],
-            is_chatroom: false
+            ) : (
+                user
+            )),
+            conversation_pic: 'sfasd' //refractor pag gagawin na yung images
         }
     }
 
     return (
-        <div className={styles.container} onClick={e => handleClick(e)}>
+        <div className={styles.container} onClick={handleClick}>
             <div className={styles.profilePicHolder}></div>
             <span className={styles.username}>{searchedUser.username}</span>
         </div>

@@ -1,18 +1,19 @@
 import React, {useState, useEffect, useContext} from 'react';
-import axios from 'axios';
 
-import styles from './conversationList.module.css';
-import Conversation from './conversation/Conversation';
+import Conversation from "../conversation/Conversation";
 import Loading from '../loading/Loading';
-import { getConversationsReq, updateMsgIsDeliveredReq } from '../../api/APIUtils';
-import { UserInfoContext } from '../../App';
+import {getConversationsReq, updateMsgIsDeliveredReq} from '../../api/APIUtils';
+import {UserInfoContext} from '../../App';
+
+import {rootState} from '../../redux/store';
+import {ConversationPopulateMembers} from '../../shared/types/dbSchema';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {retrieveConversations} from '../../redux/actions/conversationsActions';
 
-function ConversationList() {
-    const conversations = useSelector(state => state.conversations);
-    const [err, setErr] = useState(null);
+const ConversationList = () => {
+    const conversations = useSelector((state: rootState) => state.conversations);
+    const [err, setErr] = useState<string | null>(null);
     const dispatch = useDispatch();
     const user = useContext(UserInfoContext);
 
@@ -20,7 +21,7 @@ function ConversationList() {
         if (conversations.length === 0) {
             getConversationsReq(10, null, data => {
                 dispatch(retrieveConversations(data.conversations));
-                checkDeliver(data);
+                checkLastMsgDeliver(data.conversations);
             }, err => {
                 console.error(err.message)
                 setErr('Something went wrong')
@@ -29,14 +30,16 @@ function ConversationList() {
     }, []);
 
     //Check if the last message of a conversation hasn't been delivered
-    function checkDeliver(data) {
-        const conversations = data.conversations;
+    const checkLastMsgDeliver = (conversations: ConversationPopulateMembers[]) => {
 
         for (let conversation of conversations) {
             const {last_message, _id} = conversation;
 
             if (last_message.sender_id !== user.userId && !last_message.is_delivered) {
-                updateMsgIsDeliveredReq(_id, last_message.sender_id);
+                updateMsgIsDeliveredReq(_id, last_message.sender_id, (err) => {
+                    console.error(err);
+                    setErr('Something went wrong')
+                });
             }
         }
     }
@@ -52,7 +55,7 @@ function ConversationList() {
     });
 
     return (
-      <div className={styles.conversationListContainer}>
+      <div>
         {renderConversations}
       </div>
     );

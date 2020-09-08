@@ -2,17 +2,17 @@ import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import {Switch, Route} from 'react-router-dom';
 
-import { reAuthReq } from '../api/APIUtils';
+import {reAuthReq} from '../api/APIUtils';
 import ChatRoute from './ChatRoute';
 import LogInRoute from './LogInRoute';
 import SignUpRoute from './SignUpRoute';
 import SplashScreen from '../components/splashScreen/SplashScreen';
 
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {setUserInfo} from '../redux/actions/userInfoActions';
 import HomeRoute from './HomeRoute';
 
-function AppRoute() {
+const AppRoute = () => {
     const dispatch = useDispatch();
     const [triedAuthUser, setTriedAuthUser] = useState(false);
 
@@ -26,7 +26,10 @@ function AppRoute() {
 
                 ReactDOM.unstable_batchedUpdates(() => {
                     setTriedAuthUser(true);
-                    dispatch(setUserInfo({userId: data._id, username: data.username}));
+                    dispatch(setUserInfo({
+                        userId: data.userId, 
+                        username: data.username
+                    }));
                 }) ;
             }, err => {
                 setTriedAuthUser(true);
