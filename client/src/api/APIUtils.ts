@@ -1,49 +1,21 @@
 import axios from 'axios';
+import {MembersMeta, ConversationPopulateMembers} from '../shared/types/dbSchema';
 
-export async function logInReq(username, cb, errCb) {
+export interface UserAuthRes {
+    userId: string;
+    username: string;
+    isAuth: boolean;
+    csrfToken: string;
+}
+
+export async function logInReq(
+    username: string, 
+    cb?: (UserAuthRes) => void, 
+    errCb?: (err: Error) => void
+) {
     try {
-        const {data} = await axios.post('/user/logIn', {
+        const {data} = await axios.post<UserAuthRes>('/user/logIn', {
             username: username.trim()
-        }, {
-            withCredentials: true
-        });
-
-        if (cb) cb(data);
-
-        return data;
-    } catch (err) {
-        if (errCb) {
-            errCb(err);
-        } else {
-            throw err;
-        }
-    }
-}
-
-export async function reAuthReq(cb, errCb) {
-    try {
-        const {data} = await axios.post('/user/reAuth', {}, {
-            withCredentials: true
-        });
-
-        if (cb) {
-            cb(data)
-        } else {
-            return data
-        }
-    } catch (err) {
-        if (errCb) {
-            errCb(err)
-        } else {
-            throw err;
-        }
-    }
-}
-
-export async function seenConvReq(convId, convMembers, cb, errCb) {
-    try {
-        const {data} = await axios.patch(`/chat/conversations/${convId}/seen`, {
-            convMembers: convMembers
         }, {
             withCredentials: true
         });
@@ -62,9 +34,69 @@ export async function seenConvReq(convId, convMembers, cb, errCb) {
     }
 }
 
-export async function getConversationsReq(limit, before = null, cb, errCb) {
+export const reAuthReq = async (
+    cb?: (data: UserAuthRes) => void, 
+    errCb?: (err: Error) => void
+) => {
     try {
-        const res = await axios.get('/chat/conversations', {
+        const {data} = await axios.post<UserAuthRes>('/user/reAuth', {}, {
+            withCredentials: true
+        });
+
+        if (cb) {
+            cb(data)
+        } else {
+            return data
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err)
+        } else {
+            throw err;
+        }
+    }
+}
+
+interface UpdatedSeen {
+    updated_seen: {
+        convId: string,
+        userId: string,
+        new_seen: number
+    }
+}
+
+export const seenConvReq = async (
+    convId: string, 
+    cb?: (data: UpdatedSeen) => void, 
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.patch<UpdatedSeen>(`/chat/conversations/${convId}/seen`, {}, {
+            withCredentials: true
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const getConversationsReq = async (
+    limit: number, 
+    before: number | null = null, 
+    cb?: (data: {conversations: ConversationPopulateMembers[]}) => void, 
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const res = await axios.get<{conversations: ConversationPopulateMembers[]}>('/chat/conversations', {
             params: {  
                 before: before,
                 limit: 10
@@ -85,17 +117,15 @@ export async function getConversationsReq(limit, before = null, cb, errCb) {
     }
 }
 
-export async function updateMsgIsDeliveredReq(convId, senderId, cb, errCb) {
+export const updateMsgIsDeliveredReq = async (
+    convId: string, 
+    senderId: string,
+    errCb?: (err: Error) => void
+) => {
     try {
         const res = await axios.patch(`/chat/conversations/${convId}/deliver`, {
             senderId
         })
-
-        if (cb) {
-            cb(res.data);
-        } else {
-            return res.data;
-        }
     } catch (err) {
         if (errCb) {
             errCb(err);
@@ -106,9 +136,13 @@ export async function updateMsgIsDeliveredReq(convId, senderId, cb, errCb) {
 }
 
 //Get one conversation where the members are exactly what was given
-export async function getConversationByMembersReq(convMembers: string[], cb, errCb) {
+export const getConversationByMembersReq = async (
+    convMembers: string[], 
+    cb?: (data: {conversation: ConversationPopulateMembers}) => void, 
+    errCb?: (err: Error) => void
+) => {
     try {
-        const {data} = await axios.get('/chat/conversation', {
+        const {data} = await axios.get<{conversation: ConversationPopulateMembers}>('/chat/conversation', {
             params: {
                 members: convMembers
             }
