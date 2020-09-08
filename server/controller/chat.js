@@ -265,12 +265,12 @@ async function sendMessage(req, res) {
 
         for (let userId of convMembers) {
             if (userId !== decodedJwt.userId) {
-                message._doc.sender = {
-                    _id: decodedJwt.userId,
-                    username: decodedJwt.username
-                }
+                // message._doc.sender = {
+                //     _id: decodedJwt.userId,
+                //     username: decodedJwt.username
+                // }
 
-                io.in(userId).emit('sendMsg', message._doc);
+                io.in(userId).emit('sendMsg', message);
             }
         }
 
