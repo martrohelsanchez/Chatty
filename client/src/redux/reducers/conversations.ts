@@ -1,4 +1,4 @@
-import {ConvDecoy} from '../actions/conversationsActions/types';
+import {ConvDecoy} from "../../shared/types/dbSchema";
 import {ConversationActionTypes} from "../actions/conversationsActions";
 import { ConversationPopulateMembers, Message, User} from '../../shared/types/dbSchema';
 
