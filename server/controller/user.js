@@ -69,7 +69,7 @@ async function userLogIn(req, res) {
                 sameSite: true
             });
             res.status(200).json({
-                _id: user._id,
+                userId: user._id,
                 username: user.username,
                 isAuth: true,
                 csrfToken: csrfToken
@@ -119,7 +119,7 @@ async function reAuthUser(req, res) {
             sameSite: true
         });
         res.status(200).json({
-            _id: decoded.userId,
+            userId: decoded.userId,
             username: decoded.username,
             isAuth: true,
             csrfToken: newCsrfToken
