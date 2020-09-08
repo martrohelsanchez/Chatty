@@ -28,7 +28,7 @@ const Message = ({message, msgIndex, allMsg, currConv}: MessageProps) => {
                     null
                 ) : (
                     <span>
-                        {members.find(user => user.username)}:{" "}
+                        {members.find(user => user.username)?.username}:{" "}
                     </span>
                 )}
                 <MsgBox isFromUser={isFromUser}>
