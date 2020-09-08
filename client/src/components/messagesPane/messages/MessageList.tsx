@@ -15,7 +15,7 @@ import {useDispatch} from 'react-redux';
 import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
 import { Message as MessageType } from '../../../shared/types/dbSchema';
 import { ConvWithMsgs } from '../../../redux/reducers/conversations';
-import { ConvDecoy } from '../../../redux/actions/conversationsActions/types';
+import {ConvDecoy} from "../../../shared/types/dbSchema";
 
 interface MessageListProps {
     currConv: rootState['conversations'][0]
