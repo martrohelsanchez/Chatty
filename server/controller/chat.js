@@ -12,7 +12,7 @@ async function searchUsers (req, res) {
         const searchRegex = new RegExp(escapeRegex(searchInput), "gi");
         const userId =  req.decodedJwt.userId;
         const users = await User.find({$and: [{_id: {$ne: userId}}, {username: searchRegex}]})
-            .select("username")
+            .select("-password -__v")
             .exec()
 
         function escapeRegex(text) {
@@ -31,7 +31,7 @@ async function searchUsers (req, res) {
 };
 
 //GET /chat/conversation
-//Get a conversation where the members are exactly on query.members
+//Get one conversation where the members are exactly on query.members
 async function getOneConversation(req, res) {
     try {
         const query = req.query;
@@ -92,7 +92,7 @@ async function getConversations (req, res) {
     }
 }
 
-//getting one conversation
+//GET /conversations/:conversationId
 async function getTheConversation(req, res) {
     try {
         const {conversationId} = req.params;
@@ -107,7 +107,7 @@ async function getTheConversation(req, res) {
             .exec();
 
         res.status(200).json({
-            ...conversation._doc
+            conversation: conversation
         })
 
     } catch (err) {
@@ -121,7 +121,6 @@ async function getTheConversation(req, res) {
 // patch /conversations/:conversationId/seen
 async function updateSeen (req, res) {
     try {
-        const convMembers = req.body.convMembers || [];
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
         const setDate = Date.now();
@@ -143,20 +142,13 @@ async function updateSeen (req, res) {
             })
 
         res.status(200).json({
-            members_meta: [
-                ...conv.members_meta
-            ]
+            updated_seen: {
+                convId: convId,
+                userId: userId,
+                new_seen: setDate
+            }
         });
 
-        const changedLastSeen = conv.members_meta.find(user => user.user_id == userId).last_seen;
-
-        // for (let member of convMembers) {
-        //     if (member._id !== userId) {
-        //         io.in(member.id).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
-        //     }
-        // }
-
-        // io.in(conv._id).emit('seen', convId, [{user_id: userId, last_seen: changedLastSeen}]);
         io.in(conv._id).emit('seen', convId, userId, setDate);
     } catch (err) {
         console.error(err.message);
@@ -193,7 +185,7 @@ async function updateIsDelivered(req, res) {
     }
 }
 
-//creating a new conversation
+//POST /chat/conversations
 async function createConversation (req, res) {
     try {
         const { decodedJwt, body } = req;
@@ -242,7 +234,6 @@ async function getMessages(req, res) {
                     date_sent: -1
                 })
                 .limit(limit)
-                // .populate('sender', '-__v -password')
                 .exec();
 
         res.status(200).json({
