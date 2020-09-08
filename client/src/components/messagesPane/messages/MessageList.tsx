@@ -13,7 +13,7 @@ import {rootState} from '../../../redux/store';
 
 import {useDispatch} from 'react-redux';
 import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
-import { Message } from '../../../shared/types/dbSchema';
+import { Message as MessageType } from '../../../shared/types/dbSchema';
 import { ConvWithMsgs } from '../../../redux/reducers/conversations';
 import { ConvDecoy } from '../../../redux/actions/conversationsActions/types';
 
@@ -61,7 +61,7 @@ const MessageList = ({currConv}: MessageListProps) => {
     const getMessages = async (limit: number, before: number | null) => {
         setIsLoading(true);
         try {
-            const {data} = await axios.get<{messages: Message[]}>(`/chat/conversations/${currConvId}/messages`, {
+            const {data} = await axios.get<{messages: MessageType[]}>(`/chat/conversations/${currConvId}/messages`, {
                 params: {
                     before: before,
                     limit: limit
