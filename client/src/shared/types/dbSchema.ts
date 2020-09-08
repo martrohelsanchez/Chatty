@@ -1,3 +1,4 @@
+//Exact schema from User Mongoose Model
 export interface User {
     _id: string;
     username: string;
@@ -15,7 +16,7 @@ export interface Message {
 //Exact schema from Conversation Mongoose model
 export interface Conversation {
     _id: string;
-    group_name: string;
+    group_name?: string;
     is_group_chat: boolean;
     members: string[];
     conversation_pic: string;
@@ -26,7 +27,6 @@ export interface Conversation {
         sender_id: string;
         is_delivered: boolean;
     };
-    is_chatroom: boolean;
     created_at: number;
     last_updated: number;
     members_meta: {
@@ -40,6 +40,12 @@ export interface ConversationPopulateMembers extends Omit<Conversation, 'members
     members: User[];
 } 
 
-export interface MessagePopulateSender extends Omit<Message, 'sender'> {
-    sender: User;
+export type MembersMeta = Pick<Conversation, 'members_meta'>['members_meta'];
+
+export interface ConvDecoy
+  extends Omit<
+    ConversationPopulateMembers,
+    "last_message" | "created_at" | "last_updated" | "members_meta"
+  > {
+  convHasCreated: false;
 }
