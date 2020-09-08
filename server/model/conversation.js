@@ -15,7 +15,6 @@ const conversationSchema = new Schema({
         sender_id: {type: Schema.Types.ObjectId},
         is_delivered: {type: Boolean}
     },
-    is_chatroom: {type: Boolean},
     created_at: {type: Number},
     last_updated: {type: Number},
     members_meta: [
