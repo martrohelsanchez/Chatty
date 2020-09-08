@@ -1,16 +1,31 @@
-import {ConversationActionTypes} from '../actions/conversationsActions';
-import {ConversationPopulateMembers, Message, Conversation, MessagePopulateSender} from '../../shared/types/dbSchema';
+import {ConvDecoy} from '../actions/conversationsActions/types';
+import {ConversationActionTypes} from "../actions/conversationsActions";
+import { ConversationPopulateMembers, Message, User} from '../../shared/types/dbSchema';
 
-interface ConversationState extends ConversationPopulateMembers{
-    messages: MessagePopulateSender[];
+export interface ConvWithoutMsgs extends ConversationPopulateMembers {
+    convHasCreated: true;
 }
 
-export default (state: ConversationState[] = [], action: ConversationActionTypes): ConversationState[] | ConversationPopulateMembers[] => {
+export interface ConvWithMsgs extends ConvWithoutMsgs{
+    messages: (Message & {is_sent?: boolean})[];
+}
+
+export type ConversationsState = (ConvWithMsgs | ConvWithoutMsgs | ConvDecoy)[];
+
+let initialState: ConversationsState = [];
+
+const conversations = (state = initialState, action: ConversationActionTypes): ConversationsState => {
     switch (action.type) {
-        case 'conversations/retrievedConversations':
-            return [...state, ...action.retrieveConv]    
+        case 'conversations/retrievedConversations': {
+            const retrievedConversations = action.retrieveConv.map<ConvWithoutMsgs>(conv => ({
+                ...conv,
+                convHasCreated: true
+            }));
+
+            return [...state, ...retrievedConversations];
+        }
         case 'conversations/addedAConversation':
-            return [action.conv, ...state]
+            return [(action.conv as ConvDecoy | ConvWithoutMsgs), ...state];
         case 'conversations/deletedAConversation': {
             const newConversations: typeof state = [];
 
@@ -23,8 +38,7 @@ export default (state: ConversationState[] = [], action: ConversationActionTypes
             return newConversations;
         }
         case 'conversations/patchedConversation':
-            // action.patch
-            return state.map(conv => {
+            return (state as ConvWithMsgs[]).map(conv => {
                 if (conv._id === action.convId) {
                     return {
                         ...conv,
@@ -33,42 +47,33 @@ export default (state: ConversationState[] = [], action: ConversationActionTypes
                 }
                 return conv;
             })
-            // return state.map(conv => {
-            //     if (conv._id === action.convId) {
-            //         return {
-            //             ...conv,
-            //             ...action.patch
-            //         }
-            //     }
-            //     return conv;
-            // })
         case 'conversations/addedPreviousMessages':
             return state.map(conv => {
                 if (conv._id === action.convId) {
                     return {
                         ...conv, 
-                        messages: conv.messages ? [...action.prevMsgs, ...conv.messages] : [...action.prevMsgs]}
+                        messages: 'messages' in conv  ? [...action.prevMsgs, ...conv.messages] : [...action.prevMsgs]}
                 }
                 return conv
             })
         case 'conversations/addedANewMessage': {
-            const newConversations: ConversationState[] = [];
+            const newConversations: typeof state = [];
 
             for (let conv of state) {
                 if (conv._id === action.convId) {
-                    const newConv: ConversationState = {
+                    const newConv = {
                         ...conv, 
                         last_message: {
                             message_body: action.newMsg.message_body,
-                            sender_username: action.newMsg.sender.username,
+                            sender_username: conv.members.find(user => user._id === action.newMsg.sender)?.username as string,
                             date_sent: action.newMsg.date_sent,
-                            sender_id: 'sadfas',
+                            sender_id: action.newMsg.sender,
                             is_delivered: true
                         },
-                        messages: [...(conv.messages || []), action.newMsg]
+                        messages: [...('messages' in conv ? conv.messages : []), action.newMsg]
                     }
 
-                    //Puts the conversation to the top when a new message is received
+                    //Puts the conversation to the top when a new message is added
                     newConversations.unshift(newConv);
                 } else {
                     newConversations.push(conv);
@@ -91,7 +96,7 @@ export default (state: ConversationState[] = [], action: ConversationActionTypes
         case 'conversation/updatedLastSeen':
             return state.map(conv => {
                 if (conv._id === action.convId) {
-                    const newMembersMeta = conv.members_meta.map(memberMeta => {
+                    const newMembersMeta = (conv as ConvWithMsgs).members_meta.map(memberMeta => {
                         if (memberMeta.user_id === action.userId) {
                             return {
                                 ...memberMeta,
@@ -136,7 +141,7 @@ export default (state: ConversationState[] = [], action: ConversationActionTypes
         case 'conversations/msgHasSent':
             return state.map(conv => {
                 if (conv._id === action.convId) {
-                    const newMessages = conv.messages.map(msg => {
+                    const newMessages = (conv as ConvWithMsgs).messages.map(msg => {
                         if (msg._id === action.msgId) {
                             return {
                                 ...msg,
@@ -159,3 +164,5 @@ export default (state: ConversationState[] = [], action: ConversationActionTypes
             return state;
     }
 }
+
+export default conversations;;
