@@ -5,7 +5,6 @@ import {Reset} from 'styled-reset';
 import GlobalCss from './global.css';
 
 import './api/axios';
-import styles from "./index.module.css";
 import AppRoute from './pages/AppRoute';
 import theme from './theme/theme';
 
@@ -27,9 +26,7 @@ const App = () => {
       <UserInfoContext.Provider value={userInfo}>
         <Reset />
         <GlobalCss />
-        <div className={styles.chatAppContainer}>
-          <AppRoute />
-        </div>
+        <AppRoute />
       </UserInfoContext.Provider>
     </ThemeProvider>
   );
