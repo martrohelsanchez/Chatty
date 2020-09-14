@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 
-import styles from './userIsTyping.module.css';
 import { socket } from '../../App';
 
 function UserIsTyping({isTyping, setIsTyping}) {
-    const match = useRouteMatch();
+    const match = useRouteMatch<{convId: string}>();
     const currConvId = match.params.convId;
     const [numOfTyping, setNumOfTyping] = useState(0);
 
