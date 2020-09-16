@@ -19,9 +19,11 @@
     "noEmit": true,
     "jsx": "react",
     "downlevelIteration": true,
-    "noImplicitAny": false,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noImplicitAny": false,
+
+    "baseUrl": "src"
   },
   "include": [
     "src"
-  ]
+  ],
 }
