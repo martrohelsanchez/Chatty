@@ -1,17 +1,11 @@
 import React from 'react';
 import {render} from '@testing-library/react';
-import {Provider, useSelector} from "react-redux";
+import {Provider} from "react-redux";
 import {BrowserRouter as Router} from 'react-router-dom';
 import {ThemeProvider} from "styled-components";
 import theme from "shared/theme";
-import { createStore } from 'redux';
-import rootReducer from 'redux/reducers';
 
 import store from "../../redux/store"
-
-// const createStore = (initalS) =
-
-// const reduxStore = createStore(rootReducer, )
 
 const AllTheProviders: React.FC = ({children}) => {
     return (
