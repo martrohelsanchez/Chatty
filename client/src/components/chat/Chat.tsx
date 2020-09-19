@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useRouteMatch} from 'react-router-dom';
 
-import ContactsPane from '../contactsPane/ContactsPane';
+import ContactsPane from '../conversationPane/ConversationPane';
 import MessagePane from '../messagesPane/messagesPane';
 import InfoPane from '../infoPane/InfoPane'; 
 import {socket} from '../../App';
