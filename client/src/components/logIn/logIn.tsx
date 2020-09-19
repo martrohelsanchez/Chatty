@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
+import ReactDOM from 'react-dom';
 import {useHistory} from 'react-router-dom';
 
 import styles from './logIn.module.css';
@@ -20,24 +21,19 @@ const LogIn = () => {
         usernameInputRef.current?.focus()
     });
 
-    const handleLogIn = (usernameInput: string) => {
-        logIn(usernameInput);
-    }
-
-    const logIn = async (usernameInput: string) => {
+    async function handleLogIn (usernameInput: string) {
         try {
             const data = await logInReq(usernameInput);
             const {csrfToken, userId, username, isAuth} = data as UserAuthRes;
 
             if (isAuth) {
-                setInput('');
+                window.localStorage.setItem('csrfToken', csrfToken);
 
+                setInput('');
                 dispatch(setUserInfo({
                     userId: userId,
                     username
                 }));
-
-                window.localStorage.setItem('csrfToken', csrfToken);
 
                 history.push('/chat');
             } // if isAuth is false, server send 401 status
