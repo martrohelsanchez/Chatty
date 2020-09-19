@@ -4,8 +4,17 @@ import AppRoute from "./AppRoute";
 import {renderWithProviders} from 'shared/test/test-utils';
 import server from "shared/test/handlers";
 
+import store from 'redux/store';
+import {resetConvState} from 'redux/actions/conversationsActions';
+import {resetUserInfo} from 'redux/actions/userInfoActions';
+
 beforeAll(() => server.listen())
-beforeEach(() => localStorage.clear())
+beforeEach(() => {
+    localStorage.clear()
+    window.history.pushState({}, 'test', '/');
+    store.dispatch(resetConvState());
+    store.dispatch(resetUserInfo());
+});
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close());
 
