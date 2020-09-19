@@ -1,4 +1,5 @@
 import React from 'react';
+import {waitFor} from "@testing-library/react";
 
 import AppRoute from "./AppRoute";
 import {renderWithProviders} from 'shared/test/test-utils';
@@ -18,13 +19,15 @@ beforeEach(() => {
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close());
 
-test('show splash screen when trying to authenticate', () => {
+
+test('Direct to /chat if user is authenticated', async () => {
     localStorage.setItem('csrfToken', 'secretCsrfToken');
     const {getByText} = renderWithProviders(<AppRoute />);
     
-
     getByText('Loading...')
-}, 0);
+
+    await waitFor(() => expect(window.location.pathname).toBe('/chat'));
+});
 
 test('Prevent user from accessing /chat if not authenticated', () => {
     window.history.pushState({}, 'test', '/chat')
@@ -32,8 +35,5 @@ test('Prevent user from accessing /chat if not authenticated', () => {
         <AppRoute />
     );
 
-    const pathArr = window.location.pathname.split('/');
-
-    expect(pathArr).not.toContain('chat');
-}, 0);
-
+    expect(window.location.pathname).not.toBe('/chat');
+});
