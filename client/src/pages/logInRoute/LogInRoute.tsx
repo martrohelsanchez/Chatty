@@ -1,10 +1,10 @@
 import React from 'react';
 
-import LogIn from '../components/logIn/logIn';
+import LogIn from "components/logIn/LogIn";
 import {useSelector} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
-import {rootState} from "../redux/store";
+import {rootState} from "../../redux/store";
 
 const LogInRoute = () => {
     const userInfo = useSelector((state: rootState ) => state.userInfo);

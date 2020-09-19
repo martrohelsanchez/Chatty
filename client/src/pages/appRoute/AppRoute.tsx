@@ -2,19 +2,21 @@ import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import {Switch, Route} from 'react-router-dom';
 
-import {reAuthReq} from '../api/APIUtils';
-import ChatRoute from './ChatRoute';
-import LogInRoute from './LogInRoute';
-import SignUpRoute from './SignUpRoute';
-import SplashScreen from '../components/splashScreen/SplashScreen';
+import {reAuthReq} from '../../api/APIUtils';
+import ChatRoute from '../chatRoute/ChatRoute';
+import LogInRoute from "pages/logInRoute/LogInRoute";
+import SignUpRoute from "pages/signUpRoute/SignUpRoute";
+import SplashScreen from '../../components/splashScreen/SplashScreen';
+import useHasUnmounted from "../../hooks/useHasUnmounted";
 
 import {useDispatch} from 'react-redux';
-import {setUserInfo} from '../redux/actions/userInfoActions';
-import HomeRoute from './HomeRoute';
+import {setUserInfo} from '../../redux/actions/userInfoActions';
+import HomeRoute from '../homeRoute/HomeRoute';
 
 const AppRoute = () => {
     const dispatch = useDispatch();
     const [triedAuthUser, setTriedAuthUser] = useState(false);
+    const hasUnmounted = useHasUnmounted();
 
     //try to authenticate when user visits the website
     if (!triedAuthUser) {
@@ -24,13 +26,15 @@ const AppRoute = () => {
             reAuthReq(data => {
                 window.localStorage.setItem('csrfToken', data.csrfToken)
 
-                ReactDOM.unstable_batchedUpdates(() => {
-                    setTriedAuthUser(true);
-                    dispatch(setUserInfo({
-                        userId: data.userId, 
-                        username: data.username
-                    }));
-                }) ;
+                if (!hasUnmounted.current) {
+                    ReactDOM.unstable_batchedUpdates(() => {
+                        setTriedAuthUser(true);
+                        dispatch(setUserInfo({
+                            userId: data.userId, 
+                            username: data.username
+                        }));
+                    }) ;
+                }
             }, err => {
                 setTriedAuthUser(true);
             });
