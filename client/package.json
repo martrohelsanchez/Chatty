@@ -49,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-localstorage-mock": "^2.4.3",
     "msw": "^0.21.2",
     "ts-jest": "^26.3.0"
