@@ -52,10 +52,7 @@ function SignUp() {
         <br />
         <p style={{ textAlign: "center" }}>Already have an account?</p>
         <button
-            <p style={{textAlign: 'center'}}>
-                Already have an account?
-            </p>
-            <button className={styles.logInBtn} onClick={directToLogIn}>
+          data-testid='logInBtn'
           className={styles.logInBtn}
           onClick={directToLogIn}
         >
