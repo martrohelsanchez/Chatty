@@ -36,28 +36,33 @@ function SignUp() {
     }
 
     return (
-        <div className={styles.signUpContainer}>
-            <h3 className={styles.promptNickname}>What's your nickname?</h3>
-            <input 
-                className={styles.nicknameInput} 
-                type="input"
-                value={input}
-                onChange={onInputChange}
-                onKeyDown={({ key }) => key === 'Enter' ? signUp() : null}
-            />
-            {<div className={styles.userTaken}>{err}</div>}
-            <button className={styles.signUpBtn} onClick={signUp}>
-                Sign Up
-            </button>
-            <br />
+      <div className={styles.signUpContainer}>
+        <h3 className={styles.promptNickname}>What's your nickname?</h3>
+        <input
+          className={styles.nicknameInput}
+          type="input"
+          value={input}
+          onChange={onInputChange}
+          onKeyDown={({ key }) => (key === 'Enter' ? signUp() : null)}
+        />
+        {<div className={styles.userTaken}>{err}</div>}
+        <button className={styles.signUpBtn} onClick={signUp}>
+          Sign Up
+        </button>
+        <br />
+        <p style={{ textAlign: "center" }}>Already have an account?</p>
+        <button
             <p style={{textAlign: 'center'}}>
                 Already have an account?
             </p>
             <button className={styles.logInBtn} onClick={directToLogIn}>
-                Log In
-            </button>
-        </div>
-    )
+          className={styles.logInBtn}
+          onClick={directToLogIn}
+        >
+          Log In
+        </button>
+      </div>
+    );
 }
 
 export default SignUp
