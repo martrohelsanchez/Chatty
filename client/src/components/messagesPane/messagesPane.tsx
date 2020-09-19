@@ -6,7 +6,7 @@ import MessageList from './messages/MessageList'
 
 import { rootState } from '../../redux/store';
 
-import {Route, useRouteMatch} from 'react-router-dom';
+import {Route, useRouteMatch, useHistory, useLocation} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const StyledMessagePane = styled.div<{showInMobile: boolean}>`
