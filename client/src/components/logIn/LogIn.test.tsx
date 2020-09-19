@@ -2,14 +2,17 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
-import {mocked} from 'ts-jest';
+import {mocked} from 'ts-jest/utils';
+import {waitFor, fireEvent} from '@testing-library/react'
 
 import {renderWithProviders} from 'shared/test/test-utils';
 import LogIn from './LogIn';
-import { act } from '@testing-library/react';
+import * as actions from 'redux/actions/userInfoActions';
 
 jest.mock('axios');
+
 const mockedAxios = mocked(axios, true);
+const spySetUserInfo = jest.spyOn(actions, 'setUserInfo');
 
 beforeEach(() => {
     window.history.pushState({}, 'test', '/login')
@@ -23,29 +26,47 @@ test('Direct to /signUp when the signUp button is clicked', () => {
 });
 
 describe('User tries to log in', () => {
-    test('User is Authenticated', async () => {
-        const {debug, getByLabelText, getByTestId} = renderWithProviders(<LogIn />);
-        const usernameInput = getByLabelText(/enter your nickname/i)
+    describe('User is Authenticated', () => {
+        test.each([
+            'pressing Enter',
+            'clicking Log In'
+        ])('Logging user by %s', async (by) => {
+            const {getByLabelText, getByTestId} = renderWithProviders(<LogIn />);
 
-        mockedAxios.post.mockResolvedValueOnce({data: {
-            isAuth: true,
-            csrfToken: 'testCsrfToken',
-            username: 'testUsername',
-            userId: 'testId'
-        }})
+            mockedAxios.post.mockResolvedValue({data: {
+                isAuth: true,
+                csrfToken: 'testCsrfToken',
+                username: 'testUsername',
+                userId: 'testId'
+            }})
 
-        userEvent.type(usernameInput, 'testUsername');
+            userEvent.type(getByLabelText(/enter your nickname/i), 'testUsername');
+            
+            if (by === 'pressing Enter') {
+                fireEvent.keyDown(getByLabelText(/enter your nickname/i), {key: 'Enter'});
+            }
 
-        expect(usernameInput).toHaveValue("testUsername");
+            if (by === 'clicking Log In') {
+                userEvent.click(getByTestId('logInBtn'));
+            }
 
-        await act(() => {
-            userEvent.click(getByTestId('logInBtn'));
-        });
+            expect(mockedAxios.post).toHaveBeenCalled();
 
-        expect(window.location.pathname).toBe('/chat');
+            await waitFor(() => expect(spySetUserInfo).toHaveBeenCalled());
+            await waitFor(() => expect(window.location.pathname).toBe('/chat'));
+        })
     });
 
-    test('User is not authenticated', () => {
+    test('User is not authenticated', async () => {
+        const responseErr = new Error();
+        responseErr['response'] = {status: 401};
+        mockedAxios.post.mockRejectedValue(responseErr);
 
+        const {getByLabelText, getByTestId, getByText} = renderWithProviders(<LogIn />);
+
+        userEvent.type(getByLabelText(/enter your nickname/i), "testUsername");
+        userEvent.click(getByTestId("logInBtn"));
+
+        await waitFor(() => getByText(/Wrong nickname or password/i));
     })
 })
