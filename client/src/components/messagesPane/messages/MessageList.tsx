@@ -40,7 +40,7 @@ const MessageList = ({currConv}: MessageListProps) => {
                 //Update the last_seen field in redux
                 dispatch(updateLastSeen(convId, userId, new_seen));
             }, err => {
-                console.log(err);
+                console.error(err);
                 setErr('Sorry, something went wrong');
             });
         }
