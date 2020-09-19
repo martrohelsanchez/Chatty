@@ -5,8 +5,8 @@ import {Reset} from 'styled-reset';
 import GlobalCss from './global.css';
 
 import './api/axios';
-import AppRoute from './pages/AppRoute';
-import theme from './theme/theme';
+import AppRoute from './pages/appRoute/AppRoute';
+import theme from './shared/theme';
 
 import { useSelector } from 'react-redux';
 import {rootState} from './redux/store';
@@ -24,9 +24,9 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <UserInfoContext.Provider value={userInfo}>
-        <Reset />
-        <GlobalCss />
-        <AppRoute />
+      <Reset />
+      <GlobalCss />
+      <AppRoute />
       </UserInfoContext.Provider>
     </ThemeProvider>
   );
