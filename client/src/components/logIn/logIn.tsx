@@ -67,9 +67,11 @@ const LogIn = () => {
     return (
         <div className={styles.logInContainer}>
             <h3 className={styles.promptNickname}>Log In</h3>
-            <h3 className={styles.promptNickname}>Enter your nickname?</h3>
+            <label htmlFor='nickname-input' className={styles.promptNickname}>Enter your nickname</label>
             <input 
+                id='nickname-input'
                 className={styles.nicknameInput} 
+                data-testid='usernameInput'
                 ref={usernameInputRef}
                 type="input"
                 value={input}
@@ -81,14 +83,14 @@ const LogIn = () => {
             <div>
                 {isLoading && <Loading />}
             </div>
-            <button className={styles.logInBtn} onClick={e => handleLogIn(input)}>
+            <button data-testid='logInBtn' className={styles.logInBtn} onClick={e => handleLogIn(input)}>
                 Log In
             </button>
             <br />
             <p style={{textAlign: 'center'}}>
                 Doesn't have an account yet?
             </p>
-            <button className={styles.signUpBtn} onClick={directToSignUp}>
+            <button data-testid='signUpBtn' className={styles.signUpBtn} onClick={directToSignUp}>
                 Sign Up
             </button>
         </div>
