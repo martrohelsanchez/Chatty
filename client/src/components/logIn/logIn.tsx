@@ -23,7 +23,7 @@ const LogIn = () => {
 
     async function handleLogIn (usernameInput: string) {
         try {
-            const data = await logInReq(usernameInput);
+            const data = await logInReq(usernameInput.trim());
             const {csrfToken, userId, username, isAuth} = data as UserAuthRes;
 
             if (isAuth) {
