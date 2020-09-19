@@ -5,11 +5,11 @@ import axios from 'axios';
 import styles from './signUp.module.css';
 
 function SignUp() {
-    const [input, setInput] = useState('');
-    const [err, setErr] = useState(null);
+    const [input, setInput] = useState<string>('');
+    const [err, setErr] = useState<string | null>(null);
     const history = useHistory();
 
-    function signUp(e) {
+    function signUp() {
         axios.post('/user/signUp', {
             username: input.trim()
         })
