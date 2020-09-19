@@ -1,4 +1,6 @@
-export type UserInfoActionTypes = SetUserInfoAction;
+export type UserInfoActionTypes = 
+    | ReturnType<typeof setUserInfo>
+    | ReturnType<typeof resetUserInfo>
 
 export interface UserInfo {
     userId: string;
@@ -12,7 +14,13 @@ interface SetUserInfoAction {
 
 export const setUserInfo = (userInfo: UserInfo): SetUserInfoAction => {
     return {
-        type: 'userInfo/setUserInfo',
+        type: 'userInfo/setUserInfo' as 'userInfo/setUserInfo',
         userInfo 
+    }
+}
+
+export const resetUserInfo = () => {
+    return {
+        type: 'userInfo/stateReset' as 'userInfo/stateReset'
     }
 }

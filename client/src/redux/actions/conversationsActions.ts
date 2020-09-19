@@ -10,6 +10,7 @@ export type ConversationActionTypes =
     | ReturnType<typeof updateMembersMeta>
     | ReturnType<typeof updateLastSeen>
     | ReturnType<typeof msgSent>
+    | ReturnType<typeof resetConvState>
 
 export const retrieveConversations = (retrieveConv: ConversationPopulateMembers[]) => {
     return {
@@ -101,5 +102,11 @@ export const msgSent = (msgId: string, convId: string, newDateSent: number, newM
         convId,
         newDateSent,
         newMsgId
+    }
+}
+
+export const resetConvState = () => {
+    return {
+        type: 'conversations/stateReset' as 'conversations/stateReset'
     }
 }

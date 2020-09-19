@@ -160,6 +160,8 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 }
                 return conv;
             });
+        case 'conversations/stateReset': 
+            return [];
         default:
             return state;
     }
