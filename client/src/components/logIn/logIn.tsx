@@ -2,11 +2,11 @@ import React, {useState, useEffect, useRef} from 'react';
 import {useHistory} from 'react-router-dom';
 
 import styles from './logIn.module.css';
-import Loading from '../loading/Loading';
+import Loading from 'components/loading/Loading';
 
 import { useDispatch } from 'react-redux';
 import {setUserInfo} from '../../redux/actions/userInfoActions';
-import { logInReq, UserAuthRes } from '../../api/APIUtils';
+import {logInReq, UserAuthRes} from 'api/APIUtils';
 
 const LogIn = () => {
     const [input, setInput] = useState('');
