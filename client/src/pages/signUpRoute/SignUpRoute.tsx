@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SignUp from 'components/signUp/signUp';
+import SignUp from 'components/signUp/SignUp';
 import {useSelector} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
