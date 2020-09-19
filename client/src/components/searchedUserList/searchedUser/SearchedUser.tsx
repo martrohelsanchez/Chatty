@@ -23,7 +23,6 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
     const history = useHistory();
 
     const handleClick = () => {
-        console.log('clicked')
         findConv([searchedUser._id, user.userId]);
     }
 
@@ -51,7 +50,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
                 history.push(`/chat/${convObj._id}`);
             }
         }, err => {
-            console.log(err);
+            console.error(err);
             //print to the user "Something went wrong, please try again later"
         });
     }
