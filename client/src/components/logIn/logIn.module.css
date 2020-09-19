@@ -6,6 +6,7 @@
 
 .promptNickname {
     text-align: center;
+    display: block;
 }
 
 .nicknameInput {
