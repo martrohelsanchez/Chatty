@@ -1,15 +1,16 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useRouteMatch} from 'react-router-dom';
 
 import ContactsPane from '../contactsPane/ContactsPane';
 import MessagePane from '../messagesPane/messagesPane';
 import InfoPane from '../infoPane/InfoPane'; 
-import {socket, UserInfoContext} from '../../App';
+import {socket} from '../../App';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {addNewMsg, deleteConv, updateLastSeen} from '../../redux/actions/conversationsActions';
 import {rootState} from '../../redux/store';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 const StyledChat = styled.div`
     display: flex;
@@ -25,7 +26,7 @@ const Chat = () => {
     const currConvId = match ? match.params.convId : null;
     const currConv = useSelector(((state: rootState) => state.conversations.find(conv => conv._id === currConvId)));
     const dispatch = useDispatch();
-    const user = useContext(UserInfoContext);
+    const user = useSelector((state: rootState) => state.userInfo as UserInfo);
 
     useEffect(() => {
         socket.emit('join room', user.userId);

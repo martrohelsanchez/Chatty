@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 
-import { UserInfoContext } from '../../App';
 import styles from './msgStatus.module.css';
 
 import delivered from '../../images/delivered.svg';
@@ -13,6 +12,7 @@ import seen from '../../images/seen.svg';
 import { rootState } from '../../redux/store';
 import { Message, MembersMeta } from '../../shared/types/dbSchema';
 import { ConvWithMsgs } from '../../redux/reducers/conversations';
+import { UserInfo } from 'redux/actions/userInfoActions';
 
 interface MsgStatusProps {
     allMsg: Message[];
@@ -23,7 +23,7 @@ interface MsgStatusProps {
 }
 
 const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgStatusProps) => {
-    const user = useContext(UserInfoContext);
+    const user = useSelector((state: rootState) => state.userInfo as UserInfo);
     const match = useRouteMatch<{convId: string}>();
     // const lastMessage = useSelector((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId));
     const nextMsg = allMsg[msgIndex + 1] || {};

@@ -1,17 +1,17 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import {UserInfoContext} from '../../App';
-
 import { rootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
+import { UserInfo } from 'redux/actions/userInfoActions';
 
 interface ConversationProps {
     conv: rootState['conversations'][0]
 }
 
 function Conversation({conv}: ConversationProps) {               
-    const user = useContext(UserInfoContext);
+    const user = useSelector((state: rootState ) => state.userInfo as UserInfo)
     const history = useHistory();
     const match = useRouteMatch<{convId: string}>('/chat/:convId');
     const currConvId = match ? match.params.convId : '';

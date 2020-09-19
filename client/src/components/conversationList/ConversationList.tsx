@@ -1,21 +1,21 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import Conversation from "../conversation/Conversation";
 import Loading from '../loading/Loading';
 import {getConversationsReq, updateMsgIsDeliveredReq} from '../../api/APIUtils';
-import {UserInfoContext} from '../../App';
 
 import {rootState} from '../../redux/store';
 import {ConversationPopulateMembers} from '../../shared/types/dbSchema';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {retrieveConversations} from '../../redux/actions/conversationsActions';
+import { UserInfo } from 'redux/actions/userInfoActions';
 
 const ConversationList = () => {
     const conversations = useSelector((state: rootState) => state.conversations);
     const [err, setErr] = useState<string | null>(null);
     const dispatch = useDispatch();
-    const user = useContext(UserInfoContext);
+    const user = useSelector((state: rootState) => state.userInfo as UserInfo);
 
     useEffect(() => {
         if (conversations.length === 0) {

@@ -1,12 +1,14 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components';
 
-import {UserInfoContext} from '../../../../App';
 import MsgStatus from '../../../msgStatus/MsgStatus';
 
-import {Message as MessageType, MembersMeta, User} from '../../../../shared/types/dbSchema';
-import { ConvWithMsgs } from '../../../../redux/reducers/conversations';
+import {Message as MessageType} from '../../../../shared/types/dbSchema';
+import {ConvWithMsgs} from '../../../../redux/reducers/conversations';
 import {ConvDecoy} from "../../../../shared/types/dbSchema";
+import {useSelector} from 'react-redux';
+import {rootState} from 'redux/store';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface MessageProps {
     message: MessageType;
@@ -17,7 +19,7 @@ interface MessageProps {
 
 const Message = ({message, msgIndex, allMsg, currConv}: MessageProps) => {
     const {members} = currConv;
-    const userInfo = useContext(UserInfoContext);
+    const userInfo = useSelector((state: rootState) => state.userInfo as UserInfo);
     const {message_body, sender} = message;
     const isFromUser = sender === userInfo.userId;
 

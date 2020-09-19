@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import uniqid from 'uniqid';
 
 import styles from './searchedUser.module.css';
-import {UserInfoContext} from '../../../App';
 import {getConversationByMembersReq} from '../../../api/APIUtils';
 import {useHistory} from 'react-router';
 
@@ -18,7 +17,7 @@ interface SearchedUserProps {
 }
 
 const SearchedUser = ({searchedUser}: SearchedUserProps) => {
-    const user = useContext(UserInfoContext)
+    const user = useSelector((state: rootState) => state.userInfo as UserInfo)
     const conversations = useSelector((state: rootState) => state.conversations);
     const dispatch = useDispatch();
     const history = useHistory();

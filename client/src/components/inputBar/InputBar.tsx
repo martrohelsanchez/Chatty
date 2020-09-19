@@ -1,22 +1,23 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import uniqid from 'uniqid';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import styles from './inputBar.module.css';
-import {UserInfoContext, socket} from '../../App';
+import {socket} from "../../App";
 
 import {Message, Conversation, User} from "../../shared/types/dbSchema";
 
 import {useSelector, useDispatch} from 'react-redux';
 import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsActions';
 import {rootState} from '../../redux/store';
+import { UserInfo } from 'redux/actions/userInfoActions';
 
 const Input = () => {
   const match = useRouteMatch<{convId: string}>();
   const currConv = useSelector(((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId)));
   const [chatInput, setChatInput] = useState("");
-  const user = useContext(UserInfoContext);
+  const user = useSelector((state: rootState) => state.userInfo as UserInfo)
   const inputRef = useRef<HTMLInputElement>(null!);
   const dispatch = useDispatch();
   const lastMsgSent = useRef<Message>(null!);
