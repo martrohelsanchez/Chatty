@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import { useRouteMatch } from 'react-router-dom';
+import {useRouteMatch} from 'react-router-dom';
 
-import ConversationList from '../conversationList/ConversationList';
-import SearchedUserList from '../searchedUserList/SearchedUserList';
-import Search from '../search/Search';
-import { User } from '../../shared/types/dbSchema';
+import ConversationList from 'components/conversationList/ConversationList';
+import SearchedUserList from 'components/searchedUserList/SearchedUserList';
+import Search from 'components/search/Search';
+import {User} from 'shared/types/dbSchema';
 
 interface StyledContactsPaneProps {
   readonly showInMobile: boolean;

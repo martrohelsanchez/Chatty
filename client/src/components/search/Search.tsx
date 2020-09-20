@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-import searchIcon from '../../images/search-icon.svg';
+import searchIcon from 'images/search-icon.svg';
 import axios from 'axios';
-import { User } from '../../shared/types/dbSchema';
+import {User} from 'shared/types/dbSchema';
 
 interface SearchProps {
   setSearchedUsers: React.Dispatch<React.SetStateAction<User[]>>;

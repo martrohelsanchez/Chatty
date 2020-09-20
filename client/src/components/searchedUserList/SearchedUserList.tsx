@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SearchedUser from './searchedUser/SearchedUser';
+import SearchedUser from '../searchedUser/SearchedUser';
 import {User} from '../../shared/types/dbSchema';
 
 interface SearchedUserListProps {
