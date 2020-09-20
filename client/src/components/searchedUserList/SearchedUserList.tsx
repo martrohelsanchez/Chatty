@@ -16,9 +16,9 @@ const SearchedUserList = ({searchedUsers}: SearchedUserListProps) => {
     }) 
 
     return (
-        <div>
+        <ul>
             {renderSearchedUsers}
-        </div>
+        </ul>
     )
 }
 

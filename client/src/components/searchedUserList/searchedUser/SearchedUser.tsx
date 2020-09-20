@@ -79,11 +79,13 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
     }
 
     return (
-        <div className={styles.container} onClick={handleClick}>
-            <div className={styles.profilePicHolder}></div>
-            <span className={styles.username}>{searchedUser.username}</span>
-        </div>
-    )
+      <li className={styles.container} onClick={handleClick}>
+        <div className={styles.profilePicHolder}></div>
+        <span data-testid="searchedUser" className={styles.username}>
+          {searchedUser.username}
+        </span>
+      </li>
+    );
 }
 
 export default SearchedUser;
