@@ -2,15 +2,15 @@ import React from 'react';
 import uniqid from 'uniqid';
 
 import styles from './searchedUser.module.css';
-import {getConversationByMembersReq} from '../../../api/APIUtils';
+import {getConversationByMembersReq} from 'api/APIUtils';
 import {useHistory} from 'react-router';
 
-import {User, ConvDecoy} from '../../../shared/types/dbSchema';
-import {rootState} from '../../../redux/store';
-import {UserInfo} from '../../../redux/actions/userInfoActions';
+import {User, ConvDecoy} from 'shared/types/dbSchema';
+import {rootState} from 'redux/store';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {addConv} from '../../../redux/actions/conversationsActions';
+import {addConv} from 'redux/actions/conversationsActions';
 
 interface SearchedUserProps {
     searchedUser: User
@@ -34,7 +34,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
             return null;
         }
 
-        const foundConvFromDb = getConversationByMembersReq(members, data => {
+        getConversationByMembersReq(members, data => {
             const convFromDb = data.conversation;
             if (convFromDb) {
                 dispatch(addConv({
