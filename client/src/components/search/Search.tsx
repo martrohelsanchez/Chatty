@@ -46,6 +46,7 @@ const Search = ({setSearchedUsers, setIsSearching}: SearchProps) => {
       if (fromSearch) {
         return null;
       }
+
       setSearchInput(""); //reset the search input field
       setIsSearching(false);
     };
@@ -65,43 +66,50 @@ const Search = ({setSearchedUsers, setIsSearching}: SearchProps) => {
             });
 
             setSearchedUsers(data.users);
-        }, 300);
+        }, 700);
 
         setSearchInput(target.value);
     }
 
     return (
-        <>
-            {/* <StyledSearch className={styles.searchContainer}> */}
-                {/* <img className={styles.searchIcon} src={searchIcon} /> */}
-                <StyledSearch
-                    type='input'
-                    className='search-input'
-                    placeholder='     Search'
-                    value={searchInput}
-                    onChange={handleSearchInput}
-                    onFocus={handleSearchFocus}
-                />
-            {/* </StyledSearch> */}
-        </>
-    )
+      <>
+        <StyledSearch>
+          {/* <SearchIcon src={searchIcon} /> */}
+          <SearchInput
+            as="input"
+            type="input"
+            className="search-input"
+            placeholder="Search"
+            value={searchInput}
+            onChange={handleSearchInput}
+            onFocus={handleSearchFocus}
+          />
+        </StyledSearch>
+      </>
+    );
 }
 
-const StyledSearch = styled.input`
-    display: block;
-    background-color: ${({theme}) => theme.dark.secondary};
-    border-radius: 20px;
-    width: 90%;
-    height: 40px;
-    margin: 50px auto;
-    /* display: flex;
-    justify-items: center;  */
-    border: none;
-    color: white;
+const StyledSearch = styled.div`
+  display: block;
+  background-color: ${({theme}) => theme.dark.secondary};
+  border-radius: 40px;
+  width: 90%;
+  height: 40px;
+  margin: 50px auto;
+  border: none;
+  color: white;
+`;
 
-    &:focus {
-        outline: none;
-    }
+const SearchIcon = styled.img`
+  height: 60%;
+`;
+
+const SearchInput = styled(StyledSearch)`
+  width: 85%;
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 export default Search;
