@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 
-import Conversation from "../conversation/Conversation";
-import Loading from '../loading/Loading';
-import {getConversationsReq, updateMsgIsDeliveredReq} from '../../api/APIUtils';
+import Conversation from "components/conversation/Conversation";
+import Loading from 'components/loading/Loading';
+import {getConversationsReq, updateMsgIsDeliveredReq} from 'api/APIUtils';
 
-import {rootState} from '../../redux/store';
-import {ConversationPopulateMembers} from '../../shared/types/dbSchema';
+import {rootState} from 'redux/store';
+import {ConversationPopulateMembers} from 'shared/types/dbSchema';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {retrieveConversations} from '../../redux/actions/conversationsActions';
-import { UserInfo } from 'redux/actions/userInfoActions';
+import {retrieveConversations} from 'redux/actions/conversationsActions';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 const ConversationList = () => {
     const conversations = useSelector((state: rootState) => state.conversations);
