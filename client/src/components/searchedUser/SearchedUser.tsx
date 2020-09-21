@@ -1,14 +1,13 @@
 import React from 'react';
-import uniqid from 'uniqid';
+import {useHistory} from 'react-router';
 
 import styles from './searchedUser.module.css';
 import {getConversationByMembersReq} from 'api/APIUtils';
-import {useHistory} from 'react-router';
+import createConvDummyObj from 'shared/utils/createConvDummyObj';
 
-import {User, ConvDecoy} from 'shared/types/dbSchema';
+import {User} from 'shared/types/dbSchema';
 import {rootState} from 'redux/store';
 import {UserInfo} from 'redux/actions/userInfoActions';
-
 import {useDispatch, useSelector} from 'react-redux';
 import {addConv} from 'redux/actions/conversationsActions';
 
@@ -36,6 +35,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
 
         getConversationByMembersReq(members, data => {
             const convFromDb = data.conversation;
+
             if (convFromDb) {
                 dispatch(addConv({
                     ...convFromDb,
@@ -43,9 +43,9 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
                 }));
                 history.push(`/chat/${convFromDb._id}`);
             } else {
-                //If the conversation doesn't exist in DB, just create the conv obj decoy
-                const convObj = createConvObj([searchedUser, user]);
-
+                //If the conversation doesn't exist in DB, create a conv obj decoy
+                const convObj = createConvDummyObj([searchedUser, user]);
+                
                 dispatch(addConv(convObj));
                 history.push(`/chat/${convObj._id}`);
             }
@@ -59,23 +59,6 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
         return conversations.find(conv => 
             conv.members.every(member => targetMembers.includes(member._id))
         );
-    }
-
-    const createConvObj = (searchedUser: (User | UserInfo)[]): ConvDecoy => {
-        return {
-            _id: uniqid() as string,
-            convHasCreated: false,
-            is_group_chat: false,
-            members: searchedUser.map(user => 'userId' in user ? (
-                {
-                    ...user,
-                    _id: user.userId
-                }
-            ) : (
-                user
-            )),
-            conversation_pic: 'sfasd' //refractor pag gagawin na yung images
-        }
     }
 
     return (
