@@ -138,11 +138,11 @@ export const updateMsgIsDeliveredReq = async (
 //Get one conversation where the members are exactly what was given
 export const getConversationByMembersReq = async (
     convMembers: string[], 
-    cb?: (data: {conversation: ConversationPopulateMembers}) => void, 
+    cb?: (data: {conversation: ConversationPopulateMembers | undefined}) => void, 
     errCb?: (err: Error) => void
 ) => {
     try {
-        const {data} = await axios.get<{conversation: ConversationPopulateMembers}>('/chat/conversation', {
+        const {data} = await axios.get<{conversation: ConversationPopulateMembers | undefined}>('/chat/conversation', {
             params: {
                 members: convMembers
             }
