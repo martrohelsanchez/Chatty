@@ -1,24 +1,29 @@
-const jwt = require('jsonwebtoken');
-const CsrfTokenGen = require('csrf');
+import jwt from 'jsonwebtoken';
+import CsrfTokenGen from 'csrf';
+import {Request, Response} from 'express';
 
-const User = require("../model/user");
+import User from '../model/user';
+import {IJwtDecoded} from '../shared/types';
 
 const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 
 // POST /user/signUp
-async function userSignUp(req, res) {
+async function userSignUp(req: Request, res: Response) {
     try {
-        const findUser = await User.findOne({ username: req.body.username })
+        const findUser = await User
+                .findOne({ username: req.body.username })
                 .exec()
         const isUserTaken = findUser === null ? false : true;
 
         if (!isUserTaken) {
             const user = await User.create({
-                username: req.body.username
+                username: req.body.username,
+                password: req.body.password
             });
             const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
                 userId: user._id,
+                username: req.body.username,
                 csrfToken: csrfToken
             },
                 process.env.JWT_KEY
@@ -48,7 +53,7 @@ async function userSignUp(req, res) {
 }
 
 // POST /user/logIn
-async function userLogIn(req, res) {
+async function userLogIn(req: Request, res: Response) {
     try {
         const user = await User.findOne({ username: req.body.username })
             .select("-__v")
@@ -88,11 +93,11 @@ async function userLogIn(req, res) {
 }
 
 // POST /user/reAuth
-async function reAuthUser(req, res) {
+async function reAuthUser(req: Request, res: Response) {
     try {
         const jwtToken = req.cookies.jwt;
-        const decoded = jwt.verify(jwtToken, process.env.JWT_KEY);
-        const csrfToken = req.headers['csrf-token'];
+        const decoded = jwt.verify(jwtToken, process.env.JWT_KEY) as IJwtDecoded;
+        const csrfToken = req.headers['csrf-token'] as string;
         
         //Verify if the csrf token was generated from the server
         if (!csrfTokenGen.verify(process.env.CSRF_TOKEN_KEY, csrfToken)) {
@@ -132,7 +137,7 @@ async function reAuthUser(req, res) {
     }
 }
 
-module.exports = {
+export default {
     userSignUp,
     userLogIn,
     reAuthUser

@@ -1,4 +1,11 @@
-const {Schema, model} = require('mongoose');
+import {Schema, model, Document} from "mongoose";
+
+interface IMessageSchema extends Document {
+    sender: string;
+    message_body: string;
+    date_sent: number;
+    conversation_id: string;
+}
 
 const messageSchema = new Schema({
     _id: {type: Schema.Types.ObjectId},
@@ -8,4 +15,4 @@ const messageSchema = new Schema({
     conversation_id: {type: Schema.Types.ObjectId, ref: 'Conversation'}
 });
 
-module.exports = model('Message', messageSchema);
+export default model<IMessageSchema>('Message', messageSchema);

@@ -28,7 +28,7 @@ import {Schema, model, Document} from "mongoose";
 
 interface IConversationSchema extends Document {
   group_name: string;
-  is_group_chat?: string;
+  is_group_chat: boolean;
   members: string[];
   conversation_pic: string;
   last_message: string;
@@ -41,12 +41,16 @@ const conversationSchema = new Schema({
   _id: {type: Schema.Types.ObjectId},
   group_name: {type: String},
   is_group_chat: {type: Boolean},
-  members: [{type: Schema.Types.ObjectId, ref: "User"}],
+  members: [
+    {type: Schema.Types.ObjectId, ref: "User"}
+  ],
   conversation_pic: {type: String},
   last_message: {type: Schema.Types.ObjectId, ref: "Message"},
   created_at: {type: Number},
   last_updated: {type: Number},
-  members_meta: {type: Schema.Types.ObjectId, ref: 'MembersMeta'}
+  members_meta: [
+    {type: Schema.Types.ObjectId, ref: 'MembersMeta'}
+  ]
 });
 
-module.exports = model<IConversationSchema>('Conversation', conversationSchema); 
+export default model<IConversationSchema>('Conversation', conversationSchema); 
