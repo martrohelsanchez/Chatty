@@ -1,8 +1,11 @@
-let io;
+import http from 'http';
+import socketIo from 'socket.io';
 
-function connect(server) {
-    io = require('socket.io')(server, {
-        pingTimeout: 30000
+let io: socketIo.Server;
+
+export function connect(server: http.Server) {
+    io  = socketIo(server, {
+      pingTimeout: 30000,
     });
 
     io.on('connect', socket => {
@@ -28,11 +31,6 @@ function connect(server) {
     })
 }
 
-function getIo() {
+export function getIo() {
     return io;
-}
-
-module.exports = {
-    connect,
-    getIo
 }
