@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import jwt from 'jsonwebtoken';
 import CsrfTokenGen from 'csrf';
 
-import {IJwtDecoded} from "shared/types";
+import {IJwtDecoded} from "../shared/types";
 
 const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 
