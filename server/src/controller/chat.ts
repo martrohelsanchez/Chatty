@@ -1,12 +1,12 @@
 import {Request, Response} from 'express';
 import mongoose from 'mongoose'
-import {getIo} from 'websocket';
+import {getIo} from '../websocket';
 
-import User from 'model/user';
-import Conversation from 'model/conversation';
-import Message from 'model/message';
-import MembersMeta from 'model/membersMeta';
-import { IJwtDecoded } from 'shared/types';
+import User from '../model/user';
+import Conversation from '../model/conversation';
+import Message from '../model/message';
+import MembersMeta from '../model/membersMeta';
+import {IJwtDecoded} from '../shared/types';
 
 const io = getIo();
 
@@ -149,8 +149,8 @@ async function updateSeen (
         const setDate = Date.now();
 
         const conv = 
-            await Conversation.findOneAndUpdate({
-                _id: convId,
+            await MembersMeta.findOneAndUpdate({
+                conversation_id: convId,
                 members_meta: {
                     $elemMatch: {
                         user_id: userId
@@ -172,7 +172,7 @@ async function updateSeen (
             }
         });
 
-        io.in(conv._id).emit('seen', convId, userId, setDate);
+        io.in(conv?._id).emit('seen', convId, userId, setDate);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
@@ -211,7 +211,9 @@ async function updateIsDelivered(req: Request, res: Response) {
 //POST /chat/conversations
 async function createConversation (
     req: Request<{}, {}, {
-        membersId: string[]
+        membersId: string[],
+        groupName?: string,
+        lastMessageId?: string
     }> & {decodedJwt: IJwtDecoded}, 
     res: Response
 ) {
@@ -224,19 +226,27 @@ async function createConversation (
             }
         });
 
+        const membersMetaId = mongoose.Types.ObjectId() as unknown as string;
+
         const conversation = await Conversation.create({
             _id: new mongoose.Types.ObjectId,
             members: body.membersId,
             is_group_chat: body.membersId.length > 2 ? true : false,
-            group_name: body.groupName || null,
+            group_name: body.groupName || undefined,
             created_at: Date.now(),
             last_updated: Date.now(),
-            members_meta: members_meta
+            members_meta: membersMetaId,
+            conversation_pic: '',
+            last_message: body.lastMessageId || new mongoose.Types.ObjectId as unknown as string
         });
 
-        res.status(200).json({
-            ...conversation._doc
+        const membersMeta = MembersMeta.create({
+            _id: new mongoose.Types.ObjectId,
+            conversation_id: conversation._id,
+            members_meta: members_meta
         })
+
+        res.status(200).json(conversation);
     } catch (err) {
         console.error(err)
         res.status(500).json({
@@ -303,32 +313,24 @@ async function sendMessage(
             conversation_id: conversationId,
             sender: decodedJwt.userId,
             message_body: messageBody,
-            date_sent: Date.now()
+            date_sent: Date.now(),
+            is_delivered: false
         });
 
-        delete message._doc.__v;
+        delete message.__v;
 
         for (let userId of convMembers) {
             //Emit an event to all the members of the conversation except the sender
             if (userId !== decodedJwt.userId) {
-
                 io.in(userId).emit('sendMsg', message);
             }
         }
 
-        res.status(200).json({
-            ...message._doc
-        });
+        res.status(200).json(message);
 
         const conversation = await Conversation.updateOne({_id: conversationId}, {
             $set: {
-                last_message: {
-                    message_body: messageBody,
-                    sender_username: decodedJwt.username,
-                    sender_id: decodedJwt.userId,
-                    date_sent: message.date_sent,
-                    is_delivered: false
-                },
+                last_message: message._id,
                 last_updated: message.date_sent
             }
         })
