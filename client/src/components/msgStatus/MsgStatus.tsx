@@ -1,6 +1,6 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useRouteMatch } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {useRouteMatch} from 'react-router-dom';
 
 import styles from './msgStatus.module.css';
 
@@ -9,23 +9,21 @@ import sending from '../../images/sending.svg';
 import sent from '../../images/sent.svg';
 import seen from '../../images/seen.svg'; 
 
-import { rootState } from '../../redux/store';
-import { Message, MembersMeta } from '../../shared/types/dbSchema';
-import { ConvWithMsgs } from '../../redux/reducers/conversations';
-import { UserInfo } from 'redux/actions/userInfoActions';
+import {rootState} from '../../redux/store';
+import {Message, MembersMeta, PopulatedConversation} from '../../shared/types/dbSchema';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface MsgStatusProps {
     allMsg: Message[];
     msgIndex: number;
-    membersMeta: MembersMeta;
-    currMsg: ConvWithMsgs['messages'][0];
+    membersMeta: PopulatedConversation['members_meta'];
+    currMsg: PopulatedConversation['messages'][0];
     isDelivered: boolean;
 }
 
 const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgStatusProps) => {
     const user = useSelector((state: rootState) => state.userInfo as UserInfo);
     const match = useRouteMatch<{convId: string}>();
-    // const lastMessage = useSelector((state: rootState) => state.conversations.find(conv => conv._id === match.params.convId));
     const nextMsg = allMsg[msgIndex + 1] || {};
     const isLastMsg = allMsg.length - 1 === msgIndex;
     let lastSeenMembers: string[] = [];
@@ -61,7 +59,7 @@ const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgSta
     /* if our message hasn't yet seen by anyone, show if the
     message is sending, has sent, or has delivered. */
     if (user.userId === currMsg.sender && isLastMsg) {
-        const isSent = currMsg.is_sent === undefined ? true : currMsg.is_sent;
+        const isSent = currMsg.isSent === undefined ? true : currMsg.isSent;
 
         if (!isSent) {
             return (
