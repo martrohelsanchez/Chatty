@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {MembersMeta, ConversationPopulateMembers} from '../shared/types/dbSchema';
+import {Conversation_LastMessage, LastSeen, User, MembersMeta, Message} from '../shared/types/dbSchema';
 
 export interface UserAuthRes {
     userId: string;
@@ -58,11 +58,9 @@ export const reAuthReq = async (
 }
 
 interface UpdatedSeen {
-    updated_seen: {
-        convId: string,
-        userId: string,
-        new_seen: number
-    }
+    convId: string,
+    userId: string,
+    new_seen: number
 }
 
 export const seenConvReq = async (
@@ -92,11 +90,11 @@ export const seenConvReq = async (
 export const getConversationsReq = async (
     limit: number, 
     before: number | null = null, 
-    cb?: (data: {conversations: ConversationPopulateMembers[]}) => void, 
+    cb?: (data: {conversations: Conversation_LastMessage[]}) => void, 
     errCb?: (err: Error) => void
 ) => {
     try {
-        const res = await axios.get<{conversations: ConversationPopulateMembers[]}>('/chat/conversations', {
+        const res = await axios.get<{ conversations: Conversation_LastMessage[]}>('/chat/conversations', {
             params: {  
                 before: before,
                 limit: 10
@@ -119,12 +117,12 @@ export const getConversationsReq = async (
 
 export const updateMsgIsDeliveredReq = async (
     convId: string, 
-    senderId: string,
+    msgId: string,
     errCb?: (err: Error) => void
 ) => {
     try {
         const res = await axios.patch(`/chat/conversations/${convId}/deliver`, {
-            senderId
+            msgId
         })
     } catch (err) {
         if (errCb) {
@@ -138,15 +136,119 @@ export const updateMsgIsDeliveredReq = async (
 //Get one conversation where the members are exactly what was given
 export const getConversationByMembersReq = async (
     convMembers: string[], 
-    cb?: (data: {conversation: ConversationPopulateMembers | undefined}) => void, 
+    cb?: (data: { conversation: Conversation_LastMessage | undefined}) => void, 
     errCb?: (err: Error) => void
 ) => {
     try {
-        const {data} = await axios.get<{conversation: ConversationPopulateMembers | undefined}>('/chat/conversation', {
+        const { data } = await axios.get<{ conversation: Conversation_LastMessage | undefined}>('/chat/conversation', {
             params: {
                 members: convMembers
             }
         });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const getLastSeen = async (
+    cb?: (data: LastSeen) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.get<LastSeen>('/user/last-seen');
+        
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const getMembersReq = async (
+    convId: string,
+    usersId: string[],
+    cb?: (data: User[]) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.get<User[]>(`/chat/conversations/${convId}/members`, {
+            params: {
+                usersId
+            }
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const getMembersMetaReq = async (
+    convId: string,
+    membersMetaId: string,
+    cb?: (data: MembersMeta) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.get<MembersMeta>(`/chat/conversations/${convId}/membersMeta`, {
+            params: {
+                membersMetaId
+            }
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const getMessagesReq = async (
+    convId: string,
+    limit: number,
+    before: number | null,
+    cb?: (data: {messages: Message[]}) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.get<{messages: Message[]}>(`/chat/conversations/${convId}/messages`, {
+            params: {
+                before,
+                limit
+            }
+        })
 
         if (cb) {
             cb(data);
