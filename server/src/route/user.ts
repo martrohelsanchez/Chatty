@@ -1,10 +1,12 @@
 import express from 'express';
-import userController from '../controller/user';
 
+const userController = require('../controller/user');
 const router = express.Router();
+const checkAuth = require('../middleware/check-auth');
 
 router.post('/signUp', userController.userSignUp);
 router.post('/logIn', userController.userLogIn);
 router.post('/reAuth', userController.reAuthUser);
+router.get('/last-seen', checkAuth, userController.getLastSeen);
 
 export default router;

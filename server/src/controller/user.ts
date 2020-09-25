@@ -3,6 +3,7 @@ import CsrfTokenGen from 'csrf';
 import {Request, Response} from 'express';
 
 import User from '../model/user';
+import LastSeen from '../model/lastSeen';
 import {IJwtDecoded} from '../shared/types';
 
 const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
@@ -18,7 +19,8 @@ async function userSignUp(req: Request, res: Response) {
         if (!isUserTaken) {
             const user = await User.create({
                 username: req.body.username,
-                password: req.body.password
+                password: req.body.password,
+                profile_pic: 'https://smhlancers.org/wp-content/uploads/2016/06/profile-placeholder.png'
             });
             const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
@@ -28,6 +30,11 @@ async function userSignUp(req: Request, res: Response) {
             },
                 process.env.JWT_KEY
             );
+
+            await LastSeen.create({
+                user_id: user._id,
+                last_seen: {}
+            });
 
             res.cookie('jwt', jwtToken, {
                 httpOnly: true
@@ -137,8 +144,28 @@ async function reAuthUser(req: Request, res: Response) {
     }
 }
 
+async function getLastSeen(
+    req: Request & {decodedJwt: IJwtDecoded}, 
+    res: Response
+) {
+    try {
+        const userLastSeen = await LastSeen
+            .findOne({conversation_id: req.decodedJwt.userId})
+            .select('-__v')
+            .exec();
+        
+        res.status(200).json(userLastSeen);
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 export default {
     userSignUp,
     userLogIn,
-    reAuthUser
+    reAuthUser,
+    getLastSeen
 }

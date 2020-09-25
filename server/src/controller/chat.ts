@@ -166,9 +166,9 @@ async function updateSeen (
 
         res.status(200).json({
             updated_seen: {
-                convId: convId,
-                userId: userId,
-                new_seen: setDate
+            convId: convId,
+            userId: userId,
+            new_seen: setDate
             }
         });
 
@@ -275,12 +275,12 @@ async function getMessages(
                 conversation_id: conversationId,
                 date_sent: { $lt: before }
             })
-                .select('-__v')
-                .sort({
-                    date_sent: -1
-                })
-                .limit(limit)
-                .exec();
+            .select('-__v')
+            .sort({
+                date_sent: -1
+            })
+            .limit(limit)
+            .exec();
 
         res.status(200).json({
             messages: messages
@@ -342,6 +342,54 @@ async function sendMessage(
     }
 };
 
+async function getMembers(
+    req: Request<{
+        //params
+        convId: string
+    }, {}, {}, {
+        //ReqQuery
+        usersId: string[]
+    }>,
+    res: Response
+) {
+    try {
+        const members = await User
+            .find({_id: {
+                $in: req.query.usersId
+            }})
+            .select('-__v -password')
+            .exec();
+
+        res.status(200).json(members);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function getMembersMeta(
+    req: Request<{}, {}, {}, {
+        membersMetaId: string
+    }>,
+    res: Response
+) {
+    try {
+        const membersMeta = await MembersMeta
+            .findOne({_id: req.query.membersMetaId})
+            .select('-__v')
+            .exec();
+        
+        res.status(200).json(membersMeta);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 module.exports = {
     searchUsers,
     getOneConversation,
@@ -351,5 +399,7 @@ module.exports = {
     updateIsDelivered,
     createConversation,
     getMessages,
-    sendMessage
+    sendMessage,
+    getMembers,
+    getMembersMeta
 };
