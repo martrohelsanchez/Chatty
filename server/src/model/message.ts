@@ -2,6 +2,7 @@ import {Schema, model, Document} from "mongoose";
 
 interface IMessageSchema extends Document {
     sender: string;
+    sender_username: string
     message_body: string;
     date_sent: number;
     conversation_id: string;
@@ -11,6 +12,7 @@ interface IMessageSchema extends Document {
 const messageSchema = new Schema({
     _id: {type: Schema.Types.ObjectId},
     sender: {type: Schema.Types.ObjectId, ref: 'User'},
+    sender_username: {type: String},
     message_body: {type: String},
     date_sent: {type: Number},
     conversation_id: {type: Schema.Types.ObjectId, ref: 'Conversation'},
