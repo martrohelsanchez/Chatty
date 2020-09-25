@@ -1,23 +1,20 @@
 import React from 'react'
 import styled from 'styled-components';
 
-import MsgStatus from '../../../msgStatus/MsgStatus';
+import MsgStatus from 'components/msgStatus/MsgStatus';
+import {Message as MessageType, PopulatedConversation} from 'shared/types/dbSchema';
 
-import {Message as MessageType} from '../../../../shared/types/dbSchema';
-import {ConvWithMsgs} from '../../../../redux/reducers/conversations';
-import {ConvDecoy} from "../../../../shared/types/dbSchema";
 import {useSelector} from 'react-redux';
 import {rootState} from 'redux/store';
 import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface MessageProps {
-    message: MessageType;
+    message: PopulatedConversation['messages'][0];
     msgIndex: number;
-    allMsg: MessageType[];
-    currConv: ConvWithMsgs | ConvDecoy;
+    currConv: PopulatedConversation;
 }
 
-const Message = ({message, msgIndex, allMsg, currConv}: MessageProps) => {
+const Message = ({message, msgIndex, currConv}: MessageProps) => {
     const {members} = currConv;
     const userInfo = useSelector((state: rootState) => state.userInfo as UserInfo);
     const {message_body, sender} = message;
@@ -47,11 +44,11 @@ const Message = ({message, msgIndex, allMsg, currConv}: MessageProps) => {
             </StyledMessage>
             {'members_meta' in currConv ? (
                 <MsgStatus 
-                    allMsg={allMsg} 
+                    allMsg={currConv.messages} 
                     msgIndex={msgIndex} 
                     currMsg={message} 
                     membersMeta={currConv.members_meta} 
-                    isDelivered={currConv.last_message.is_delivered} />
+                />
             ) : (
                 null
             )}
