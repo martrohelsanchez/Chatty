@@ -1,40 +1,38 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import {useHistory, useRouteMatch} from 'react-router-dom';
 
-import { rootState } from '../../redux/store';
-import { useSelector } from 'react-redux';
-import { UserInfo } from 'redux/actions/userInfoActions';
+import {LastSeen, MergedConversation} from 'shared/types/dbSchema';
+
+import {rootState} from 'redux/store';
+import {useSelector} from 'react-redux';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface ConversationProps {
-    conv: rootState['conversations'][0]
+    conv: MergedConversation;
+    userLastSeen: LastSeen | null;
 }
 
-function Conversation({conv}: ConversationProps) {               
+function Conversation({conv, userLastSeen}: ConversationProps) {               
     const user = useSelector((state: rootState ) => state.userInfo as UserInfo)
     const history = useHistory();
     const match = useRouteMatch<{convId: string}>('/chat/:convId');
     const currConvId = match ? match.params.convId : '';
-    
-    /* When the user clicked a user from search, the conversation is added in
-    the redux state. Don't show the conversation if it doesn't exists yet in the DB */
-    if (conv.convHasCreated === false) return null;
-
-    const {last_message, is_group_chat, group_name, members, members_meta} = conv;
-    const isRead = (members_meta.find(member => member.user_id === user.userId) as typeof members_meta[0])?.last_seen >= last_message.date_sent;
-    const isSelected = currConvId === conv._id ? true : false;
+    const {last_message, is_group_chat, group_name, members_username} = conv;
     let conversationName;
-
 
     if (is_group_chat) {
         conversationName = group_name;
     } else {
-        conversationName = members.find(member => member._id !== user.userId)?.username;
+        conversationName = members_username.find(username => username !== user.username);
     }
 
     function handleOpenConvo() {
         history.push(`/chat/${conv._id}`);
     }
+
+    const isRead = knowIfRead(userLastSeen, conv, currConvId, conv.last_message.date_sent, user.userId);
+    const isSelected = currConvId === conv._id ? true : false;
  
     return (
         <StyledConversation isRead={isRead} isSelected={isSelected} onClick={handleOpenConvo}>
@@ -55,6 +53,27 @@ function Conversation({conv}: ConversationProps) {
         </StyledConversation>
     ) 
 }
+
+function knowIfRead(
+    lastReadDoc: ConversationProps['userLastSeen'], 
+    conv: MergedConversation,
+    currConvId: string,
+    lastMessageDate: number,
+    userId: string
+) {
+    if (lastReadDoc === null) {
+        return false
+    }
+
+    //If members_meta is not populated
+    if (typeof conv.members_meta === 'string') {
+        //Use LastMessage document
+        return lastReadDoc.last_seen[currConvId] >= lastMessageDate
+    }
+
+    return conv.members_meta.find(member => member.user_id === userId)?.last_seen as number >= lastMessageDate;
+}
+
 
 const StyledConversation = styled.div<{isRead: boolean, isSelected: boolean}>`
     display: flex;
