@@ -18,39 +18,35 @@ interface MsgStatusProps {
     msgIndex: number;
     membersMeta: PopulatedConversation['members_meta'];
     currMsg: PopulatedConversation['messages'][0];
-    isDelivered: boolean;
 }
 
-const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgStatusProps) => {
+const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg}: MsgStatusProps) => {
     const user = useSelector((state: rootState) => state.userInfo as UserInfo);
     const match = useRouteMatch<{convId: string}>();
     const nextMsg = allMsg[msgIndex + 1] || {};
     const isLastMsg = allMsg.length - 1 === msgIndex;
-    let lastSeenMembers: string[] = [];
-    
-    //Know how many users is the last seen of the message
-    for (let member of membersMeta) {
-        if (user.userId === member.user_id) {
-            continue
-        }
 
+    //Know how many members that this is the last message they last saw
+    let usersLastMsgSeen = membersMeta.filter(member => {
         const seenCurrMsg = member.last_seen >= currMsg.date_sent;
         const seenNextMsg = member.last_seen > nextMsg.date_sent;
-        const userLastSeenMsg = isLastMsg ? seenCurrMsg : seenCurrMsg && !seenNextMsg;
+        const userLastMsgSeen = isLastMsg ? seenCurrMsg : seenCurrMsg && !seenNextMsg;
 
-        if (userLastSeenMsg) {
-            lastSeenMembers.push(member.user_id);
+        if (user.userId === member.user_id) {
+            return false;
         }
-    }
 
-    let seenHeads = [];
+        if (userLastMsgSeen) {
+            return true
+        }
+    })
 
-    //show users who are the last seen of the message
-    if (lastSeenMembers.length > 0) {
+    //Render users who are the last seen of the message
+    if (usersLastMsgSeen.length > 0) {
         return (
             <div>
-                {lastSeenMembers.map(user => 
-                    <img key={user} className={styles.status} src={seen} />
+                {usersLastMsgSeen.map(user => 
+                    <img key={user.user_id} className={styles.status} src={seen} />
                 )}
             </div>
         )
@@ -60,6 +56,7 @@ const MsgStatus = ({allMsg, msgIndex, membersMeta, currMsg, isDelivered}: MsgSta
     message is sending, has sent, or has delivered. */
     if (user.userId === currMsg.sender && isLastMsg) {
         const isSent = currMsg.isSent === undefined ? true : currMsg.isSent;
+        const isDelivered = currMsg.is_delivered;
 
         if (!isSent) {
             return (
