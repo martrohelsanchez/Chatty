@@ -2,10 +2,10 @@ import React, {useState, useEffect} from 'react';
 
 import Conversation from "components/conversation/Conversation";
 import Loading from 'components/loading/Loading';
-import {getConversationsReq, updateMsgIsDeliveredReq} from 'api/APIUtils';
+import {getConversationsReq, updateMsgIsDeliveredReq, getLastSeen} from 'api/APIUtils';
 
 import {rootState} from 'redux/store';
-import {ConversationPopulateMembers} from 'shared/types/dbSchema';
+import {Conversation_LastMessage, LastSeen} from 'shared/types/dbSchema';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {retrieveConversations} from 'redux/actions/conversationsActions';
@@ -16,6 +16,7 @@ const ConversationList = () => {
     const [err, setErr] = useState<string | null>(null);
     const dispatch = useDispatch();
     const user = useSelector((state: rootState) => state.userInfo as UserInfo);
+    const [userLastSeen, setUserLastSeen] = useState<LastSeen | null>(null);
 
     useEffect(() => {
         if (conversations.length === 0) {
@@ -29,14 +30,22 @@ const ConversationList = () => {
         }
     }, []);
 
-    //Check if the last message of a conversation hasn't been delivered
-    const checkLastMsgDeliver = (conversations: ConversationPopulateMembers[]) => {
+    useEffect(() => {
+        getLastSeen((data) => {
+            setUserLastSeen(data);
+        }, (err) => {
+            console.error(err.message);
+            setErr('Something went wrong');
+        })
+    }, []);
 
+    //Check if the last message of a conversation hasn't been delivered
+    const checkLastMsgDeliver = (conversations: Conversation_LastMessage[]) => {
         for (let conversation of conversations) {
             const {last_message, _id} = conversation;
 
-            if (last_message.sender_id !== user.userId && !last_message.is_delivered) {
-                updateMsgIsDeliveredReq(_id, last_message.sender_id, (err) => {
+            if (last_message.sender !== user.userId && !last_message.is_delivered) {
+                updateMsgIsDeliveredReq(_id, last_message.sender, (err) => {
                     console.error(err);
                     setErr('Something went wrong')
                 });
@@ -51,7 +60,9 @@ const ConversationList = () => {
     }
 
     const renderConversations = conversations.map(conv => {
-        return <Conversation key={conv._id} conv={conv} />
+        if (conv.convHasCreated) {
+            return <Conversation key={conv._id} conv={conv} userLastSeen={userLastSeen} />
+        }
     });
 
     return (
