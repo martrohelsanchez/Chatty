@@ -1,23 +1,25 @@
-import {ConvDecoy} from "../../shared/types/dbSchema";
-import {ConversationActionTypes} from "../actions/conversationsActions";
-import { ConversationPopulateMembers, Message, User} from '../../shared/types/dbSchema';
+import {ConvDecoy, MergedConversation, MembersMeta} from "shared/types/dbSchema";
+import {ConversationActionTypes} from "redux/actions/conversationsActions";
+import {User} from 'shared/types/dbSchema';
 
-export interface ConvWithoutMsgs extends ConversationPopulateMembers {
-    convHasCreated: true;
-}
+// export interface ConvWithoutMsgs extends Conversation_Members {
+//     convHasCreated: true;
+// }
 
-export interface ConvWithMsgs extends ConvWithoutMsgs{
-    messages: (Message & {is_sent?: boolean})[];
-}
+// export interface ConvWithMsgs extends ConvWithoutMsgs{
+//     messages: (Message & {is_sent?: boolean})[];
+// }
 
-export type ConversationsState = (ConvWithMsgs | ConvWithoutMsgs | ConvDecoy)[];
+export type ConversationsState = (MergedConversation | ConvDecoy)[];
+
+// export type ConversationsState = (ConvWithMsgs | ConvWithoutMsgs | ConvDecoy)[];
 
 let initialState: ConversationsState = [];
 
 const conversations = (state = initialState, action: ConversationActionTypes): ConversationsState => {
     switch (action.type) {
         case 'conversations/retrievedConversations': {
-            const retrievedConversations = action.retrieveConv.map<ConvWithoutMsgs>(conv => ({
+            const retrievedConversations = action.retrieveConv.map(conv => ({
                 ...conv,
                 convHasCreated: true
             }));
@@ -25,7 +27,7 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
             return [...state, ...retrievedConversations];
         }
         case 'conversations/addedAConversation':
-            return [(action.conv as ConvDecoy | ConvWithoutMsgs), ...state];
+            return [action.conv, ...state];
         case 'conversations/deletedAConversation': {
             const newConversations: typeof state = [];
 
@@ -38,12 +40,12 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
             return newConversations;
         }
         case 'conversations/patchedConversation':
-            return (state as ConvWithMsgs[]).map(conv => {
+            return state.map(conv => {
                 if (conv._id === action.convId) {
                     return {
                         ...conv,
                         ...action.patch
-                    }
+                    } as MergedConversation
                 }
                 return conv;
             })
@@ -52,7 +54,8 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 if (conv._id === action.convId) {
                     return {
                         ...conv, 
-                        messages: 'messages' in conv  ? [...action.prevMsgs, ...conv.messages] : [...action.prevMsgs]}
+                        messages: 'messages' in conv  ? [...action.prevMsgs, ...conv.messages] : [...action.prevMsgs]
+                    }
                 }
                 return conv
             })
@@ -63,13 +66,7 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 if (conv._id === action.convId) {
                     const newConv = {
                         ...conv, 
-                        last_message: {
-                            message_body: action.newMsg.message_body,
-                            sender_username: conv.members.find(user => user._id === action.newMsg.sender)?.username as string,
-                            date_sent: action.newMsg.date_sent,
-                            sender_id: action.newMsg.sender,
-                            is_delivered: true
-                        },
+                        last_message: action.newMsg,
                         messages: [...('messages' in conv ? conv.messages : []), action.newMsg]
                     }
 
@@ -82,12 +79,41 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
 
             return newConversations;
         }
-        case 'conversation/updatedMembersMeta':
-            return state.map(conv => {
+        case 'conversation/modifiedMembersMeta':
+            return (state as MergedConversation[]).map(conv => {
                 if (conv._id === action.convId) {
+                    if (action.action === 'set') {
+                        return {
+                            ...conv,
+                            members_meta: action.newMembersMeta
+                        }
+                    }
+
+                    if (typeof conv.members_meta === 'string') {
+                        return conv;
+                    }
+
+                    if (action.action === 'add') {
+                        return {
+                            ...conv,
+                            members_meta: [
+                                ...conv.members_meta,
+                                ...action.newMembersMeta
+                            ]
+                        }
+                    }
+
+                    //deleting a memberMeta
+                    let newMembersMeta: Pick<MembersMeta, 'members_meta'>['members_meta'] = [];
+                    conv.members_meta.forEach(memberMeta => {
+                        if (memberMeta.user_id !== action.userIdToRemove) {
+                            newMembersMeta.push(memberMeta);
+                        }
+                    })
+
                     return {
                         ...conv,
-                        members_meta: action.newMembersMeta
+                        members_meta: newMembersMeta 
                     }
                 }
 
@@ -95,8 +121,18 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
             })
         case 'conversation/updatedLastSeen':
             return state.map(conv => {
+                //if conv doesn't exist yet in the db
+                if (!('members_meta' in conv)) {
+                    return conv
+                }
+
+                //if members_meta is not populated
+                if (typeof conv.members_meta === 'string') {
+                    return conv
+                }
+
                 if (conv._id === action.convId) {
-                    const newMembersMeta = (conv as ConvWithMsgs).members_meta.map(memberMeta => {
+                    const newMembersMeta = conv.members_meta.map(memberMeta => {
                         if (memberMeta.user_id === action.userId) {
                             return {
                                 ...memberMeta,
@@ -115,38 +151,42 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
 
                 return conv;
             })
-        // case 'conversations/updatedDelivered':
-        //     return state.map(conv => {
-        //         if (conv._id === payload.convId) {
-        //             const newMembersMeta = conv.members_meta.map(user => {
-        //                 for (let deliveredMeta of payload.deliveredMeta) {
-        //                     if (user.user_id === deliveredMeta.user_id) {
-        //                         return {
-        //                             ...user,
-        //                             delivered: deliveredMeta.delivered
-        //                         }
-        //                     }
-        //                 }
+        case 'conversations/updatedDelivered':
+            return state.map(conv => {
+                if (!('messages' in conv)) {
+                    return conv;
+                }
 
-        //                 return user;
-        //             })
+                if (conv._id === action.convId) {
+                    const newMessages = conv.messages?.map(message => {
+                        if (message._id === action.msgId) {
+                            return {
+                                ...message,
+                                is_delivered: true
+                            };
+                        }
 
-        //             return {
-        //                 ...conv,
-        //                 members_meta: newMembersMeta
-        //             }
-        //         }
-        //         return conv;
-        //     })
+                        return message;
+                    })
+
+                    return {
+                        ...conv,
+                        messages: newMessages
+                    }
+                }
+
+                return conv;
+            })
         case 'conversations/msgHasSent':
+            //Update date_sent and _id to mirror its document in db
             return state.map(conv => {
                 if (conv._id === action.convId) {
-                    const newMessages = (conv as ConvWithMsgs).messages.map(msg => {
+                    const newMessages = (conv as MergedConversation).messages?.map(msg => {
                         if (msg._id === action.msgId) {
                             return {
                                 ...msg,
                                 _id: action.newMsgId,
-                                is_sent: true,
+                                isSent: true,
                                 date_sent: action.newDateSent
                             }
                         }
@@ -160,6 +200,34 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 }
                 return conv;
             });
+        case 'conversation/modifiedMembers':
+            return state.map(conv => {
+                if (conv._id === action.convId) {
+                    if (action.action === 'set' || action.action === 'add') {
+                        return {
+                            ...conv,
+                            members: action.action === 'set' ? action.members : [
+                                ...(conv.members as User[]),
+                                ...action.members
+                            ]
+                        }
+                    }
+
+                    //Removing a member
+                    const newMembers: User[] = [];
+                    for (let member of conv.members as User[]) {
+                        if (member._id !== action.memberIdToRemove) {
+                            newMembers.push(member);
+                        }
+                    }
+
+                    return {
+                        ...conv,
+                        members: newMembers
+                    }
+                }
+                return conv;
+            })
         case 'conversations/stateReset': 
             return [];
         default:

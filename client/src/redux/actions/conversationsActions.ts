@@ -1,4 +1,4 @@
-import {ConversationPopulateMembers, Message, Conversation, ConvDecoy} from "../../shared/types/dbSchema";
+import {Message, ConvDecoy, MembersMeta, User, Conversation_LastMessage} from "../../shared/types/dbSchema";
 
 export type ConversationActionTypes = 
     | ReturnType<typeof retrieveConversations>
@@ -7,12 +7,16 @@ export type ConversationActionTypes =
     | ReturnType<typeof patchConv>
     | ReturnType<typeof addPrevMsgs>
     | ReturnType<typeof addNewMsg>
-    | ReturnType<typeof updateMembersMeta>
+    | ReturnType<typeof modifyMembersMeta>
     | ReturnType<typeof updateLastSeen>
+    | ReturnType<typeof updateDelivered>
     | ReturnType<typeof msgSent>
+    | ReturnType<typeof modifyMembers>
     | ReturnType<typeof resetConvState>
 
-export const retrieveConversations = (retrieveConv: ConversationPopulateMembers[]) => {
+export const retrieveConversations = (
+    retrieveConv: (Conversation_LastMessage)[]
+) => {
     return {
         type: 'conversations/retrievedConversations' as 'conversations/retrievedConversations',
         retrieveConv,
@@ -20,7 +24,7 @@ export const retrieveConversations = (retrieveConv: ConversationPopulateMembers[
 }
 
 export const addConv = (
-    conv: (ConversationPopulateMembers & {convHasCreated: boolean}) | ConvDecoy
+    conv: (Conversation_LastMessage & {convHasCreated: boolean}) | ConvDecoy
 ) => {
     return {
         type: 'conversations/addedAConversation' as 'conversations/addedAConversation',
@@ -37,8 +41,9 @@ export const deleteConv = (convId: string) => {
 
 export const patchConv = (
     convId: string, 
-    patch: Partial<ConversationPopulateMembers>
+    patch: Partial<Conversation_LastMessage & {convHasCreated: boolean}>
 ) => {
+    patch.last_message
     return {
         type: 'conversations/patchedConversation' as 'conversations/patchedConversation',
         convId,
@@ -52,27 +57,34 @@ export const addPrevMsgs = (
 ) => {
     return {
       type: "conversations/addedPreviousMessages" as "conversations/addedPreviousMessages",
-      prevMsgs,
+      prevMsgs: prevMsgs.map(msg => ({
+          ...msg,
+          isSent: true
+      })),
       convId,
     };
 }
 
-export const addNewMsg = (convId: string, newMsg: Message, is_sent: boolean) => {
+export const addNewMsg = (convId: string, newMsg: Message, isSent: boolean) => {
     return {
         type: 'conversations/addedANewMessage' as 'conversations/addedANewMessage',
-        newMsg: {...newMsg, is_sent},
+        newMsg: {...newMsg, isSent},
         convId
     }
 }
 
-export const updateMembersMeta = (
+export const modifyMembersMeta = (
     convId: string, 
-    newMembersMeta: Pick<Conversation, 'members_meta'>['members_meta']
+    action: 'set' | 'add' | 'remove',
+    newMembersMeta: Pick<MembersMeta, 'members_meta'>['members_meta'],
+    userIdToRemove?: string
 ) => {
     return {
-        type: 'conversation/updatedMembersMeta' as 'conversation/updatedMembersMeta', 
+        type: 'conversation/modifiedMembersMeta' as 'conversation/modifiedMembersMeta', 
+        convId,
         newMembersMeta,
-        convId
+        action,
+        userIdToRemove
     }
 }
 
@@ -85,23 +97,39 @@ export const updateLastSeen = (convId: string, userId: string, newSeen: number) 
     }
 }
 
-// export function updateDelivered(convId: string, deliveredMeta: ) {
-//     return {
-//         type: 'conversations/updatedDelivered',
-//         payload: {
-//             deliveredMeta,
-//             convId
-//         }
-//     }
-// }
+export function updateDelivered(convId: string, msgId: string) {
+    return {
+        type: 'conversations/updatedDelivered' as 'conversations/updatedDelivered',
+        msgId,
+        convId
+    }
+}
 
-export const msgSent = (msgId: string, convId: string, newDateSent: number, newMsgId: string) => {
+export const msgSent = (
+    msgId: string, convId: string, 
+    newDateSent: number, newMsgId: string
+) => {
     return {
         type: 'conversations/msgHasSent' as 'conversations/msgHasSent',
         msgId,
         convId,
         newDateSent,
         newMsgId
+    }
+}
+
+export const modifyMembers = (
+    convId: string,
+    action: 'set' | 'add' | 'remove',
+    members: User[],
+    memberIdToRemove?: string
+) => {
+    return {
+        type: 'conversation/modifiedMembers' as 'conversation/modifiedMembers',
+        convId,
+        action,
+        members,
+        memberIdToRemove
     }
 }
 
