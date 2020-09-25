@@ -14,25 +14,26 @@ import {useDispatch} from 'react-redux';
 import {addPrevMsgs, updateLastSeen, modifyMembers, modifyMembersMeta} from 'redux/actions/conversationsActions';
 
 interface MessageListProps {
-    currConv: rootState['conversations'][0]
+    currConv: MergedConversation
 }
 
 const MessageList = ({currConv}: MessageListProps) => {
     const [err, setErr] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [numOfLoading, setNumOfLoading] = useState(3);
     const dispatch = useDispatch();
     const moreMsgAtDb = useRef(true);
     const [isTyping, setIsTyping] = useState(false);
     const messages = 'messages' in currConv ? currConv.messages : undefined;
-    const {convHasCreated} = currConv;
+    const {members, members_meta} = currConv;
     const currConvId = currConv._id;
     const msgLength = messages ? messages.length : 0;
 
     useEffect(() => {
-        if (messages !== undefined && convHasCreated) {
+        if (messages !== undefined) {
             //Update the last_seen field in DB when user visits a conversation
             seenConvReq(currConvId, data => {
-                const {convId, new_seen, userId} = data.updated_seen;
+                const {convId, new_seen, userId} = data;
                 //Update the last_seen field in redux
                 dispatch(updateLastSeen(convId, userId, new_seen));
             }, err => {
@@ -42,28 +43,36 @@ const MessageList = ({currConv}: MessageListProps) => {
         }
     }, [msgLength]);
 
+    //When user switches through conversations
     useEffect(()=> {
-        if (messages === undefined && convHasCreated !== false) {
-            //get the initial messages if there's no messages yet in current conversation
-            getMessages(10, null);
+        if (typeof currConv.members[0] === 'string' && typeof currConv.members_meta === 'string') {
+            //members and members_meta is not yet populated
+            getMembersReq(currConvId, currConv.members as string[], (data) => {
+                dispatch(modifyMembers(currConvId, 'set', data, ));
+                setNumOfLoading(c => c - 1);
+            });
+            getMembersMetaReq(currConvId, currConv.members_meta, (data) => {
+                dispatch(modifyMembersMeta(currConvId, 'set', data.members_meta));
+                setNumOfLoading(c => c - 1);
+            })
+        }
+
+        if (messages === undefined) {
+            //get the initial messages if there are no messages yet in current conversation
+            getMessages(10, null, true);
         }
 
         return () => {
-            setErr(null);
             moreMsgAtDb.current = true;
+            setNumOfLoading(3);
+            setErr(null);
         }
     }, [currConvId]);
 
-    const getMessages = async (limit: number, before: number | null) => {
-        setIsLoading(true);
-        try {
-            const {data} = await axios.get<{messages: MessageType[]}>(`/chat/conversations/${currConvId}/messages`, {
-                params: {
-                    before: before,
-                    limit: limit
-                }
-            });
+    const getMessages = async (limit: number, before: number | null, initial) => {
+        initial ? setNumOfLoading(c => c - 1) : setNumOfLoading(1);
 
+        getMessagesReq(currConvId, limit, before, (data) => {
             //Newest messages are at the end of the array
             data.messages.reverse();
 
@@ -72,33 +81,33 @@ const MessageList = ({currConv}: MessageListProps) => {
             }
 
             ReactDOM.unstable_batchedUpdates(() => {
-                setIsLoading(false);
                 dispatch(addPrevMsgs(currConvId, data.messages));
+                setNumOfLoading(c => c - 1);
             });
-        } catch (err) {
+        }, (err) => {
             console.error(err);
             setErr('Sorry, something went wrong')
-        }
+            setNumOfLoading(0);
+        })
     }
 
     const handleScroll = (pos) => {
         //when the user scroll to the top to get the previous msgs
         if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
-            getMessages(10, messages[0].date_sent);
+            getMessages(10, messages[0].date_sent, false);
         }
     }
 
     let renderMessages: JSX.Element[] = null!;
 
-    if (messages) {
-        renderMessages = messages.map((message, i, msgArr) => {
+    if (currConv.messages !== undefined && typeof members_meta !== 'string' && typeof members[0] !== 'string') {
+        renderMessages = currConv.messages.map((message, i, msgArr) => {
             return (
                 <Message 
                     key={message._id} 
                     message={message} 
-                    allMsg={msgArr} 
                     msgIndex={i} 
-                    currConv={currConv as ConvWithMsgs | ConvDecoy}
+                    currConv={currConv as PopulatedConversation}
                 />
             )
         });
@@ -114,12 +123,16 @@ const MessageList = ({currConv}: MessageListProps) => {
             whenChanged ={[messages, isTyping]}
             onScroll={handleScroll}
         >
-            {isLoading && <Loading />}
+            {numOfLoading === 0 ? (
+                <>
                     {renderMessages}
                     <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
+                </>
+            ) : (
+                <Loading />
+            )}
         </ScrollRetract>
     )
 }
-
 
 export default MessageList;
