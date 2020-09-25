@@ -1,0 +1,1 @@
+export const msgsDeliveredUpdated: {[key: string]: string} = {};
