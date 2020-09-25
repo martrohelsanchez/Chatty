@@ -4,18 +4,14 @@ import axios from 'axios';
 
 import styles from './messages.module.css';
 import Message from './message/Message';
-import Loading from '../../loading/Loading';
-import ScrollRetract from '../../scrollRetract/ScrollRetract';
-import UserIsTyping from '../../userIsTyping/UserIsTyping';
-import {seenConvReq} from '../../../api/APIUtils';
-
-import {rootState} from '../../../redux/store';
+import Loading from 'components/loading/Loading';
+import ScrollRetract from 'components/scrollRetract/ScrollRetract';
+import UserIsTyping from 'components/userIsTyping/UserIsTyping';
+import {seenConvReq, getMembersReq, getMembersMetaReq, getMessagesReq} from 'api/APIUtils';
+import { Message as MessageType, MergedConversation, User, PopulatedConversation} from 'shared/types/dbSchema';
 
 import {useDispatch} from 'react-redux';
-import {addPrevMsgs, updateLastSeen} from '../../../redux/actions/conversationsActions';
-import { Message as MessageType } from '../../../shared/types/dbSchema';
-import { ConvWithMsgs } from '../../../redux/reducers/conversations';
-import {ConvDecoy} from "../../../shared/types/dbSchema";
+import {addPrevMsgs, updateLastSeen, modifyMembers, modifyMembersMeta} from 'redux/actions/conversationsActions';
 
 interface MessageListProps {
     currConv: rootState['conversations'][0]
@@ -70,7 +66,7 @@ const MessageList = ({currConv}: MessageListProps) => {
 
             //Newest messages are at the end of the array
             data.messages.reverse();
-            
+
             if (data.messages.length < limit) {
                 moreMsgAtDb.current = false;
             }
@@ -119,8 +115,8 @@ const MessageList = ({currConv}: MessageListProps) => {
             onScroll={handleScroll}
         >
             {isLoading && <Loading />}
-            {renderMessages}
-            <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
+                    {renderMessages}
+                    <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
         </ScrollRetract>
     )
 }
