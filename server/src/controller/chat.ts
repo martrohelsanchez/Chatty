@@ -7,6 +7,9 @@ import Conversation from '../model/conversation';
 import Message from '../model/message';
 import MembersMeta from '../model/membersMeta';
 import {IJwtDecoded} from '../shared/types';
+import {IUserSchema} from '../model/user';
+import { msgsDeliveredUpdated } from '../cache';
+import LastSeen from '../model/lastSeen';
 
 const io = getIo();
 
@@ -51,8 +54,8 @@ async function getOneConversation(
         })
             .select('-__v')
             .populate({
-                path: 'members',
-                select: '-password -__v'
+                path: 'last_message',
+                select: '-__v'
             })
             .exec();
 
@@ -93,8 +96,8 @@ async function getConversations (
                 .limit(limit)
                 .select('-__v')
                 .populate({
-                    path: 'members',
-                    select: '-password -__v'
+                    path: 'last_message',
+                    select: '-__v'
                 })
                 .exec();
 
@@ -121,8 +124,8 @@ async function getTheConversation(
             await Conversation.findOne({_id: conversationId})
             .select('-__v')
             .populate({
-                path: 'members',
-                select: '-password -__v'
+                path: 'last_message',
+                select: '-__v'
             })
             .exec();
 
@@ -147,9 +150,8 @@ async function updateSeen (
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
         const setDate = Date.now();
-
-        const conv = 
-            await MembersMeta.findOneAndUpdate({
+        const conv = await MembersMeta
+            .findOneAndUpdate({
                 conversation_id: convId,
                 members_meta: {
                     $elemMatch: {
@@ -164,12 +166,20 @@ async function updateSeen (
                 new: true
             })
 
+        const fieldToUpdate = `last_seen.${convId}`;
+        await LastSeen
+            .findOneAndUpdate({
+                user_id: userId
+            }, {
+                $set: {
+                    [fieldToUpdate]: setDate
+                }
+            }); 
+
         res.status(200).json({
-            updated_seen: {
             convId: convId,
             userId: userId,
             new_seen: setDate
-            }
         });
 
         io.in(conv?._id).emit('seen', convId, userId, setDate);
@@ -182,22 +192,38 @@ async function updateSeen (
 }
 
 // patch /conversations/:conversationId/deliver
-async function updateIsDelivered(req: Request, res: Response) {
+async function updateIsDelivered(
+    req: Request<{
+        conversationId: string
+    }, {}, {
+        msgId: string
+    }>, 
+    res: Response
+) {
     try {
         const convId = req.params.conversationId;
-        const senderId = req.body.senderId;
+        const msgId = req.body.msgId;
 
-        const conv = await Conversation.findOneAndUpdate({
-            _id: convId
+        if (msgsDeliveredUpdated[msgId] !== undefined) {
+            //A previous request has already updated the is_delivered field in the message document
+            return res.status(200).end();
+        }
+
+        //Cache the message id to tell future requests that this 
+        //message's is_delivered field was already updated
+        msgsDeliveredUpdated[msgId] = 'delivered';
+
+        const msg = await Message.findOneAndUpdate({
+            _id: msgId
         }, {
             $set: {
-                "last_message.is_delivered": true
+                'is_delivered': true
             }
         }, {
             new: true
         });
 
-        io.in(senderId).emit('msgDelivered', convId);
+        io.in(msg?.sender as string).emit('msgDelivered', convId, msgId);
 
         res.status(200).end();
     } catch (err) {
@@ -213,7 +239,8 @@ async function createConversation (
     req: Request<{}, {}, {
         membersId: string[],
         groupName?: string,
-        lastMessageId?: string
+        lastMessageId?: string,
+        groupPic?: string
     }> & {decodedJwt: IJwtDecoded}, 
     res: Response
 ) {
@@ -225,19 +252,38 @@ async function createConversation (
                 last_seen: 0
             }
         });
+        const isGroupChat = body.membersId.length > 2 ? true : false
+        let convPic: {[key: string]: string} = {};
+        let users: IUserSchema[] = [];
+
+        if (isGroupChat) {
+            convPic = {convPic: body.groupPic as string}
+        } else {
+            for (let userId in body.membersId) {
+                const user = await User.findOne({_id: userId});
+
+                if (user === null) {
+                    throw Error("User can't find");
+                }
+
+                users.push(user);
+            }
+            users.forEach(user => convPic[user._id] = user.profile_pic);
+        }
 
         const membersMetaId = mongoose.Types.ObjectId() as unknown as string;
 
         const conversation = await Conversation.create({
             _id: new mongoose.Types.ObjectId,
             members: body.membersId,
-            is_group_chat: body.membersId.length > 2 ? true : false,
+            is_group_chat: isGroupChat,
             group_name: body.groupName || undefined,
             created_at: Date.now(),
             last_updated: Date.now(),
             members_meta: membersMetaId,
-            conversation_pic: '',
-            last_message: body.lastMessageId || new mongoose.Types.ObjectId as unknown as string
+            conversation_pic: convPic,
+            last_message: body.lastMessageId || new mongoose.Types.ObjectId as unknown as string,
+            members_username: users.map(user => user.username)
         });
 
         const membersMeta = MembersMeta.create({
@@ -270,8 +316,8 @@ async function getMessages(
         const before = Number(req.query.before) || Date.now();
         const conversationId = req.params.conversationId;
 
-        const messages =
-            await Message.find({
+        const messages = await Message
+            .find({
                 conversation_id: conversationId,
                 date_sent: { $lt: before }
             })
@@ -293,7 +339,7 @@ async function getMessages(
     }
 };
 
-//Sending a message
+// POST /chat/conversations/:conversationId/messages
 async function sendMessage(
     req: Request<{
         conversationId: string
@@ -311,6 +357,7 @@ async function sendMessage(
         const message = await Message.create({
             _id: new mongoose.Types.ObjectId,
             conversation_id: conversationId,
+            sender_username: decodedJwt.username,
             sender: decodedJwt.userId,
             message_body: messageBody,
             date_sent: Date.now(),
