@@ -31,7 +31,11 @@ const MessagePane = () => {
             <Route path='/chat/:convId'>
                 {currConv ? (
                     <>
-                        <MessageList currConv={currConv} />
+                        {currConv.convHasCreated ? (
+                            <MessageList currConv={currConv} />
+                        ) : (
+                            null
+                        )}
                         <InputBar />
                     </>
                 ) : (
