@@ -30,11 +30,14 @@ interface IConversationSchema extends Document {
   group_name?: string;
   is_group_chat: boolean;
   members: string[];
-  conversation_pic: string;
+  conversation_pic: {
+    [key: string]: string
+  };
   last_message: string;
   created_at: number;
   last_updated: number;
   members_meta: string;
+  members_username: string[];
 } 
 
 const conversationSchema = new Schema({
@@ -44,11 +47,12 @@ const conversationSchema = new Schema({
   members: [
     {type: Schema.Types.ObjectId, ref: "User"}
   ],
-  conversation_pic: {type: String},
+  conversation_pic: {type: Map, of: String},
   last_message: {type: Schema.Types.ObjectId, ref: "Message"},
   created_at: {type: Number},
   last_updated: {type: Number},
-  members_meta: {type: Schema.Types.ObjectId, ref: 'MembersMeta'}
+  members_meta: {type: Schema.Types.ObjectId, ref: 'MembersMeta'},
+  members_username: [String]
 });
 
 export default model<IConversationSchema>('Conversation', conversationSchema); 
