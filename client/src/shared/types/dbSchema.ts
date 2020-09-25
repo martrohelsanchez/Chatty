@@ -93,6 +93,7 @@ export interface MergedConversation extends Omit<Conversation, 'members' | 'memb
     messages?: (Message & {
         isSent: boolean
     })[];
+    convHasCreated: boolean;
 }
 
 export interface PopulatedConversation extends Omit<Conversation, 'members' | 'members_meta'>{
@@ -101,6 +102,7 @@ export interface PopulatedConversation extends Omit<Conversation, 'members' | 'm
     messages: (Message & {
         isSent: boolean
     })[];
+    convHasCreated: boolean;
 }
 
 // export interface MergedConversation {
