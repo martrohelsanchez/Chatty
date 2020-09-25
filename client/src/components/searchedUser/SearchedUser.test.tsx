@@ -9,7 +9,7 @@ import SearchedUser from './SearchedUser';
 
 import store from 'redux/store';
 import {resetConvState, retrieveConversations} from 'redux/actions/conversationsActions';
-import {ConversationPopulateMembers} from 'shared/types/dbSchema';
+import {Conversation_Members} from 'shared/types/dbSchema';
 import {setUserInfo} from 'redux/actions/userInfoActions';
 import { waitFor } from '@testing-library/react';
 
@@ -23,7 +23,7 @@ const searchedUser = {
     username: 'testUsername3' 
 }
 
-const conversation: ConversationPopulateMembers = {
+const conversation: Conversation_Members = {
   _id: "testConvId",
   conversation_pic: "testUrlPic",
   created_at: Date.now(),
