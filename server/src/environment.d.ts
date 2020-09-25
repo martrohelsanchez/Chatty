@@ -5,6 +5,7 @@ declare global {
       MONGODB_PASS: string;
       JWT_KEY: string;
       CSRF_TOKEN_KEY: string;
+      NODE_ENV: 'development' | 'production'
     }
   }
 }
