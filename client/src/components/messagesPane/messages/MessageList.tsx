@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios';
 
 import styles from './messages.module.css';
 import Message from './message/Message';
@@ -8,7 +7,7 @@ import Loading from 'components/loading/Loading';
 import ScrollRetract from 'components/scrollRetract/ScrollRetract';
 import UserIsTyping from 'components/userIsTyping/UserIsTyping';
 import {seenConvReq, getMembersReq, getMembersMetaReq, getMessagesReq} from 'api/APIUtils';
-import { Message as MessageType, MergedConversation, User, PopulatedConversation} from 'shared/types/dbSchema';
+import {MergedConversation, PopulatedConversation} from 'shared/types/dbSchema';
 
 import {useDispatch} from 'react-redux';
 import {addPrevMsgs, updateLastSeen, modifyMembers, modifyMembersMeta} from 'redux/actions/conversationsActions';
@@ -19,8 +18,7 @@ interface MessageListProps {
 
 const MessageList = ({currConv}: MessageListProps) => {
     const [err, setErr] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [numOfLoading, setNumOfLoading] = useState(3);
+    const [numOfLoading, setNumOfLoading] = useState(0);
     const dispatch = useDispatch();
     const moreMsgAtDb = useRef(true);
     const [isTyping, setIsTyping] = useState(false);
@@ -47,6 +45,7 @@ const MessageList = ({currConv}: MessageListProps) => {
     useEffect(()=> {
         if (typeof currConv.members[0] === 'string' && typeof currConv.members_meta === 'string') {
             //members and members_meta is not yet populated
+            setNumOfLoading(c => c + 2);
             getMembersReq(currConvId, currConv.members as string[], (data) => {
                 dispatch(modifyMembers(currConvId, 'set', data, ));
                 setNumOfLoading(c => c - 1);
@@ -61,19 +60,18 @@ const MessageList = ({currConv}: MessageListProps) => {
             //get the initial messages if there are no messages yet in current conversation
             getMessages(10, null, true);
         }
-
         return () => {
             moreMsgAtDb.current = true;
-            setNumOfLoading(3);
+            // setNumOfLoading(3);
             setErr(null);
         }
     }, [currConvId]);
 
     const getMessages = async (limit: number, before: number | null, initial) => {
-        initial ? setNumOfLoading(c => c - 1) : setNumOfLoading(1);
+        setNumOfLoading(c => c + 1);
 
         getMessagesReq(currConvId, limit, before, (data) => {
-            //Newest messages are at the end of the array
+            //Newest messages must be at the end of the array
             data.messages.reverse();
 
             if (data.messages.length < limit) {
@@ -93,6 +91,7 @@ const MessageList = ({currConv}: MessageListProps) => {
 
     const handleScroll = (pos) => {
         //when the user scroll to the top to get the previous msgs
+        const isLoading = numOfLoading === 0;
         if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
             getMessages(10, messages[0].date_sent, false);
         }
@@ -117,20 +116,18 @@ const MessageList = ({currConv}: MessageListProps) => {
         return <div>{err}</div>
     }
 
+    if (numOfLoading !== 0) {
+        return <Loading />
+    }
+
     return (
         <ScrollRetract 
             className={`${styles.messagesContainer}`}
             whenChanged ={[messages, isTyping]}
             onScroll={handleScroll}
         >
-            {numOfLoading === 0 ? (
-                <>
-                    {renderMessages}
-                    <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
-                </>
-            ) : (
-                <Loading />
-            )}
+                {renderMessages}
+                <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
         </ScrollRetract>
     )
 }
