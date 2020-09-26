@@ -37,18 +37,24 @@ const Chat = () => {
 
         socket.on('seen', (convId, userId, newSeen) => {
             if (userId !== user.userId) {
-                //The seen must not came from the current user
+                //The seen must not from the current user
                 dispatch(updateLastSeen(convId, userId, newSeen));
             }
         });
+
+        socket.on('msgDelivered', (convId: string, msgId: string) => {
+            dispatch(updateDelivered(convId, msgId));
+        })
     }, []);
 
     useEffect(() => {
         if (currConvId) {
+            //Start receiving events on this conversation room
             socket.emit('join room', currConvId);
         }
 
         return () => {
+            //Stop receiving events from the previous opened conversation 
             socket.emit('leave room', currConvId);
         }
     }, [currConvId])
