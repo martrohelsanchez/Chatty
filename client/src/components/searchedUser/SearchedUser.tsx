@@ -3,7 +3,7 @@ import {useHistory} from 'react-router';
 
 import styles from './searchedUser.module.css';
 import {getConversationByMembersReq} from 'api/APIUtils';
-import createConvDummyObj from 'shared/utils/createConvDummyObj';
+import {createConvDummyDoc} from 'shared/utils/createDummyDoc';
 
 import {User} from 'shared/types/dbSchema';
 import {rootState} from 'redux/store';
@@ -44,7 +44,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
                 history.push(`/chat/${convFromDb._id}`);
             } else {
                 //If the conversation doesn't exist in DB, create a conv obj decoy
-                const convObj = createConvDummyObj([searchedUser, user]);
+                const convObj = createConvDummyDoc([searchedUser._id, user.userId]);
                 
                 dispatch(addConv(convObj));
                 history.push(`/chat/${convObj._id}`);
