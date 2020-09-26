@@ -15,28 +15,6 @@ export interface Message {
     is_delivered: boolean;
 }
 
-// export interface Conversation {
-//     _id: string;
-//     group_name?: string;
-//     is_group_chat: boolean;
-//     members: string[];
-//     conversation_pic: string;
-//     last_message: {
-//         message_body: string;
-//         sender_username: string;
-//         date_sent: number;
-//         sender_id: string;
-//         is_delivered: boolean;
-//     };
-//     created_at: number;
-//     last_updated: number;
-//     members_meta: {
-//         user_id: string;
-//         last_seen: number;
-//         delivered: boolean;
-//     }[];
-// }
-
 //Exact schema from Conversation Mongoose model
 export interface Conversation {
     _id: string;
@@ -81,10 +59,11 @@ export interface Conversation_Members extends Omit<Conversation, 'members'> {
 
 export interface ConvDecoy
   extends Omit<
-    Conversation_Members,
-    "last_message" | "created_at" | "last_updated" | "members_meta"
+    MergedConversation,
+    "last_message" | "created_at" | "last_updated" | "members_meta" | "conversation_pic" | "members_username" | "convHasCreated" | "members"
   > {
-  convHasCreated: false;
+    members: string[];
+    convHasCreated: false;
 }
 
 export interface MergedConversation extends Omit<Conversation, 'members' | 'members_meta'>{
@@ -93,7 +72,7 @@ export interface MergedConversation extends Omit<Conversation, 'members' | 'memb
     messages?: (Message & {
         isSent: boolean
     })[];
-    convHasCreated: boolean;
+    convHasCreated: true;
 }
 
 export interface PopulatedConversation extends Omit<Conversation, 'members' | 'members_meta'>{
@@ -102,24 +81,9 @@ export interface PopulatedConversation extends Omit<Conversation, 'members' | 'm
     messages: (Message & {
         isSent: boolean
     })[];
-    convHasCreated: boolean;
+    convHasCreated: true;
 }
 
-// export interface MergedConversation {
-//     _id: string;
-//     group_name?: string;
-//     is_group_chat: boolean;
-//     members: string[] | User[];
-//     conversation_pic: {
-//         [key: string]: string
-//     };
-//     last_message: Message;
-//     created_at: number;
-//     last_updated: number;
-//     members_meta: string | Pick<MembersMeta, 'members_meta'>['members_meta'];
-//     convHasCreated: boolean;
-//     messages?: (Message & {
-//         isSent: boolean
-//     })[]
-//     members_username: string[];
-// } 
+export interface MessageRedux extends Message{
+    isSent: boolean;
+}
