@@ -1,5 +1,8 @@
 import axios from 'axios';
-import {Conversation_LastMessage, LastSeen, User, MembersMeta, Message} from '../shared/types/dbSchema';
+import {
+    Conversation_LastMessage, LastSeen, 
+    User, MembersMeta, Message, Conversation
+} from '../shared/types/dbSchema';
 
 export interface UserAuthRes {
     userId: string;
@@ -262,4 +265,57 @@ export const getMessagesReq = async (
             throw err;
         }
     }
+}
+
+export const sendMsgReq = async (
+    convId: string,
+    messageBody: string,
+    convMembers: string[],
+    cb?: (data: Message) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        var {data} = await axios.post<Message>(`/chat/conversations/${convId}/messages`, {
+            messageBody: messageBody,
+            convMembers: convMembers
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+    return data;
+}
+
+export const createConvDocReq = async (
+    membersId: string[],
+    cb?: (data: Conversation) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        var {data} = await axios.post<Conversation>('/chat/conversations', {
+            membersId: membersId
+        });
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        } 
+    }
+    return data;
 }
