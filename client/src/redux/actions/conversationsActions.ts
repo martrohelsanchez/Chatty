@@ -43,7 +43,6 @@ export const patchConv = (
     convId: string, 
     patch: Partial<Conversation_LastMessage & {convHasCreated: boolean}>
 ) => {
-    patch.last_message
     return {
         type: 'conversations/patchedConversation' as 'conversations/patchedConversation',
         convId,
