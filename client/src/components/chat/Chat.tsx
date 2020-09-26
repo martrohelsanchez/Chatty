@@ -2,14 +2,14 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useRouteMatch} from 'react-router-dom';
 
-import ContactsPane from '../conversationPane/ConversationPane';
-import MessagePane from '../messagesPane/messagesPane';
-import InfoPane from '../infoPane/InfoPane'; 
-import {socket} from '../../App';
+import ContactsPane from 'components/conversationPane/ConversationPane';
+import MessagePane from 'components/messagesPane/messagesPane';
+import InfoPane from 'components/infoPane/InfoPane'; 
+import {socket} from 'App';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {addNewMsg, deleteConv, updateLastSeen} from '../../redux/actions/conversationsActions';
-import {rootState} from '../../redux/store';
+import {addNewMsg, deleteConv, updateLastSeen, updateDelivered} from 'redux/actions/conversationsActions';
+import {rootState} from 'redux/store';
 import {UserInfo} from 'redux/actions/userInfoActions';
 
 const StyledChat = styled.div`
