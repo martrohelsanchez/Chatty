@@ -266,15 +266,6 @@ async function createConversation (
                 .select('-__v')
                 .exec();
                 
-            // for (let userId in body.membersId) {
-            //     const user = await User.findOne({_id: userId});
-
-            //     if (user === null) {
-            //         throw Error("User can't find");
-            //     }
-
-            //     users.push(user);
-            // }
             users.forEach(user => convPic[user._id] = user.profile_pic);
         }
 
