@@ -10,10 +10,10 @@ import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface ConversationProps {
     conv: MergedConversation;
-    userLastSeen: LastSeen | null;
+    userLastSeenDoc: LastSeen | null;
 }
 
-function Conversation({conv, userLastSeen}: ConversationProps) {               
+function Conversation({conv, userLastSeenDoc}: ConversationProps) {               
     const user = useSelector((state: rootState ) => state.userInfo as UserInfo)
     const history = useHistory();
     const match = useRouteMatch<{convId: string}>('/chat/:convId');
@@ -31,7 +31,7 @@ function Conversation({conv, userLastSeen}: ConversationProps) {
         history.push(`/chat/${conv._id}`);
     }
 
-    const isRead = knowIfHasRead(userLastSeen, conv, currConvId, conv.last_message.date_sent, user.userId);
+    const isRead = knowIfHasRead(userLastSeenDoc, conv, user.userId);
     const isSelected = currConvId === conv._id ? true : false;
  
     return (
@@ -55,23 +55,21 @@ function Conversation({conv, userLastSeen}: ConversationProps) {
 }
 
 function knowIfHasRead(
-    lastReadDoc: ConversationProps['userLastSeen'], 
+    lastReadDoc: ConversationProps['userLastSeenDoc'], 
     conv: MergedConversation,
-    currConvId: string,
-    lastMessageDate: number,
     userId: string
 ) {
     if (lastReadDoc === null) {
-        return false
+        return true
     }
 
     //If members_meta is not populated
     if (typeof conv.members_meta === 'string') {
         //Use LastMessage document
-        return lastReadDoc.last_seen[currConvId] >= lastMessageDate
+        return lastReadDoc.last_seen[conv._id] >= conv.last_message.date_sent
     }
 
-    return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= lastMessageDate;
+    return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= conv.last_message.date_sent;
 }
 
 
