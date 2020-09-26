@@ -153,7 +153,7 @@ async function getLastSeen(
 ) {
     try {
         const userLastSeen = await LastSeen
-            .findOne({conversation_id: req.decodedJwt.userId})
+            .findOne({user_id: req.decodedJwt.userId})
             .select('-__v')
             .exec();
         
