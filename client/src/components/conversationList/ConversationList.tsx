@@ -14,31 +14,35 @@ import {UserInfo} from 'redux/actions/userInfoActions';
 const ConversationList = () => {
     const conversations = useSelector((state: rootState) => state.conversations);
     const [err, setErr] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [numOfLoading, setNumOfLoading] = useState(0);
     const dispatch = useDispatch();
     const user = useSelector((state: rootState) => state.userInfo as UserInfo);
     const [userLastSeen, setUserLastSeen] = useState<LastSeen | null>(null);
 
     useEffect(() => {
         if (conversations.length === 0) {
-            setIsLoading(true);
+            setNumOfLoading(c => c + 1);
             getConversationsReq(10, null, data => {
                 dispatch(retrieveConversations(data.conversations));
                 checkLastMsgDeliver(data.conversations);
-                setIsLoading(false);
+                setNumOfLoading(c => c - 1);
             }, err => {
                 console.error(err.message)
                 setErr('Something went wrong')
+                setNumOfLoading(c => c - 1);
             })
         }
     }, []);
 
     useEffect(() => {
+        setNumOfLoading(c => c + 1);
         getLastSeen((data) => {
             setUserLastSeen(data);
+            setNumOfLoading(c => c - 1);
         }, (err) => {
             console.error(err.message);
             setErr('Something went wrong');
+            setNumOfLoading(c => c - 1);
         })
     }, []);
 
@@ -58,7 +62,7 @@ const ConversationList = () => {
         }
     }
 
-    if (isLoading) {
+    if (numOfLoading > 0) {
         return <Loading />
     } else if (err) {
         return <div>{err}</div>
@@ -66,7 +70,7 @@ const ConversationList = () => {
 
     const renderConversations = conversations.map(conv => {
         if (conv.convHasCreated && conv.last_message) {
-            return <Conversation key={conv._id} conv={conv} userLastSeen={userLastSeen} />
+            return <Conversation key={conv._id} conv={conv} userLastSeenDoc={userLastSeen} />
         }
     });
 
