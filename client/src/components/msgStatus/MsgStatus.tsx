@@ -4,13 +4,13 @@ import {useRouteMatch} from 'react-router-dom';
 
 import styles from './msgStatus.module.css';
 
-import delivered from '../../images/delivered.svg';
-import sending from '../../images/sending.svg';
-import sent from '../../images/sent.svg';
-import seen from '../../images/seen.svg'; 
+import delivered from 'images/delivered.svg';
+import sending from 'images/sending.svg';
+import sent from 'images/sent.svg';
+import seen from 'images/seen.svg'; 
 
-import {rootState} from '../../redux/store';
-import {Message, MembersMeta, PopulatedConversation} from '../../shared/types/dbSchema';
+import {rootState} from 'redux/store';
+import {Message, MembersMeta, PopulatedConversation} from 'shared/types/dbSchema';
 import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface MsgStatusProps {
