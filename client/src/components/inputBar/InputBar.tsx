@@ -20,7 +20,7 @@ const Input = () => {
   const user = useSelector((state: rootState) => state.userInfo as UserInfo)
   const inputRef = useRef<HTMLInputElement>(null!);
   const dispatch = useDispatch();
-  const lastMsgSent = useRef<Message>(null!);
+  const lastMsgSent = useRef<MessageRedux>(null!);
   const typingTimeout = useRef<number | undefined>(undefined);
   const history = useHistory();
 
@@ -32,11 +32,11 @@ const Input = () => {
     return null;
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    try {
       const currConvId = currConv._id;
-    const convHasCreated = currConv.convHasCreated;
       const currConvMembers = (currConv.members as User[]).map(members => members._id);
-    lastMsgSent.current = createMsgObj(user.userId, chatInput);
+      lastMsgSent.current = createMsgObj(currConvId, user.userId, user.username, chatInput);
 
       if (typingTimeout.current) {
         socket.emit('stopTyping', currConvId, user.userId);
@@ -45,21 +45,19 @@ const Input = () => {
 
       dispatch(addNewMsg(currConvId, lastMsgSent.current, false));
 
-    if (convHasCreated) {
-      sendMsgReq(chatInput, currConvMembers, currConvId);
+      if (currConv.convHasCreated) {
+        const message = await sendMsgReq(currConvId, chatInput, currConvMembers) as Message;
+        dispatch(msgSent(lastMsgSent.current._id, message.conversation_id, message.date_sent, message._id));
       } else {
-      //The conversation doesn't exist yet in the DB
-      let membersId: string[] = [];
-      currConv.members.forEach(user => membersId.push(user._id))
+        //The conversation doesn't exist in the DB
+        const conv = await createConvDocReq(currConv.members);
+        const message = await sendMsgReq(conv?._id as string, chatInput, currConv.members);
 
-      createConvDoc(membersId, (conv) => {
-        sendMsgReq(chatInput, currConvMembers, conv._id);
+        //Don't overwrite last_message
+        delete conv.last_message
 
-        //Get the whole conv with the populated members field
-        getTheConvDoc(conv._id, (conv) => {
-          delete conv.last_message;
-
-          dispatch(patchConv(currConvId, {...conv, convHasCreated: true}));
+        dispatch(msgSent(lastMsgSent.current._id, currConvId, message.date_sent, message._id));
+        dispatch(patchConv(currConvId, { ...conv, convHasCreated: true }));
         history.push(`/chat/${conv._id}`);
       }
 
@@ -80,6 +78,7 @@ const Input = () => {
 
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
+      typingTimeout.current = undefined;
       socket.emit('stopTyping', currConvId, user.userId);
     }, 5000)
   }
