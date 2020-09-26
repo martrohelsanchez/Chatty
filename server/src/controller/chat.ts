@@ -190,7 +190,7 @@ async function updateSeen (
     }
 }
 
-// patch /conversations/:conversationId/deliver
+// PATCH /conversations/:conversationId/deliver
 async function updateIsDelivered(
     req: Request<{
         conversationId: string
