@@ -11,8 +11,6 @@ import {IUserSchema} from '../model/user';
 import { msgsDeliveredUpdated } from '../cache';
 import LastSeen from '../model/lastSeen';
 
-const io = getIo();
-
 //search users /search
 async function searchUsers (
     req: Request<{}, {}, {}, {searchInput: string}> & {decodedJwt: IJwtDecoded},
@@ -147,6 +145,7 @@ async function updateSeen (
     res: Response
 ) {
     try {
+        const io = getIo();
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
         const setDate = Date.now();
@@ -201,6 +200,7 @@ async function updateIsDelivered(
     res: Response
 ) {
     try {
+        const io = getIo();
         const convId = req.params.conversationId;
         const msgId = req.body.msgId;
 
@@ -259,15 +259,22 @@ async function createConversation (
         if (isGroupChat) {
             convPic = {convPic: body.groupPic as string}
         } else {
-            for (let userId in body.membersId) {
-                const user = await User.findOne({_id: userId});
+            users = await User
+                .find({_id: {
+                    $in: body.membersId
+                }})
+                .select('-__v')
+                .exec();
+                
+            // for (let userId in body.membersId) {
+            //     const user = await User.findOne({_id: userId});
 
-                if (user === null) {
-                    throw Error("User can't find");
-                }
+            //     if (user === null) {
+            //         throw Error("User can't find");
+            //     }
 
-                users.push(user);
-            }
+            //     users.push(user);
+            // }
             users.forEach(user => convPic[user._id] = user.profile_pic);
         }
 
@@ -286,8 +293,8 @@ async function createConversation (
             members_username: users.map(user => user.username)
         });
 
-        const membersMeta = MembersMeta.create({
-            _id: new mongoose.Types.ObjectId,
+        const membersMeta = await MembersMeta.create({
+            _id: membersMetaId,
             conversation_id: conversation._id,
             members_meta: members_meta
         })
@@ -352,7 +359,8 @@ async function sendMessage(
     try {
         const conversationId = req.params.conversationId;
         const decodedJwt = req.decodedJwt;
-        const {messageBody, convMembers} = req.body
+        const {messageBody, convMembers} = req.body;
+        const io = getIo();
 
         const message = await Message.create({
             _id: new mongoose.Types.ObjectId,
