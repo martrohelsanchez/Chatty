@@ -163,7 +163,7 @@ async function getLastSeen(
     }
 }
 
-export default {
+module.exports = {
     userSignUp,
     userLogIn,
     reAuthUser,
