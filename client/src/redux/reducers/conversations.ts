@@ -2,17 +2,7 @@ import {ConvDecoy, MergedConversation, MembersMeta} from "shared/types/dbSchema"
 import {ConversationActionTypes} from "redux/actions/conversationsActions";
 import {User} from 'shared/types/dbSchema';
 
-// export interface ConvWithoutMsgs extends Conversation_Members {
-//     convHasCreated: true;
-// }
-
-// export interface ConvWithMsgs extends ConvWithoutMsgs{
-//     messages: (Message & {is_sent?: boolean})[];
-// }
-
 export type ConversationsState = (MergedConversation | ConvDecoy)[];
-
-// export type ConversationsState = (ConvWithMsgs | ConvWithoutMsgs | ConvDecoy)[];
 
 let initialState: ConversationsState = [];
 
@@ -207,7 +197,7 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                         return {
                             ...conv,
                             members: action.action === 'set' ? action.members : [
-                                ...(conv.members as User[]),
+                                ...conv.members,
                                 ...action.members
                             ]
                         }
@@ -227,7 +217,7 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                     }
                 }
                 return conv;
-            })
+            }) as typeof state
         case 'conversations/stateReset': 
             return [];
         default:
