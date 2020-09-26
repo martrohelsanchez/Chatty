@@ -53,11 +53,11 @@ const Chat = () => {
         }
     }, [currConvId])
 
-    /* 
-        Before the user switches to other conversation, 
-        delete the conversation if it doesn't exist in DB
-    */
     useEffect(() => {
+        /* 
+            Before the user switches to other conversation, 
+            delete the conversation if it doesn't exist in DB
+        */
         return () => {
             if (currConv?.convHasCreated === false) {
                 dispatch(deleteConv(currConv._id));
