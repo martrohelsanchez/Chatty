@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import uniqid from 'uniqid';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import {useHistory, useRouteMatch} from 'react-router-dom';
 
 import styles from './inputBar.module.css';
-import {socket} from "../../App";
-
-import {Message, Conversation, User} from "../../shared/types/dbSchema";
+import {socket} from "App";
+import {User, MessageRedux, Message} from "shared/types/dbSchema";
+import { sendMsgReq, createConvDocReq } from 'api/APIUtils';
+import { createMsgObj } from 'shared/utils/createDummyDoc';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {addNewMsg, msgSent, patchConv} from '../../redux/actions/conversationsActions';
-import {rootState} from '../../redux/store';
-import { UserInfo } from 'redux/actions/userInfoActions';
+import {addNewMsg, msgSent, patchConv} from 'redux/actions/conversationsActions';
+import {rootState} from 'redux/store';
+import {UserInfo} from 'redux/actions/userInfoActions';
 
 const Input = () => {
   const match = useRouteMatch<{convId: string}>();
