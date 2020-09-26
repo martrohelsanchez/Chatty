@@ -31,7 +31,7 @@ function Conversation({conv, userLastSeen}: ConversationProps) {
         history.push(`/chat/${conv._id}`);
     }
 
-    const isRead = knowIfRead(userLastSeen, conv, currConvId, conv.last_message.date_sent, user.userId);
+    const isRead = knowIfHasRead(userLastSeen, conv, currConvId, conv.last_message.date_sent, user.userId);
     const isSelected = currConvId === conv._id ? true : false;
  
     return (
@@ -54,7 +54,7 @@ function Conversation({conv, userLastSeen}: ConversationProps) {
     ) 
 }
 
-function knowIfRead(
+function knowIfHasRead(
     lastReadDoc: ConversationProps['userLastSeen'], 
     conv: MergedConversation,
     currConvId: string,
@@ -71,7 +71,7 @@ function knowIfRead(
         return lastReadDoc.last_seen[currConvId] >= lastMessageDate
     }
 
-    return conv.members_meta.find(member => member.user_id === userId)?.last_seen as number >= lastMessageDate;
+    return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= lastMessageDate;
 }
 
 
