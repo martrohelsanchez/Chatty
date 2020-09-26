@@ -33,21 +33,21 @@ const Input = () => {
   }
 
   const handleSend = () => {
-    const currConvId = currConv._id;
+      const currConvId = currConv._id;
     const convHasCreated = currConv.convHasCreated;
-    const currConvMembers = (currConv.members as User[]).map(members => members._id);
+      const currConvMembers = (currConv.members as User[]).map(members => members._id);
     lastMsgSent.current = createMsgObj(user.userId, chatInput);
 
-    if (typingTimeout.current) {
-      socket.emit('stopTyping', currConvId, user.userId);
-      typingTimeout.current = undefined;
-    }
+      if (typingTimeout.current) {
+        socket.emit('stopTyping', currConvId, user.userId);
+        typingTimeout.current = undefined;
+      }
 
-    dispatch(addNewMsg(currConvId, lastMsgSent.current, false));
+      dispatch(addNewMsg(currConvId, lastMsgSent.current, false));
 
     if (convHasCreated) {
       sendMsgReq(chatInput, currConvMembers, currConvId);
-    } else {
+      } else {
       //The conversation doesn't exist yet in the DB
       let membersId: string[] = [];
       currConv.members.forEach(user => membersId.push(user._id))
@@ -60,56 +60,10 @@ const Input = () => {
           delete conv.last_message;
 
           dispatch(patchConv(currConvId, {...conv, convHasCreated: true}));
-          history.push(`/chat/${conv._id}`);
-        })
-      });
-    }
+        history.push(`/chat/${conv._id}`);
+      }
 
-    setChatInput('');
-  }
-
-  const createMsgObj = (senderId: string, messageBody: string) => {
-    const currConvId = currConv._id;
-    return {
-      _id: uniqid() as string,
-      conversation_id: currConvId,
-      sender: senderId,
-      message_body: messageBody,
-      date_sent: Date.now(),
-      is_sent: false
-    }
-  }
-
-  const sendMsgReq = async (messageBody: string, convMembers: string[], convId: string) => {
-    try {
-      const {data} = await axios.post(`/chat/conversations/${convId}/messages`, {
-        messageBody: messageBody,
-        convMembers: convMembers
-      });
-
-      dispatch(msgSent(lastMsgSent.current._id, convId, data.date_sent, data._id));
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  const createConvDoc = async (membersId: string[], callback: (data: Conversation) => void) => {
-    try {
-      const {data} = await axios.post<Conversation>('/chat/conversations', {
-        membersId: membersId
-      });
-
-      callback(data);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  const getTheConvDoc = async (convId: string, callback) => {
-    try {
-      const {data} = await axios.get(`chat/conversations/${convId}`);
-
-      callback(data.conversation);
+      setChatInput('');
     } catch (err) {
       console.error(err);
     }
@@ -127,7 +81,6 @@ const Input = () => {
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
       socket.emit('stopTyping', currConvId, user.userId);
-      typingTimeout.current = undefined;
     }, 5000)
   }
 
