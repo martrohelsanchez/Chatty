@@ -319,3 +319,26 @@ export const createConvDocReq = async (
     }
     return data;
 }
+
+export const getTheConversationReq = async (
+    convId: string,
+    cb?: (data: Conversation_LastMessage) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        var {data} = await axios.get<Conversation_LastMessage>(`/chat/conversations/${convId}`)
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        } 
+    }
+    return data;
+}
