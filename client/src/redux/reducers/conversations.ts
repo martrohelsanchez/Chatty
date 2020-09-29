@@ -18,6 +18,21 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
         }
         case 'conversations/addedAConversation':
             return [action.conv, ...state];
+        case 'conversation/updatedLastMsg': {
+            const newConversations: typeof state = [];
+            for (let conv of state) {
+                if (action.convId === conv._id) {
+                    const newConv = {
+                        ...conv,
+                        last_message: action.msg
+                    }
+                    newConversations.unshift(newConv)
+                } else {
+                    newConversations.push(conv);
+                }
+            }
+            return newConversations;
+        }
         case 'conversations/deletedAConversation': {
             const newConversations: typeof state = [];
 

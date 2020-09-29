@@ -12,6 +12,7 @@ export type ConversationActionTypes =
     | ReturnType<typeof updateDelivered>
     | ReturnType<typeof msgSent>
     | ReturnType<typeof modifyMembers>
+    | ReturnType<typeof updateLastMsg>
     | ReturnType<typeof resetConvState>
 
 export const retrieveConversations = (
@@ -132,6 +133,13 @@ export const modifyMembers = (
     }
 }
 
+export const updateLastMsg = (convId: string, msg: Message) => {
+    return {
+        type: 'conversation/updatedLastMsg' as 'conversation/updatedLastMsg',
+        convId,
+        msg
+    }
+}
 export const resetConvState = () => {
     return {
         type: 'conversations/stateReset' as 'conversations/stateReset'
