@@ -127,9 +127,7 @@ async function getTheConversation(
             })
             .exec();
 
-        res.status(200).json({
-            conversation: conversation
-        })
+        res.status(200).json(conversation);
 
     } catch (err) {
         console.error(err.message)
@@ -149,7 +147,7 @@ async function updateSeen (
         const userId = req.decodedJwt.userId;
         const convId = req.params.conversationId;
         const setDate = Date.now();
-        const conv = await MembersMeta
+        const membersMeta = await MembersMeta
             .findOneAndUpdate({
                 conversation_id: convId,
                 members_meta: {
@@ -181,7 +179,7 @@ async function updateSeen (
             new_seen: setDate
         });
 
-        io.in(conv?._id).emit('seen', convId, userId, setDate);
+        io.in(convId).emit('seen', convId, userId, setDate);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({
@@ -278,6 +276,7 @@ async function createConversation (
             group_name: body.groupName || undefined,
             created_at: Date.now(),
             last_updated: Date.now(),
+            members_meta_id: membersMetaId,
             members_meta: membersMetaId,
             conversation_pic: convPic,
             last_message: body.lastMessageId || new mongoose.Types.ObjectId as unknown as string,
@@ -368,7 +367,7 @@ async function sendMessage(
         for (let userId of convMembers) {
             //Emit an event to all the members of the conversation except the sender
             if (userId !== decodedJwt.userId) {
-                io.in(userId).emit('sendMsg', message);
+                io.in(userId).emit('gotMessage', message);
             }
         }
 

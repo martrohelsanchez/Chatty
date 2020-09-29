@@ -38,6 +38,7 @@ interface IConversationSchema extends Document {
   last_updated: number;
   members_meta: string;
   members_username: string[];
+  members_meta_id: string;
 } 
 
 const conversationSchema = new Schema({
@@ -52,7 +53,8 @@ const conversationSchema = new Schema({
   created_at: {type: Number},
   last_updated: {type: Number},
   members_meta: {type: Schema.Types.ObjectId, ref: 'MembersMeta'},
-  members_username: [String]
+  members_username: [String],
+  members_meta_id: {type: Schema.Types.ObjectId}
 });
 
 export default model<IConversationSchema>('Conversation', conversationSchema); 
