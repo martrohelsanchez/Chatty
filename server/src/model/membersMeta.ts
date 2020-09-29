@@ -12,7 +12,7 @@ const membersMetaSchema = new Schema({
     conversation_id: {type: Schema.Types.ObjectId},
     members_meta: [
         {
-            user_id: {tyjpe: Schema.Types.ObjectId},
+            user_id: {type: Schema.Types.ObjectId},
             last_seen: {type: Number}
         }
     ]
