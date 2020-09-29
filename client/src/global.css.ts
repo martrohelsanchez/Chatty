@@ -3,6 +3,7 @@ import {createGlobalStyle} from 'styled-components';
 export default createGlobalStyle`
     html {
         font-size: 16px;
+        font-family: ${({theme}) => theme.font.primary}
     }
 
     ::placeholder {
