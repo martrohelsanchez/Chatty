@@ -2,6 +2,7 @@
 export interface User {
     _id: string;
     username: string;
+    profile_pic: string;
 }
 
 //Exact schema from Message Mongoose model
@@ -29,6 +30,7 @@ export interface Conversation {
     last_updated: number;
     members_meta: string;
     members_username: string[];
+    members_meta_id: string
 } 
 
 //Exact schema from MembersMeta Mongoose model
@@ -60,7 +62,8 @@ export interface Conversation_Members extends Omit<Conversation, 'members'> {
 export interface ConvDecoy
   extends Omit<
     MergedConversation,
-    "last_message" | "created_at" | "last_updated" | "members_meta" | "conversation_pic" | "members_username" | "convHasCreated" | "members"
+    "last_message" | "created_at" | "last_updated" | "members_meta" | 
+    "conversation_pic" | "members_username" | "convHasCreated" | "members" | "members_meta_id"
   > {
     members: string[];
     convHasCreated: false;
