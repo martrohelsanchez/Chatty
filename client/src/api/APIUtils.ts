@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
     Conversation_LastMessage, LastSeen, 
     User, MembersMeta, Message, Conversation
-} from '../shared/types/dbSchema';
+} from 'shared/types/dbSchema';
 
 export interface UserAuthRes {
     userId: string;
@@ -341,4 +341,30 @@ export const getTheConversationReq = async (
         } 
     }
     return data;
+}
+
+export const getUserByUsernameReq = async (
+    username: string,
+    cb?: (data: User) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const {data} = await axios.get<User>('/user', {
+            params: {
+                username
+            }
+        })
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
 }
