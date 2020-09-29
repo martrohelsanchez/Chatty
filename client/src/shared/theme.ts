@@ -3,6 +3,7 @@ import {DefaultTheme} from 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     mobile: string;
+    cinnabar: string;
     text: {
         primary: string;
         secondary: string;
@@ -21,6 +22,7 @@ declare module 'styled-components' {
 
 const theme: DefaultTheme = {
     mobile: '700px',
+    cinnabar: '#ed553b', 
     text: {
         primary: '#ffffff',
         secondary: '#003a47'
