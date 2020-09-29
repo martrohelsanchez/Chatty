@@ -147,6 +147,7 @@ async function reAuthUser(req: Request, res: Response) {
     }
 }
 
+//GET /user/last-seen
 async function getLastSeen(
     req: Request & {decodedJwt: IJwtDecoded}, 
     res: Response
@@ -166,9 +167,29 @@ async function getLastSeen(
     }
 }
 
+// GET /user/
+async function getUserByUsername(
+    req: Request<{}, {}, {}, {
+        username: string
+    }>,
+    res: Response
+) {
+    try {
+        const user = await User.findOne({username: req.query.username});
+        console.log(user);
+        res.status(200).json(user);
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 module.exports = {
     userSignUp,
     userLogIn,
     reAuthUser,
-    getLastSeen
+    getLastSeen,
+    getUserByUsername
 }
