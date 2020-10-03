@@ -14,10 +14,10 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 convHasCreated: true
             }));
 
-            return [...state, ...retrievedConversations];
+            return [...state, ...retrievedConversations] as typeof state;
         }
         case 'conversations/addedAConversation':
-            return [action.conv, ...state];
+            return [action.conv, ...state] as typeof state;
         case 'conversation/updatedLastMsg': {
             const newConversations: typeof state = [];
             for (let conv of state) {
