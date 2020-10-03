@@ -1,16 +1,20 @@
 import uniqid from 'uniqid';
 
-import {ConvDecoy, MergedConversation, LastSeen} from "shared/types/dbSchema";
+import {ConvDecoy, MergedConversation, LastSeen, User} from "shared/types/dbSchema";
 import store from 'redux/store';
+import {UserInfo} from 'redux/actions/userInfoActions';
+import { ConversationsState } from 'redux/reducers/conversations';
 
 export const createConvDummyDoc = (
-  members: string[]
+  members: string[],
+  searchedUser: User
 ): ConvDecoy => {
   return {
     _id: uniqid() as string,
     convHasCreated: false,
     is_group_chat: false,
-    members: members
+    members: members,
+    searchedUser
   };
 };
 
@@ -49,4 +53,28 @@ export const knowIfHasRead = (
   }
 
   return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= conv.last_message.date_sent;
+}
+
+export const getConversationName = (conv: MergedConversation, user: UserInfo) => {
+  if (conv.is_group_chat) {
+    return conv.group_name
+  } else {
+    return conv.members_username.find(username => username !== user.username);
+  }
+}
+
+export const getConvPic = (conv: ConversationsState[0], currUser: UserInfo) => {
+  if (conv.convHasCreated) {
+    if (conv.is_group_chat) {
+      return conv.conversation_pic.convPic
+    } else {
+      for (let member in conv.conversation_pic) {
+        if (member !== currUser.userId) {
+          return conv.conversation_pic[member];
+        }
+      }
+    }
+  } else {
+    return conv.searchedUser.profile_pic;
+  }
 }
