@@ -4,7 +4,7 @@ import {
     User, MembersMeta, Message, Conversation
 } from 'shared/types/dbSchema';
 
-export interface UserAuthRes {
+export interface UserAuthRes extends Omit<User, '_id'> {
     userId: string;
     username: string;
     isAuth: boolean;
