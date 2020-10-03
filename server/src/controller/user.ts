@@ -86,6 +86,9 @@ async function userLogIn(req: Request, res: Response) {
             res.status(200).json({
                 userId: user._id,
                 username: user.username,
+                profile_pic: user.profile_pic,
+                bio: user.bio,
+                header: user.header,
                 isAuth: true,
                 csrfToken: csrfToken
             });
@@ -102,13 +105,25 @@ async function userLogIn(req: Request, res: Response) {
     }
 }
 
+//Generate new csrf and jwt token to authenticate user
 // POST /user/reAuth
 async function reAuthUser(req: Request, res: Response) {
     try {
         const jwtToken = req.cookies.jwt;
         const decoded = jwt.verify(jwtToken, process.env.JWT_KEY) as IJwtDecoded;
         const csrfToken = req.headers['csrf-token'] as string;
-        
+
+        //Fetch the updated info of user
+        const user = await User
+            .findOne({_id: decoded.userId})
+            .exec();        
+
+        if (!user) {
+            return res.status(403).json({
+                isAuth: false
+            })
+        }
+
         //Verify if the csrf token was generated from the server
         if (!csrfTokenGen.verify(process.env.CSRF_TOKEN_KEY, csrfToken)) {
             throw new Error();
@@ -136,6 +151,9 @@ async function reAuthUser(req: Request, res: Response) {
         res.status(200).json({
             userId: decoded.userId,
             username: decoded.username,
+            profile_pic: user.profile_pic,
+            bio: user.bio,
+            header: user.header,
             isAuth: true,
             csrfToken: newCsrfToken
         });
