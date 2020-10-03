@@ -1,8 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, {useRef} from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 
-import {LastSeen, MergedConversation} from 'shared/types/dbSchema';
+import {LastSeen, MergedConversation, Message} from 'shared/types/dbSchema';
+import {knowIfHasRead, getConversationName, getConvPic} from 'shared/utils/helpers';
+import * as S from './Conversation.styles';
 
 import {rootState} from 'redux/store';
 import {useSelector} from 'react-redux';
@@ -13,96 +14,66 @@ interface ConversationProps {
     userLastSeenDoc: LastSeen | null;
 }
 
-function Conversation({conv, userLastSeenDoc}: ConversationProps) {               
+const Conversation = ({conv, userLastSeenDoc}: ConversationProps) => {               
     const user = useSelector((state: rootState ) => state.userInfo as UserInfo)
     const history = useHistory();
     const match = useRouteMatch<{convId: string}>('/chat/:convId');
     const currConvId = match ? match.params.convId : '';
-    const {last_message, is_group_chat, group_name, members_username} = conv;
-    let conversationName;
-
-    if (is_group_chat) {
-        conversationName = group_name;
-    } else {
-        conversationName = members_username.find(username => username !== user.username);
-    }
+    const {last_message, is_group_chat} = conv;
+    const conversationName = getConversationName(conv, user);
+    const isRead = knowIfHasRead(userLastSeenDoc, conv, user.userId);
+    const isSelected = currConvId === conv._id ? true : false;
+    const convContRef = useRef<HTMLDivElement | null>(null);
+    const lastMsgbodyRef = useRef<HTMLSpanElement | null>(null);
+    const convPic = getConvPic(conv, user);
 
     function handleOpenConvo() {
         history.push(`/chat/${conv._id}`);
     }
 
-    const isRead = knowIfHasRead(userLastSeenDoc, conv, user.userId);
-    const isSelected = currConvId === conv._id ? true : false;
- 
     return (
-        <StyledConversation isRead={isRead} isSelected={isSelected} onClick={handleOpenConvo}>
-            <ProfilePicHolder></ProfilePicHolder>
-            <div>
-                <ConvName>
+        <S.Conversation 
+            ref={convContRef}
+            isRead={isRead} 
+            isSelected={isSelected} 
+            onClick={handleOpenConvo}
+        >
+            <S.ProfilePicHolder pic={convPic}></S.ProfilePicHolder>
+            <S.PrevCont>
+                <S.ConvName>
                     {conversationName}
-                </ConvName>
-                <LastConvoPrev>
+                </S.ConvName>
+                <S.LastConvoPrev>
                     <span>
-                        {last_message.sender_username}:{' '}
+                        {renderSender(last_message, user, is_group_chat)}
                     </span>
-                    <span>
+                    <S.LastMsgBody ref={lastMsgbodyRef}>
                         {last_message.message_body}
-                    </span>
-                </LastConvoPrev>
-            </div>
-        </StyledConversation>
+                    </S.LastMsgBody>
+                </S.LastConvoPrev>
+            </S.PrevCont>
+        </S.Conversation>
     ) 
 }
 
-function knowIfHasRead(
-    lastReadDoc: ConversationProps['userLastSeenDoc'], 
-    conv: MergedConversation,
-    userId: string
-) {
-    if (lastReadDoc === null) {
-        return true
+const renderSender = (
+    lastMsg: Message,
+    currentUser: UserInfo,
+    isGroupChat: boolean
+) => {
+    if (isGroupChat) {
+        if (lastMsg.sender === currentUser.userId) {
+            return '';
+        } else {
+            return lastMsg.sender_username + ': '
+        }
+    } else {
+        if (lastMsg.sender === currentUser.userId) {
+            return 'You: ';
+        } else {
+            return '';
+        }
     }
-
-    //If members_meta is not populated
-    if (typeof conv.members_meta === 'string') {
-        //Use LastMessage document
-        return lastReadDoc.last_seen[conv._id] >= conv.last_message.date_sent
-    }
-
-    return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= conv.last_message.date_sent;
 }
-
-
-const StyledConversation = styled.div<{isRead: boolean, isSelected: boolean}>`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: .5rem;
-    background-color: ${({isSelected, theme}) => isSelected ? theme.dark.thirdly : 'transparent'};
-    color: ${({isSelected, theme}) => isSelected ? theme.text.secondary : 'white'};
-    font-weight: ${({isRead}) => isRead ? null : '600'};
-
-    &:hover {
-        cursor: pointer;
-        background-color: ${({isSelected, theme}) => isSelected ? null : theme.dark.secondary};
-    }
-`;
-
-const ConvName = styled.p`
-    font-weight: bold;
-    font-size: 1.1rem;
-`
-
-const LastConvoPrev = styled.div`
-    font-size: 1rem;
-`;
-
-const ProfilePicHolder = styled.div`
-    height: 50px;
-    width: 50px;
-    border-radius: 100%;
-    background-color: rgb(209, 209, 209);
-    margin-right: 10px;
-`;
 
 export default Conversation
