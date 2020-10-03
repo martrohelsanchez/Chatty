@@ -31,8 +31,29 @@ const Chat = () => {
     useEffect(() => {
         socket.emit('join room', user.userId);
 
-        socket.on('sendMsg', newMsg => {
-            dispatch(addNewMsg(newMsg.conversation_id, newMsg, true));
+        socket.on('gotMessage', async (newMsg: Message) => {
+            if (!newMsg.is_delivered) {
+                updateMsgIsDeliveredReq(newMsg.conversation_id, newMsg._id);
+                updateDelivered(newMsg.conversation_id, newMsg._id);
+            }
+
+            const convFromRedux = findConvInRedux(newMsg.conversation_id)
+
+            if (convFromRedux) {
+                if (convFromRedux.messages) {
+                    dispatch(addNewMsg(newMsg.conversation_id, newMsg, true));
+                } else {
+                    //if messages is not yet populated, only update the last_message field
+                    dispatch(updateLastMsg(newMsg.conversation_id, newMsg));
+                }
+            } else {
+                //Conv doesn't exist in redux. Get the conversation doc in DB
+                const convFromDb = await getTheConversationReq(newMsg.conversation_id);
+                dispatch(addConv({
+                    ...convFromDb,
+                    convHasCreated: true
+                }));
+            }
         });
 
         socket.on('seen', (convId, userId, newSeen) => {
