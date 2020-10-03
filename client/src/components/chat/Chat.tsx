@@ -3,21 +3,23 @@ import styled from 'styled-components';
 import {useRouteMatch} from 'react-router-dom';
 
 import ContactsPane from 'components/conversationPane/ConversationPane';
-import MessagePane from 'components/messagesPane/messagesPane';
+import MessagePane from 'components/messagesPane/MessagesPane';
 import InfoPane from 'components/infoPane/InfoPane'; 
 import {socket} from 'App';
+import {findConvInRedux} from 'shared/utils/helpers';
+import {getTheConversationReq, updateMsgIsDeliveredReq} from 'api/APIUtils';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {addNewMsg, deleteConv, updateLastSeen, updateDelivered} from 'redux/actions/conversationsActions';
+import {addNewMsg, deleteConv, updateLastSeen, updateDelivered, addConv, updateLastMsg} from 'redux/actions/conversationsActions';
 import {rootState} from 'redux/store';
 import {UserInfo} from 'redux/actions/userInfoActions';
+import {Message} from 'shared/types/dbSchema';
 
 const StyledChat = styled.div`
     display: flex;
     background-color: #ffffff;
     width: 100vw;
     height: 100vh;
-    font-family: ${({theme}) => theme.font.primary};
     color: white;
 `
 
