@@ -8,15 +8,25 @@ import LogInRoute from "pages/logInRoute/LogInRoute";
 import SignUpRoute from "pages/signUpRoute/SignUpRoute";
 import SplashScreen from '../../components/splashScreen/SplashScreen';
 import useHasUnmounted from "../../hooks/useHasUnmounted";
+import HomeRoute from '../homeRoute/HomeRoute';
+import UserRoute from 'pages/userRoute/UserRoute';
+import useUserJustReg from 'hooks/useUserJustReg';
 
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from '../../redux/actions/userInfoActions';
-import HomeRoute from '../homeRoute/HomeRoute';
+
+export interface IsUserJustReg {
+    justRegistered: boolean,
+    setIsUserJustReg: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const IsUserJustRegistered = React.createContext<IsUserJustReg>(null!);
 
 const AppRoute = () => {
     const dispatch = useDispatch();
     const [triedAuthUser, setTriedAuthUser] = useState(false);
     const hasUnmounted = useHasUnmounted();
+    const isUserJustRegistered = useUserJustReg();
 
     //try to authenticate when user visits the website
     if (!triedAuthUser) {
@@ -31,7 +41,10 @@ const AppRoute = () => {
                         setTriedAuthUser(true);
                         dispatch(setUserInfo({
                             userId: data.userId, 
-                            username: data.username
+                            username: data.username,
+                            bio: data.bio,
+                            header: data.header,
+                            profile_pic: data.profile_pic
                         }));
                     }) ;
                 }
@@ -47,20 +60,25 @@ const AppRoute = () => {
     return (
         <>
             {triedAuthUser ? (
-                <Switch>
-                    <Route exact={true} path='/'>
-                        <HomeRoute />
-                    </Route>
-                    <Route path='/chat'>
-                        <ChatRoute />
-                    </Route>
-                    <Route path='/logIn'>
-                        <LogInRoute />
-                    </Route>
-                    <Route path='/signUp'>
-                        <SignUpRoute />
-                    </Route>
-                </Switch>
+                <IsUserJustRegistered.Provider value={isUserJustRegistered}>
+                    <Switch>
+                        <Route exact={true} path='/'>
+                            <HomeRoute />
+                        </Route>
+                        <Route path='/chat'>
+                            <ChatRoute />
+                        </Route>
+                        <Route path='/logIn'>
+                            <LogInRoute />
+                        </Route>
+                        <Route path='/signUp'>
+                            <SignUpRoute />
+                        </Route>
+                        <Route path='/user'>
+                            <UserRoute />
+                        </Route>
+                    </Switch>
+                </IsUserJustRegistered.Provider>
             ) : (
                 <SplashScreen />
             )}
