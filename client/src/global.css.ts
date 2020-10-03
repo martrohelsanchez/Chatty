@@ -3,7 +3,7 @@ import {createGlobalStyle} from 'styled-components';
 export default createGlobalStyle`
     html {
         font-size: 16px;
-        font-family: ${({theme}) => theme.font.primary}
+        font-family: ${({theme}) => theme.font.primary};
     }
 
     ::placeholder {
@@ -16,7 +16,8 @@ export default createGlobalStyle`
     }
 
     ::-webkit-scrollbar-thumb {
-        background: ${({theme}) => theme.dark.thirdly}; 
+        background: white; 
+        /* background: ${({theme}) => theme.dark.thirdly};  */
         border-radius: 10px;
     }
 `;
