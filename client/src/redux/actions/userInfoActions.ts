@@ -1,10 +1,11 @@
+import {User} from 'shared/types/dbSchema';
+
 export type UserInfoActionTypes = 
     | ReturnType<typeof setUserInfo>
     | ReturnType<typeof resetUserInfo>
 
-export interface UserInfo {
+export interface UserInfo extends Omit<User, '_id'> {
     userId: string;
-    username: string
 }
 
 interface SetUserInfoAction {
