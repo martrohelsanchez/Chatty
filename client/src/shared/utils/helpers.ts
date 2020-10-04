@@ -55,11 +55,15 @@ export const knowIfHasRead = (
   return (conv.members_meta.find(member => member.user_id === userId)?.last_seen as number) >= conv.last_message.date_sent;
 }
 
-export const getConversationName = (conv: MergedConversation, user: UserInfo) => {
-  if (conv.is_group_chat) {
-    return conv.group_name
+export const getConversationName = (conv: ConversationsState[0], user: UserInfo) => {
+  if (conv.convHasCreated) {
+    if (conv.is_group_chat) {
+      return conv.group_name
+    } else {
+      return conv.members_username.find(username => username !== user.username);
+    }
   } else {
-    return conv.members_username.find(username => username !== user.username);
+    return conv.searchedUser.username;
   }
 }
 
