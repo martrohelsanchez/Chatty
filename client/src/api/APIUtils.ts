@@ -349,11 +349,34 @@ export const getUserByUsernameReq = async (
     errCb?: (err: Error) => void
 ) => {
     try {
-        const {data} = await axios.get<User>('/user', {
+        var {data} = await axios.get<User>('/user', {
             params: {
                 username
             }
         })
+
+        if (cb) {
+            cb(data);
+        } else {
+            return data;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+    return data;
+}
+
+export const deleteConversationReq = async (
+    convId: string,
+    cb?: (data: {deletedConv: string}) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        const { data } = await axios.delete<{deletedConv: string}>(`/chat/conversations/${convId}`);
 
         if (cb) {
             cb(data);
