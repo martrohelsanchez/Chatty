@@ -54,7 +54,7 @@ const ConversationList = () => {
             if (last_message === null) continue
 
             if (last_message.sender !== user.userId && !last_message.is_delivered) {
-                updateMsgIsDeliveredReq(_id, last_message.sender, (err) => {
+                updateMsgIsDeliveredReq(_id, last_message._id, (err) => {
                     console.error(err);
                     setErr('Something went wrong')
                 });
