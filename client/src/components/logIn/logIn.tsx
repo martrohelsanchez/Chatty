@@ -1,13 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react';
-import ReactDOM from 'react-dom';
-import {useHistory} from 'react-router-dom';
+import {useHistory, Link} from 'react-router-dom';
 
-import styles from './logIn.module.css';
 import Loading from 'components/loading/Loading';
-
-import { useDispatch } from 'react-redux';
-import {setUserInfo} from '../../redux/actions/userInfoActions';
 import {logInReq, UserAuthRes} from 'api/APIUtils';
+import * as S from './Login.styles';
+import next from 'images/next.svg'
+
+import {useDispatch} from 'react-redux';
+import {setUserInfo} from 'redux/actions/userInfoActions';
 
 const LogIn = () => {
     const [input, setInput] = useState('');
@@ -65,20 +65,20 @@ const LogIn = () => {
             <h3 className={styles.promptNickname}>Log In</h3>
             <label htmlFor='nickname-input' className={styles.promptNickname}>Enter your nickname</label>
             <input 
-                id='nickname-input'
+                    id='nickname-input'
                 className={styles.nicknameInput} 
-                data-testid='usernameInput'
-                ref={usernameInputRef}
+                    data-testid='usernameInput'
+                    ref={usernameInputRef}
                 type="input"
                 value={input}
-                autoFocus
+                    autoFocus
                 onChange={onInputChange}
                 onKeyDown={({ key }) => key === 'Enter' ? handleLogIn(input) : null}
-            />
+                />
             <div className={styles.err}>{err}</div>
-            <div>
-                {isLoading && <Loading />}
-            </div>
+                <div>
+                    {isLoading && <Loading />}
+                </div>
             <button data-testid='logInBtn' className={styles.logInBtn} onClick={e => handleLogIn(input)}>
                 Log In
             </button>
@@ -89,7 +89,7 @@ const LogIn = () => {
             <button data-testid='signUpBtn' className={styles.signUpBtn} onClick={directToSignUp}>
                 Sign Up
             </button>
-        </div>
+                </div>
     )
 }
 
