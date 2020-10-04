@@ -16,5 +16,6 @@ router.get('/conversations/:conversationId/messages', checkAuth, chatController.
 router.post('/conversations/:conversationId/messages', checkAuth, chatController.sendMessage);
 router.get('/conversations/:conversationId/members', checkAuth, chatController.getMembers);
 router.get('/conversations/:conversationId/membersMeta', checkAuth, chatController.getMembersMeta);
+router.delete('/conversations/:conversationId', checkAuth, chatController.deleteConversation);
 
 export default router;

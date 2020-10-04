@@ -435,6 +435,27 @@ async function getMembersMeta(
     }
 }
 
+async function deleteConversation(
+    req: Request<{
+        conversationId: string
+    }>,
+    res: Response
+) {
+    try {
+        await Conversation.deleteOne({_id: req.params.conversationId});
+        await Message.deleteMany({conversation_id: req.params.conversationId});
+
+        res.status(200).json({
+            deletedConv: req.params.conversationId
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 module.exports = {
     searchUsers,
     getOneConversation,
@@ -446,5 +467,6 @@ module.exports = {
     getMessages,
     sendMessage,
     getMembers,
-    getMembersMeta
+    getMembersMeta,
+    deleteConversation
 };
