@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 
-import styles from './inputBar.module.css';
+import * as S from './InputBar.styles';
 import {socket} from "App";
 import {User, MessageRedux, Message} from "shared/types/dbSchema";
-import { sendMsgReq, createConvDocReq } from 'api/APIUtils';
-import { createMsgObj } from 'shared/utils/createDummyDoc';
+import {sendMsgReq, createConvDocReq } from 'api/APIUtils';
+import {createMsgObj} from 'shared/utils/helpers';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {addNewMsg, msgSent, patchConv} from 'redux/actions/conversationsActions';
