@@ -43,6 +43,7 @@ const Input = () => {
         typingTimeout.current = undefined;
       }
 
+      setChatInput('');
       dispatch(addNewMsg(currConvId, lastMsgSent.current, false));
 
       if (currConv.convHasCreated) {
