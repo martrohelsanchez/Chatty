@@ -61,35 +61,45 @@ const LogIn = () => {
     }
 
     return (
-        <div className={styles.logInContainer}>
-            <h3 className={styles.promptNickname}>Log In</h3>
-            <label htmlFor='nickname-input' className={styles.promptNickname}>Enter your nickname</label>
-            <input 
+        <S.LogIn>
+            <S.ChittyName>
+                Chitty
+            </S.ChittyName>
+            <S.Wrapper>
+                <S.ChittyMascot />
+                <S.Err>
+                    {err}
+                </S.Err>
+                <S.Input 
                     id='nickname-input'
-                className={styles.nicknameInput} 
                     data-testid='usernameInput'
                     ref={usernameInputRef}
-                type="input"
-                value={input}
+                    placeholder='Username'
+                    type="text"
+                    value={usernameInput}
                     autoFocus
-                onChange={onInputChange}
-                onKeyDown={({ key }) => key === 'Enter' ? handleLogIn(input) : null}
+                    onChange={handleUsernameChange}
+                    onKeyDown={({key}) => key === 'Enter' ? passInputRef.current.focus() : null}
                 />
-            <div className={styles.err}>{err}</div>
+                <S.Input
+                    type='password'
+                    ref={passInputRef}
+                    value={passInput}
+                    onChange={handlePasswordChange} 
+                    placeholder='Password'
+                    onKeyDown={({key}) => key === 'Enter' ? handleLogIn() : null}
+                />
                 <div>
                     {isLoading && <Loading />}
                 </div>
-            <button data-testid='logInBtn' className={styles.logInBtn} onClick={e => handleLogIn(input)}>
-                Log In
-            </button>
-            <br />
-            <p style={{textAlign: 'center'}}>
-                Doesn't have an account yet?
-            </p>
-            <button data-testid='signUpBtn' className={styles.signUpBtn} onClick={directToSignUp}>
-                Sign Up
-            </button>
+                <S.Register to='/signUp'>
+                    Register
+                </S.Register>
+                <div style={{textAlign: 'center'}}>
+                    <S.LogInBtn src={next} data-testid='logInBtn' onClick={handleLogIn}></S.LogInBtn>
                 </div>
+            </S.Wrapper>
+        </S.LogIn>
     )
 }
 
