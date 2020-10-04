@@ -19,7 +19,7 @@ const LogIn = () => {
 
     useEffect(() => {
         usernameInputRef.current?.focus()
-    });
+    }, []);
 
     async function handleLogIn (usernameInput: string) {
         try {
