@@ -1,35 +1,39 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
-import {useRouteMatch} from 'react-router-dom';
+import {useRouteMatch, useHistory} from 'react-router-dom';
 
-import ConversationList from 'components/conversationList/ConversationList';
-import SearchedUserList from 'components/searchedUserList/SearchedUserList';
+import * as S from './ConversationPane.styles';
 import Search from 'components/search/Search';
 import {User} from 'shared/types/dbSchema';
+import ConversationList from 'components/conversationList/ConversationList';
+import SearchedUserList from 'components/searchedUserList/SearchedUserList';
 
-interface StyledContactsPaneProps {
+import {useSelector} from 'react-redux';
+import {rootState} from 'redux/store';
+
+export interface StyledContactsPaneProps {
   readonly showInMobile: boolean;
 }
-
-const StyledContactsPane = styled.div<StyledContactsPaneProps>`
-    background-color: ${({theme}) => theme.dark.primary};
-    flex: 1.2 1 0;
-
-    @media all and (max-width: ${({theme}) => theme.mobile}) {
-        & {
-            display: ${({showInMobile}) => showInMobile ? 'block' : 'none'};
-        }
-    }
-`;
 
 const ContactsPane = () => { 
   const [isSearching, setIsSearching] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const match = useRouteMatch();
   const showInMobile = match.isExact;
+  const user = useSelector((state: rootState) => state.userInfo);
+  const history = useHistory();
+
+  const directToUserProfile = () => {
+    history.push(`/user/${user.userId}`);
+  }  
 
   return (
-    <StyledContactsPane showInMobile={showInMobile}>
+    <S.StyledContactsPane showInMobile={showInMobile}>
+      <S.UserCont onClick={directToUserProfile}>
+        <S.UserProfilePic pic={user.profile_pic} />
+        <S.Username>
+          {user.username}
+        </S.Username>
+      </S.UserCont>
       <Search
         setSearchedUsers={setSearchedUsers}
         setIsSearching={setIsSearching}
@@ -39,7 +43,7 @@ const ContactsPane = () => {
       ) : (
         <ConversationList />
       )}
-    </StyledContactsPane>
+    </S.StyledContactsPane>
   );
 }
 
