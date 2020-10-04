@@ -53,22 +53,20 @@ export const ChittyName = styled.p`
 
 export const OuterCircle = styled.div`
     display: flex;
+    position: relative;
     background-color: white;
-    max-height: 82px;
-    max-width: 82px;
-    height: 7vw;
-    width: 7vw;
+    padding-top: 23%;
+    width: 23%;
     border-radius: 50%;
+    box-sizing: border-box;
 `;
 
 export const ConvPic = styled.div<{ pic: string | undefined }>`
     background-color: ${({ theme }) => theme.dark.primary};
-    height: 6.5vw;
-    width: 6.5vw;
-    max-height: 76px;
-    max-width: 76px;
+    padding-top: 91%;
+    width: 91%;
     border-radius: 50%;
-    margin: auto;
     background-image: url(${({ pic }) => pic});
     background-size: cover;
+    box-sizing: border-box;
 `;
