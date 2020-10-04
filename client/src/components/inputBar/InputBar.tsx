@@ -61,7 +61,6 @@ const Input = () => {
         history.push(`/chat/${conv._id}`);
       }
 
-      setChatInput('');
     } catch (err) {
       console.error(err);
     }
@@ -84,9 +83,7 @@ const Input = () => {
   }
 
   return (
-    <div className={styles.inputContainer}>
-      <input
-        className={styles.input}
+      <S.msgInputBar
         ref={inputRef}
         type="text"
         placeholder="Type a message"
@@ -94,10 +91,6 @@ const Input = () => {
         onChange={onInputChange}
         onKeyDown={({key}) => key === 'Enter' && chatInput ? handleSend() : null }
       />
-      <button className={styles.sendBtn} onClick={handleSend}>
-        Send
-      </button>
-    </div>
   );
 }
 export default Input;
