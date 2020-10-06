@@ -391,3 +391,102 @@ export const deleteConversationReq = async (
         }
     }
 }
+
+export const updateBioReq = async (
+    isGroupChat: boolean,
+    newBio: string,
+    userId?: string,
+    convId?: string,
+    cb?: (isUpdated: boolean) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        if (isGroupChat) {
+            await axios.patch(`/chat/conversations/${convId}/bio`, {
+                newBio
+            });
+        } else {
+            await axios.patch(`/user/bio/${userId}`, {
+                newBio
+            });
+        }
+
+        if (cb) {
+            cb(true);
+        } else {
+            return true;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const updateHeaderReq = async (
+    isGroupChat: boolean,
+    newHeader: string,
+    userId?: string,
+    convId?: string,
+    cb?: (isUpdated: boolean) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        if (isGroupChat) {
+            await axios.patch(`/chat/conversations/${convId}/header`, {
+                newHeader
+            })
+        } else {
+            await axios.patch(`/user/header/${userId}`, {
+                newHeader
+            });
+        }
+
+        if (cb) {
+            cb(true);
+        } else {
+            return true;
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
+
+export const updateProfilePicReq = async (
+    isGroupChat: boolean,
+    newProfilePic: string,
+    userId?: string,
+    convId?: string,
+    cb?: (isUpdated: boolean) => void,
+    errCb?: (err: Error) => void
+) => {
+    try {
+        if (isGroupChat) {
+            await axios.patch(`/chat/conversations/${convId}/groupPic`, {
+                newPic: newProfilePic
+            })
+        } else {
+            await axios.patch(`/user/profile/${userId}`, {
+                newProfilePic: newProfilePic 
+            });
+        }
+
+        if (cb) {
+            cb(true)
+        } else {
+            return true
+        }
+    } catch (err) {
+        if (errCb) {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    }
+}
