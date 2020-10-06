@@ -39,7 +39,8 @@ interface IConversationSchema extends Document {
   members_meta: string;
   members_username: string[];
   members_meta_id: string;
-  conv_bio?: string;
+  group_bio?: string;
+  group_header?: string;
 } 
 
 const conversationSchema = new Schema({
@@ -56,7 +57,8 @@ const conversationSchema = new Schema({
   members_meta: {type: Schema.Types.ObjectId, ref: 'MembersMeta'},
   members_username: [String],
   members_meta_id: {type: Schema.Types.ObjectId},
-  conv_bio: {type: String}
+  group_bio: {type: String},
+  group_header: {type: String}
 });
 
 export default model<IConversationSchema>('Conversation', conversationSchema); 
