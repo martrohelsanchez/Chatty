@@ -1,10 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
 import ReactDOM from 'react-dom';
 
-import styles from './messages.module.css';
-import Message from './message/Message';
+import * as S from './MessageList.styles';
+import Message from 'components/message/Message';
 import Loading from 'components/loading/Loading';
-import ScrollRetract from 'components/scrollRetract/ScrollRetract';
 import UserIsTyping from 'components/userIsTyping/UserIsTyping';
 import {seenConvReq, getMembersReq, getMembersMetaReq, getMessagesReq} from 'api/APIUtils';
 import {MergedConversation, PopulatedConversation} from 'shared/types/dbSchema';
@@ -43,6 +42,11 @@ const MessageList = ({currConv}: MessageListProps) => {
 
     //When user switches through conversations
     useEffect(()=> {
+        getMembersMetaReq(currConvId, currConv.members_meta_id, (data) => {
+            dispatch(modifyMembersMeta(currConvId, 'set', data.members_meta));
+            setNumOfLoading(c => c - 1);
+        })
+
         if (typeof currConv.members[0] === 'string' && typeof currConv.members_meta === 'string') {
             //members and members_meta is not yet populated
             setNumOfLoading(c => c + 2);
@@ -50,16 +54,12 @@ const MessageList = ({currConv}: MessageListProps) => {
                 dispatch(modifyMembers(currConvId, 'set', data, ));
                 setNumOfLoading(c => c - 1);
             });
-            getMembersMetaReq(currConvId, currConv.members_meta, (data) => {
-                dispatch(modifyMembersMeta(currConvId, 'set', data.members_meta));
-                setNumOfLoading(c => c - 1);
-            })
         }
 
         if (messages === undefined) {
             //get the initial messages if there are no messages yet in current conversation
-            getMessages(10, null, true);
-        }
+            getMessages(30, null);
+        } 
         return () => {
             moreMsgAtDb.current = true;
             // setNumOfLoading(3);
@@ -67,9 +67,8 @@ const MessageList = ({currConv}: MessageListProps) => {
         }
     }, [currConvId]);
 
-    const getMessages = async (limit: number, before: number | null, initial) => {
+    const getMessages = async (limit: number, before: number | null) => {
         setNumOfLoading(c => c + 1);
-
         getMessagesReq(currConvId, limit, before, (data) => {
             //Newest messages must be at the end of the array
             data.messages.reverse();
@@ -89,11 +88,11 @@ const MessageList = ({currConv}: MessageListProps) => {
         })
     }
 
-    const handleScroll = (pos) => {
+    const handleScroll = (pos: React.UIEvent<HTMLDivElement, UIEvent>) => {
         //when the user scroll to the top to get the previous msgs
-        const isLoading = numOfLoading === 0;
-        if (pos.scrollTop < 50 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
-            getMessages(10, messages[0].date_sent, false);
+        const isLoading = numOfLoading > 0;
+        if (pos.currentTarget.scrollTop < 5 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
+            getMessages(30, messages[0].date_sent);
         }
     }
 
@@ -116,19 +115,19 @@ const MessageList = ({currConv}: MessageListProps) => {
         return <div>{err}</div>
     }
 
-    if (numOfLoading !== 0) {
-        return <Loading />
-    }
-
     return (
-        <ScrollRetract 
-            className={`${styles.messagesContainer}`}
-            whenChanged ={[messages, isTyping]}
+        <S.ScrollRetract
+            whenChanged={[messages, isTyping]}
             onScroll={handleScroll}
         >
-                {renderMessages}
-                <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
-        </ScrollRetract>
+            {numOfLoading > 0 ? (
+                <Loading />
+            ) : (
+                null
+            )}
+            {renderMessages}
+            <UserIsTyping setIsTyping={setIsTyping} isTyping={isTyping} />
+        </S.ScrollRetract>
     )
 }
 
