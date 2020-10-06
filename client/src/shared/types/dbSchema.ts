@@ -33,7 +33,8 @@ export interface Conversation {
     members_meta: string;
     members_username: string[];
     members_meta_id: string;
-    conv_bio?: string;
+    group_bio?: string;
+    group_header?: string;
 } 
 
 //Exact schema from MembersMeta Mongoose model
