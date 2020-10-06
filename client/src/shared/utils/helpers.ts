@@ -70,7 +70,7 @@ export const getConversationName = (conv: ConversationsState[0], user: UserInfo)
 export const getConvPic = (conv: ConversationsState[0], currUser: UserInfo) => {
   if (conv.convHasCreated) {
     if (conv.is_group_chat) {
-      return conv.conversation_pic.convPic
+      return conv.conversation_pic.groupPic
     } else {
       for (let member in conv.conversation_pic) {
         if (member !== currUser.userId) {
