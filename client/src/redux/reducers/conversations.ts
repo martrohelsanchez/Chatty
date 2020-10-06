@@ -233,6 +233,38 @@ const conversations = (state = initialState, action: ConversationActionTypes): C
                 }
                 return conv;
             }) as typeof state
+        case 'conversation/updatedHeaderPic': 
+            return state.map(conv => {
+                if (conv._id === action.convId) {
+                    return {
+                        ...conv,
+                        group_header: action.picUrl
+                    }
+                }
+                return conv;
+            })
+        case 'conversation/updatedGroupPic': 
+            return state.map(conv => {
+                if (conv._id === action.convId) {
+                    return {
+                        ...conv,
+                        conversation_pic: {
+                            groupPic: action.picUrl
+                        }
+                    }
+                }
+                return conv;
+            })
+        case 'conversation/updatedBio': 
+            return state.map(conv => {
+                if (conv._id === action.convId) {
+                    return {
+                        ...conv,
+                        group_bio: action.newBio
+                    }
+                }
+                return conv;
+            })
         case 'conversations/stateReset': 
             return [];
         default:

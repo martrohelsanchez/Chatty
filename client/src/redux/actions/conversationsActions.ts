@@ -14,6 +14,9 @@ export type ConversationActionTypes =
     | ReturnType<typeof modifyMembers>
     | ReturnType<typeof updateLastMsg>
     | ReturnType<typeof resetConvState>
+    | ReturnType<typeof updateGroupHeader>
+    | ReturnType<typeof updateGroupPic>
+    | ReturnType<typeof updateGroupBio>
 
 export const retrieveConversations = (
     retrieveConv: (Conversation_LastMessage)[]
@@ -140,6 +143,31 @@ export const updateLastMsg = (convId: string, msg: Message) => {
         msg
     }
 }
+
+export const updateGroupHeader = (convId: string, picUrl: string) => {
+    return {
+        type: 'conversation/updatedHeaderPic' as 'conversation/updatedHeaderPic',
+        convId,
+        picUrl
+    }
+}
+
+export const updateGroupPic = (convId: string, picUrl: string) => {
+    return {
+        type: 'conversation/updatedGroupPic' as 'conversation/updatedGroupPic',
+        convId,
+        picUrl
+    }
+}
+
+export const updateGroupBio = (convId: string, newBio: string) => {
+    return {
+        type: 'conversation/updatedBio' as 'conversation/updatedBio',
+        convId,
+        newBio
+    }
+}
+
 export const resetConvState = () => {
     return {
         type: 'conversations/stateReset' as 'conversations/stateReset'
