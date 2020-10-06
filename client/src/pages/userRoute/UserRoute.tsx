@@ -15,6 +15,12 @@ const UserRoute = () => {
                     <Route to='/user/:userId'>
                         <UserProfile />
                     </Route>
+                    <Route to='/user/:userId/set-header-pic'>
+                        
+                    </Route>
+                    <Route to='/user/:userId/set-profile-pic'>
+
+                    </Route>
                 </Switch>
             ) : (
                 <Redirect to='/signUp'/>
