@@ -68,6 +68,7 @@ const InfoPane = () => {
                 bio={bio} 
                 header={header}
                 profilePic={profilePic} 
+                group={{convId: currConv?._id as string}}
             />
             {currConv?.convHasCreated ? (
                 <S.ConvActionCont onClick={handleDeleteConv}>
