@@ -71,6 +71,7 @@ async function getOneConversation(
 // GET /chat/conversations
 async function getConversations (
     req: Request<{}, {}, {}, {
+        //ReqQuery
         before: string,
         limit: string
     }> & {decodedJwt: IJwtDecoded}, 
@@ -191,8 +192,10 @@ async function updateSeen (
 // PATCH /conversations/:conversationId/deliver
 async function updateIsDelivered(
     req: Request<{
+        //Params
         conversationId: string
     }, {}, {
+        //ReqBody
         msgId: string
     }>, 
     res: Response
@@ -235,6 +238,7 @@ async function updateIsDelivered(
 //POST /chat/conversations
 async function createConversation (
     req: Request<{}, {}, {
+        //Reqbody
         membersId: string[],
         groupName?: string,
         lastMessageId?: string,
@@ -244,18 +248,18 @@ async function createConversation (
 ) {
     try {
         const { decodedJwt, body } = req;
+        const isGroupChat = body.membersId.length > 2 ? true : false
+        let convPic: {[key: string]: string} = {};
+        let users: IUserSchema[] = [];
         const members_meta = body.membersId.map(id => {
             return {
                 user_id: id,
                 last_seen: 0
             }
         });
-        const isGroupChat = body.membersId.length > 2 ? true : false
-        let convPic: {[key: string]: string} = {};
-        let users: IUserSchema[] = [];
 
         if (isGroupChat) {
-            convPic = {convPic: body.groupPic as string}
+            convPic = {groupPic: body.groupPic as string}
         } else {
             users = await User
                 .find({_id: {
@@ -301,8 +305,10 @@ async function createConversation (
 //Getting the messages of a conversation
 async function getMessages(
     req: Request<{
+        //Params
         conversationId: string
     }, {}, {}, {
+        //ReqQuery
         before: string,
         limit: string
     }>, 
@@ -339,8 +345,10 @@ async function getMessages(
 // POST /chat/conversations/:conversationId/messages
 async function sendMessage(
     req: Request<{
+        //Params
         conversationId: string
     }, {}, {
+        //ReqBody
         messageBody: string,
         convMembers: string[]
     }> & {decodedJwt: IJwtDecoded},
@@ -416,6 +424,7 @@ async function getMembers(
 
 async function getMembersMeta(
     req: Request<{}, {}, {}, {
+        //ReqQuery
         membersMetaId: string
     }>,
     res: Response
@@ -437,6 +446,7 @@ async function getMembersMeta(
 
 async function deleteConversation(
     req: Request<{
+        //Params
         conversationId: string
     }>,
     res: Response
@@ -448,6 +458,92 @@ async function deleteConversation(
         res.status(200).json({
             deletedConv: req.params.conversationId
         })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function updateBio (
+    req: Request<{
+        conversationId: string
+    }, {}, {
+        newbio: string
+    }>,
+    res: Response
+) {
+    try {
+        await Conversation
+            .findOneAndUpdate({
+                _id: req.params.conversationId
+            }, {
+                $set: {
+                    group_bio: req.body.newbio 
+                }
+            })
+            .exec();
+        
+        res.status(200).end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function updateHeader(
+    req: Request<{
+        //Params
+        conversationId: string
+    }, {}, {
+        //ReqBody
+        newHeader: string
+    }>,
+    res: Response
+) {
+    try {
+        await Conversation
+            .findOneAndUpdate({
+                _id: req.params.conversationId
+            }, {
+                $set: {
+                    group_header: req.body.newHeader
+                }
+            })
+            .exec();
+        
+        res.status(200).end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function updateProfilePic(
+    req: Request<{
+        conversationId: string
+    }, {}, {
+        newPic: string
+    }>,
+    res: Response
+) {
+    try {
+        await Conversation
+            .findOneAndUpdate({
+                _id: req.params.conversationId
+            }, {
+                $set: {
+                    'conversation_pic.groupPic': req.body.newPic
+                }
+            })
+            .exec();
+
+        res.status(200).end();
     } catch (err) {
         console.error(err);
         res.status(500).json({
@@ -468,5 +564,8 @@ module.exports = {
     sendMessage,
     getMembers,
     getMembersMeta,
-    deleteConversation
+    deleteConversation,
+    updateBio,
+    updateHeader,
+    updateProfilePic
 };
