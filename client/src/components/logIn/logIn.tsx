@@ -10,33 +10,50 @@ import {useDispatch} from 'react-redux';
 import {setUserInfo} from 'redux/actions/userInfoActions';
 
 const LogIn = () => {
-    const [input, setInput] = useState('');
+    const [usernameInput, setUsernameInput] = useState('');
     const [err, setErr] = useState<string | null>(null);
     const usernameInputRef = useRef<HTMLInputElement>(null); 
     const history = useHistory();
     const [isLoading, setLoading] = useState(false);
     const dispatch = useDispatch();
+    const [passInput, setPassInput] = useState('');
+    const passInputRef = useRef<HTMLInputElement>(null!);
 
     useEffect(() => {
         usernameInputRef.current?.focus()
     }, []);
 
-    async function handleLogIn (usernameInput: string) {
+    async function handleLogIn () {
         try {
+            setLoading(true);
+
             const data = await logInReq(usernameInput.trim());
-            const {csrfToken, userId, username, isAuth} = data as UserAuthRes;
+            const {
+                csrfToken, 
+                userId, 
+                username, 
+                isAuth, 
+                bio, 
+                header, 
+                profile_pic
+            } = data as UserAuthRes;
 
             if (isAuth) {
                 window.localStorage.setItem('csrfToken', csrfToken);
 
-                setInput('');
+                setUsernameInput('');
+                setPassInput('');
+                setLoading(false);
                 dispatch(setUserInfo({
                     userId: userId,
-                    username
+                    username,
+                    bio,
+                    header,
+                    profile_pic
                 }));
 
                 history.push('/chat');
-            } // if isAuth is false, server send 401 status
+            } // if isAuth is false, server send 401 status as an Error object
         } catch (err) {
             if (!err.response) {
                     console.error(err)
@@ -49,15 +66,17 @@ const LogIn = () => {
             } else {
                 setErr('Sorry, something went wrong. Please try again later')   
             }
+
+            setLoading(false);
         }
     }
 
-    function onInputChange(e) {
-        setInput(e.target.value);
+    function handleUsernameChange(e) {
+        setUsernameInput(e.target.value);
     }
 
-    function directToSignUp() {
-        history.push('/signUp')
+    function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setPassInput(e.target.value);
     }
 
     return (
