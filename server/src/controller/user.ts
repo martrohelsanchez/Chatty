@@ -5,6 +5,7 @@ import {Request, Response} from 'express';
 import User from '../model/user';
 import LastSeen from '../model/lastSeen';
 import {IJwtDecoded} from '../shared/types';
+import Conversation from '../model/conversation';
 
 const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 
@@ -204,10 +205,115 @@ async function getUserByUsername(
     }
 }
 
+async function updateBio(
+    req: Request<{
+        //params
+        userId: string
+    }, {}, {
+        newBio: string
+    }>,
+    res: Response
+) {
+    try {
+        await User.findOneAndUpdate({
+                _id: req.params.userId
+            }, {
+                $set: {
+                    bio: req.body.newBio
+                }
+            })
+            .exec();
+        
+        res.status(200).end();
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function updateHeader(
+    req: Request<{
+        //Params
+        userId: string
+    }, {}, {
+        //ReqBody
+        newHeader: string
+    }>,
+    res: Response
+) {
+    try {
+        await User
+            .findOneAndUpdate({
+                _id: req.params.userId
+            }, {
+                $set: {
+                    header: req.body.newHeader
+                }
+            })
+            .exec();
+        
+        res.status(200).end();
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
+async function updateProfilePic(
+    req: Request<{
+        //Params
+        userId: string
+    }, {}, {
+        //ReqBody
+        newProfilePic: string
+    }>,
+    res: Response
+) {
+    try {
+        const userId = req.params.userId;
+        const userConvPicField = `conversation_pic.${userId}`;
+
+        await User
+            .findOneAndUpdate({
+                _id: userId
+            }, {
+                $set: {
+                    profile_pic: req.body.newProfilePic
+                }
+            })
+            .exec();
+        
+        await Conversation
+            .updateMany({
+                members: userId,
+                is_group_chat: false
+            }, {
+                $set: {
+                    [userConvPicField]: req.body.newProfilePic,
+                }
+            })
+            .exec();
+
+        res.status(200).end();
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            err: err.message
+        })
+    }
+}
+
 module.exports = {
     userSignUp,
     userLogIn,
     reAuthUser,
     getLastSeen,
-    getUserByUsername
+    getUserByUsername,
+    updateBio,
+    updateHeader,
+    updateProfilePic
 }
