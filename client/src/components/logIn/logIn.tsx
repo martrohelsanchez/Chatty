@@ -93,6 +93,7 @@ const LogIn = () => {
                     id='nickname-input'
                     data-testid='usernameInput'
                     ref={usernameInputRef}
+                    autoComplete='off'
                     placeholder='Username'
                     type="text"
                     value={usernameInput}
@@ -104,6 +105,7 @@ const LogIn = () => {
                     type='password'
                     ref={passInputRef}
                     value={passInput}
+                    autoComplete="off"
                     onChange={handlePasswordChange} 
                     placeholder='Password'
                     onKeyDown={({key}) => key === 'Enter' ? handleLogIn() : null}
@@ -115,7 +117,7 @@ const LogIn = () => {
                     Register
                 </S.Register>
                 <div style={{textAlign: 'center'}}>
-                    <S.LogInBtn src={next} data-testid='logInBtn' onClick={handleLogIn}></S.LogInBtn>
+                        <S.LogInBtn src={next} data-testid='logInBtn' onClick={handleLogIn}></S.LogInBtn>
                 </div>
             </S.Wrapper>
         </S.LogIn>
