@@ -1,10 +1,13 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 import next from 'images/next.svg';
 import * as S from './SignUp.styles';
-import { getUserByUsernameReq } from 'api/APIUtils';
+import {getUserByUsernameReq} from 'api/APIUtils';
+import {IsUserJustRegistered} from 'pages/appRoute/AppRoute';
+import { useDispatch } from 'react-redux';
+import { setUserInfo } from 'redux/actions/userInfoActions';
 
 function SignUp() {
   const [usernameInput, setUsernameInput] = useState('');
@@ -15,13 +18,20 @@ function SignUp() {
   const [err, setErr] = useState<string | null>(null!);
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
+  const justReg = useContext(IsUserJustRegistered);
+  const dispatch = useDispatch();
 
   function signUp() {
     if (!usernameInput) {
       return null;
     } 
 
-    axios.post('/user/signUp', {
+    axios.post<{
+      userId: string,
+      username: string,
+      isUsernameTaken: boolean,
+      csrfToken: string
+    }>('/user/signUp', {
         username: usernameInput.trim(),
         password: confirmPass.trim()
     }, {
@@ -29,7 +39,14 @@ function SignUp() {
     })
         .then(({data}) => {
             if (!data.isUsernameTaken) {
+                window.localStorage.setItem('csrfToken', data.csrfToken);
+                
                 setUsernameInput('')
+                dispatch(setUserInfo({
+                  userId: data.userId,
+                  username: data.username,
+                }))
+                justReg.setIsUserJustReg(true);
                 history.push(`/user/${data.userId}`)
             } else {
                 setErr('User already exists')
@@ -87,6 +104,7 @@ function SignUp() {
         {isUsernameScreen ? (
           <S.Input
             type="input"
+            autoComplete="off"
             value={usernameInput}
             placeholder='What should everyone call you?'
             onChange={onUsernameChange}
@@ -97,6 +115,7 @@ function SignUp() {
             <S.Input
               type="password"
               value={passInput}
+              autoComplete="off"
               placeholder='Password'
               onChange={onPassChange}
               onKeyDown={({key}) => (key === 'Enter' ? confirmPassRef.current.focus() : null)}
@@ -105,6 +124,7 @@ function SignUp() {
               type="password"
               ref={confirmPassRef}
               value={confirmPass}
+              autoComplete="off"
               placeholder='Confirm Password'
               onChange={onConfirmPassChange}
               onKeyDown={({key}) => (key === 'Enter' && !err && confirmPass ? signUp() : null)}
