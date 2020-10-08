@@ -297,12 +297,14 @@ export const sendMsgReq = async (
 
 export const createConvDocReq = async (
     membersId: string[],
+    groupName?: string,
     cb?: (data: Conversation) => void,
     errCb?: (err: Error) => void
 ) => {
     try {
         var {data} = await axios.post<Conversation>('/chat/conversations', {
-            membersId: membersId
+            membersId,
+            groupName
         });
 
         if (cb) {
@@ -395,18 +397,17 @@ export const deleteConversationReq = async (
 export const updateBioReq = async (
     isGroupChat: boolean,
     newBio: string,
-    userId?: string,
-    convId?: string,
+    id: string,
     cb?: (isUpdated: boolean) => void,
     errCb?: (err: Error) => void
 ) => {
     try {
         if (isGroupChat) {
-            await axios.patch(`/chat/conversations/${convId}/bio`, {
+            await axios.patch(`/chat/conversations/${id}/bio`, {
                 newBio
             });
         } else {
-            await axios.patch(`/user/bio/${userId}`, {
+            await axios.patch(`/user/bio/${id}`, {
                 newBio
             });
         }
@@ -428,18 +429,17 @@ export const updateBioReq = async (
 export const updateHeaderReq = async (
     isGroupChat: boolean,
     newHeader: string,
-    userId?: string,
-    convId?: string,
+    id: string,
     cb?: (isUpdated: boolean) => void,
     errCb?: (err: Error) => void
 ) => {
     try {
         if (isGroupChat) {
-            await axios.patch(`/chat/conversations/${convId}/header`, {
+            await axios.patch(`/chat/conversations/${id}/header`, {
                 newHeader
             })
         } else {
-            await axios.patch(`/user/header/${userId}`, {
+            await axios.patch(`/user/header/${id}`, {
                 newHeader
             });
         }
@@ -461,18 +461,17 @@ export const updateHeaderReq = async (
 export const updateProfilePicReq = async (
     isGroupChat: boolean,
     newProfilePic: string,
-    userId?: string,
-    convId?: string,
+    id: string,
     cb?: (isUpdated: boolean) => void,
     errCb?: (err: Error) => void
 ) => {
     try {
         if (isGroupChat) {
-            await axios.patch(`/chat/conversations/${convId}/groupPic`, {
+            await axios.patch(`/chat/conversations/${id}/groupPic`, {
                 newPic: newProfilePic
             })
         } else {
-            await axios.patch(`/user/profile/${userId}`, {
+            await axios.patch(`/user/profile/${id}`, {
                 newProfilePic: newProfilePic 
             });
         }
