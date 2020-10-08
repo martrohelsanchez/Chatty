@@ -27,7 +27,7 @@ export interface Conversation {
     conversation_pic: {
         [key: string]: string
     };
-    last_message: Message;
+    last_message?: Message;
     created_at: number;
     last_updated: number;
     members_meta: string;
