@@ -44,12 +44,18 @@ const Conversation = ({conv, userLastSeenDoc}: ConversationProps) => {
                     {conversationName}
                 </S.ConvName>
                 <S.LastConvoPrev>
-                    <span>
-                        {renderSender(last_message, user, is_group_chat)}
-                    </span>
-                    <S.LastMsgBody ref={lastMsgbodyRef}>
-                        {last_message.message_body}
-                    </S.LastMsgBody>
+                    {last_message ? (
+                        <>
+                            <span>
+                                {renderSender(last_message, user, is_group_chat)}
+                            </span>
+                            <S.LastMsgBody ref={lastMsgbodyRef}>
+                                {last_message.message_body}
+                            </S.LastMsgBody>
+                        </>
+                    ) : (
+                        <span style={{visibility: 'hidden'}}>filler</span>
+                    )}
                 </S.LastConvoPrev>
             </S.PrevCont>
         </S.Conversation>
