@@ -3,7 +3,7 @@ import mongoose, {Schema, model} from 'mongoose';
 export interface IUserSchema extends mongoose.Document {
     username: string,
     password: string,
-    profile_pic: string,
+    profile_pic?: string,
     header?: string,
     bio?: string,
 };
