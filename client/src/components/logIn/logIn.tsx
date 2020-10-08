@@ -110,14 +110,15 @@ const LogIn = () => {
                     placeholder='Password'
                     onKeyDown={({key}) => key === 'Enter' ? handleLogIn() : null}
                 />
-                <div>
-                    {isLoading && <Loading />}
-                </div>
                 <S.Register to='/signUp'>
                     Register
                 </S.Register>
                 <div style={{textAlign: 'center'}}>
+                    {isLoading ? (
+                        <Loading style={{ display: 'inline-block', margin: '60px auto 0 auto'}} />
+                    ) : (
                         <S.LogInBtn src={next} data-testid='logInBtn' onClick={handleLogIn}></S.LogInBtn>
+                    )}
                 </div>
             </S.Wrapper>
         </S.LogIn>
