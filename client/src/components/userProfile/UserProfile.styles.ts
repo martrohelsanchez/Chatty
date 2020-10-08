@@ -1,9 +1,16 @@
 import styled from 'styled-components';
-import {SherpaBlueBg, NextBtn as nextBtn, ChittyName} from 'shared/styles';
+import {PrussianBlueBg as prussianBlueBg, NextBtn as nextBtn, ChittyName} from 'shared/styles';
 
-export const NextBtn = styled(nextBtn)`
-    display: block;
-    margin: 100px auto;
+export const PrussianBlueBg = styled(prussianBlueBg)`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 `;
 
-export {SherpaBlueBg, nextBtn, ChittyName}
+export const NextBtn = styled(nextBtn) <{canProceed: boolean}>`
+    display: block;
+    margin: 100px auto 0 auto;
+    opacity: ${({canProceed}) => canProceed ? '1' : '.3'};
+`;
+
+export {nextBtn, ChittyName}
