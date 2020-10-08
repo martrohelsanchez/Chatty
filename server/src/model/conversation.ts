@@ -31,7 +31,7 @@ interface IConversationSchema extends Document {
   is_group_chat: boolean;
   members: string[];
   conversation_pic: {
-    [key: string]: string
+    [key: string]: string | undefined
   };
   last_message: string;
   created_at: number;
