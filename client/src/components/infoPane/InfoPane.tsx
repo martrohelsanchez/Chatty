@@ -9,11 +9,11 @@ import {User} from 'shared/types/dbSchema';
 import trashCan from 'images/trash_can.svg';
 import videoCall from 'images/video_call.svg';
 import call from 'images/call.svg';
+import {deleteConversationReq} from 'api/APIUtils';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {rootState} from 'redux/store';
-import { deleteConversationReq } from 'api/APIUtils';
-import { deleteConv } from 'redux/actions/conversationsActions';
+import {deleteConv} from 'redux/actions/conversationsActions';
 
 const InfoPane = () => {
     const infoPaneMatchRoute = useRouteMatch('/chat/:convId/info');
@@ -57,6 +57,7 @@ const InfoPane = () => {
             convName = currConv?.searchedUser.username;
             header = currConv?.searchedUser.header;
             profilePic = currConv?.searchedUser.profile_pic;
+            bio = currConv?.searchedUser.bio;
         }
     }
 
@@ -68,7 +69,7 @@ const InfoPane = () => {
                 bio={bio} 
                 header={header}
                 profilePic={profilePic} 
-                group={{convId: currConv?._id as string}}
+                group={currConv?.is_group_chat ? {convId: currConv?._id as string} : undefined}
             />
             {currConv?.convHasCreated ? (
                 <S.ConvActionCont onClick={handleDeleteConv}>
