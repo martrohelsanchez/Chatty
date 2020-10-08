@@ -470,7 +470,7 @@ async function updateBio (
     req: Request<{
         conversationId: string
     }, {}, {
-        newbio: string
+        newBio: string
     }>,
     res: Response
 ) {
@@ -480,11 +480,10 @@ async function updateBio (
                 _id: req.params.conversationId
             }, {
                 $set: {
-                    group_bio: req.body.newbio 
+                    group_bio: req.body.newBio 
                 }
             })
             .exec();
-        
         res.status(200).end();
     } catch (err) {
         console.error(err);
