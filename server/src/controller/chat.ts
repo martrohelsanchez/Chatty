@@ -249,7 +249,7 @@ async function createConversation (
     try {
         const { decodedJwt, body } = req;
         const isGroupChat = body.membersId.length > 2 ? true : false
-        let convPic: {[key: string]: string} = {};
+        let convPic: {[key: string]: string | undefined} = {};
         let users: IUserSchema[] = [];
         const members_meta = body.membersId.map(id => {
             return {
