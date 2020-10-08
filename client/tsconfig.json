@@ -21,7 +21,7 @@
     "downlevelIteration": true,
     "noImplicitAny": false,
 
-    "baseUrl": "src"
+    "baseUrl": "./src"
   },
   "include": [
     "src"
