@@ -68,15 +68,15 @@ const ConversationList = () => {
         return <div>{err}</div>
     }
 
-    const renderConversations = conversations.map(conv => {
-        if (conv.convHasCreated && conv.last_message) {
+    const conversationList = conversations.map(conv => {
+        if (conv.convHasCreated) {
             return <Conversation key={conv._id} conv={conv} userLastSeenDoc={userLastSeen} />
         }
     });
 
     return (
       <div>
-        {renderConversations}
+        {conversationList}
       </div>
     );
 }
