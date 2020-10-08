@@ -79,7 +79,6 @@ const Search = ({setSearchedUsers, setIsSearching, autoFocus, className}: Search
 
     return (
       <>
-        {/* <SearchIcon src={searchIcon} /> */}
         <S.SearchInput
           type="text"
           className={`search-input ${className}`}
