@@ -13,7 +13,7 @@ const HomeRoute = () => {
             {userInfo ? (
                 <Redirect to='/chat' />
             ) : (
-                'Home'
+                <Redirect to='/signUp' />
             )}
         </div>
     )
