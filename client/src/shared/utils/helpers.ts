@@ -42,6 +42,10 @@ export const knowIfHasRead = (
   conv: MergedConversation,
   userId: string
 ) => {
+  if (!conv.last_message) {
+    return true;
+  }
+
   if (lastReadDoc === null) {
     return true
   }
