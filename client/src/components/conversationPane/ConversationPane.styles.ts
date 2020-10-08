@@ -41,14 +41,33 @@ export const Username = styled.p`
     }
 `;
 
-export const UserCont = styled.span`
+export const TopCont = styled.span`
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin: 20px;
+    width: 90%;
+    box-sizing: border-box;
+`;
+
+export const LogOut = styled.img`
+    height: 35px;
+    
     &:hover {
         cursor: pointer;
     }
 `;
+
+export const SearchCont = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 50px auto;
+  width: 90%;
+`;
+
+export const CreateGrp = styled.img`
+  height: 35px;
 
   &:hover {
     cursor: pointer;
