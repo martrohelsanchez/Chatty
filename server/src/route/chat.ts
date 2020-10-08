@@ -13,7 +13,7 @@ router.get('/conversations/:conversationId/messages', checkAuth, chatController.
 router.post('/conversations/:conversationId/messages', checkAuth, chatController.sendMessage);
 router.get('/conversations/:conversationId/members', checkAuth, chatController.getMembers);
 router.get('/conversations/:conversationId/membersMeta', checkAuth, chatController.getMembersMeta);
-router.patch('conversations/:conversationId/bio', checkAuth, chatController.updateBio);
+router.patch('/conversations/:conversationId/bio', checkAuth, chatController.updateBio);
 router.delete('/conversations/:conversationId', checkAuth, chatController.deleteConversation);
 router.post('/conversations', checkAuth, chatController.createConversation);
 router.get('/conversation', checkAuth, chatController.getOneConversation);
