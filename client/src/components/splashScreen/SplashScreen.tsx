@@ -1,10 +1,13 @@
 import React from 'react';
 
 import Loading from '../loading/Loading';
+import * as S from './SplashScreen.styles';
 
 function SplashScreen() {
     return (
-        <Loading />
+        <S.PrussianBlueBg>
+            <Loading />
+        </S.PrussianBlueBg>
     )
 }
 
