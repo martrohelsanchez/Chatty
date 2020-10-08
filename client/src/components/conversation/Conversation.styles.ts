@@ -38,7 +38,6 @@ export const LastMsgBody = styled.span`
     max-width: 100%;
     white-space: pre;
     margin: 0 0 -3px 0;
-
 `;
 
 export const PrevCont = styled.div`
