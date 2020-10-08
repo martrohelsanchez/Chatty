@@ -1,10 +1,22 @@
 import React from 'react';
 
-function Loading() {
+import * as S from './Loading.styles';
+import loadingSpinnerIcon from 'images/loading_spinner.svg';
+
+interface LoadingProps {
+    style?: React.CSSProperties;
+    className?: string;
+}
+
+function Loading({className, style}: LoadingProps) {
     return (
-        <div>
-            Loading...
-        </div>
+        <>
+            <S.Spinner 
+                style={style}
+                className={className} 
+                icon={loadingSpinnerIcon}
+            ></S.Spinner>
+        </>
     )
 }
 
