@@ -1,5 +1,4 @@
 import React, {useRef, useLayoutEffect} from 'react';
-import styled from 'styled-components';
 
 interface ScrollMessagesProps {
     onScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
@@ -8,9 +7,9 @@ interface ScrollMessagesProps {
 }
 
 interface PrevScrollPos {
-    scrollTop: number,
-    clientHeight: number,
-    scrollHeight: number
+    scrollTop: number;
+    clientHeight: number;
+    scrollHeight: number;
 }
 
 const ScrollRetract: React.FC<ScrollMessagesProps> = (props) => {
