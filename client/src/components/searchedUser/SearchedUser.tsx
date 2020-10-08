@@ -3,7 +3,7 @@ import {useHistory} from 'react-router';
 
 import styles from './searchedUser.module.css';
 import {getConversationByMembersReq} from 'api/APIUtils';
-import {createConvDummyDoc} from 'shared/utils/createDummyDoc';
+import {createConvDummyDoc} from 'shared/utils/helpers';
 
 import {User} from 'shared/types/dbSchema';
 import {rootState} from 'redux/store';
@@ -20,7 +20,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
     const conversations = useSelector((state: rootState) => state.conversations);
     const dispatch = useDispatch();
     const history = useHistory();
-
+    
     const handleClick = () => {
         findConv([searchedUser._id, user.userId]);
     }
@@ -44,7 +44,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
                 history.push(`/chat/${convFromDb._id}`);
             } else {
                 //If the conversation doesn't exist in DB, create a conv obj decoy
-                const convObj = createConvDummyDoc([searchedUser._id, user.userId]);
+                const convObj = createConvDummyDoc([searchedUser._id, user.userId], searchedUser);
                 
                 dispatch(addConv(convObj));
                 history.push(`/chat/${convObj._id}`);
@@ -63,7 +63,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
 
     return (
       <li className={styles.container} onClick={handleClick}>
-        <div className={styles.profilePicHolder}></div>
+        <img src={searchedUser.profile_pic} className={styles.profilePicHolder}></img>
         <span data-testid="searchedUser" className={styles.username}>
           {searchedUser.username}
         </span>
