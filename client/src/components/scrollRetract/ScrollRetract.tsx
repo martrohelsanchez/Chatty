@@ -21,7 +21,7 @@ const ScrollRetract: React.FC<ScrollMessagesProps> = (props) => {
     useLayoutEffect(() => {
         const prevFromBottom = getPxFromBottom(prevScrollPos.current);
 
-        if (prevFromBottom < 100) {
+        if (prevFromBottom < 200) {
             scrollToBottom(messagesContainer.current);
         } else {
             //remain from previous position
