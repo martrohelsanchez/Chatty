@@ -6,9 +6,12 @@ import Search from 'components/search/Search';
 import {User} from 'shared/types/dbSchema';
 import ConversationList from 'components/conversationList/ConversationList';
 import SearchedUserList from 'components/searchedUserList/SearchedUserList';
+import logOutIcon from 'images/logout.svg';
+import createGrpIcon from 'images/create_group.svg';
 
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {rootState} from 'redux/store';
+import {resetUserInfo} from 'redux/actions/userInfoActions';
 
 export interface StyledContactsPaneProps {
   readonly showInMobile: boolean;
@@ -21,23 +24,41 @@ const ContactsPane = () => {
   const showInMobile = match.isExact;
   const user = useSelector((state: rootState) => state.userInfo);
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const directToUserProfile = () => {
     history.push(`/user/${user.userId}`);
-  }  
+  }
+  
+  const logOut = () => {
+    window.localStorage.clear();
+    dispatch(resetUserInfo());
+    history.push('/logIn');
+  }
+
+  const directToGroupRoute = () => {
+    history.push('/group');
+  }
 
   return (
     <S.StyledContactsPane showInMobile={showInMobile}>
-      <S.UserCont onClick={directToUserProfile}>
-        <S.UserProfilePic pic={user.profile_pic} />
-        <S.Username>
-          {user.username}
-        </S.Username>
-      </S.UserCont>
-      <Search
-        setSearchedUsers={setSearchedUsers}
-        setIsSearching={setIsSearching}
-      />
+      <S.TopCont >
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <S.UserProfilePic onClick={directToUserProfile} pic={user.profile_pic} />
+          <S.Username onClick={directToUserProfile}>
+            {user.username}
+          </S.Username>
+        </div>
+        <S.LogOut src={logOutIcon} onClick={logOut} />
+      </S.TopCont>
+      <S.SearchCont>
+        <Search
+          setSearchedUsers={setSearchedUsers}
+          setIsSearching={setIsSearching}
+          autoFocus={false}
+        />
+        <S.CreateGrp src={createGrpIcon} onClick={directToGroupRoute} />
+      </S.SearchCont>
       {isSearching ? (
         <SearchedUserList searchedUsers={searchedUsers} />
       ) : (
