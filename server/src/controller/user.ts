@@ -20,8 +20,7 @@ async function userSignUp(req: Request, res: Response) {
         if (!isUserTaken) {
             const user = await User.create({
                 username: req.body.username,
-                password: req.body.password,
-                profile_pic: 'https://smhlancers.org/wp-content/uploads/2016/06/profile-placeholder.png'
+                password: req.body.password
             });
             const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
@@ -195,7 +194,6 @@ async function getUserByUsername(
 ) {
     try {
         const user = await User.findOne({username: req.query.username});
-        console.log(user);
         res.status(200).json(user);
     } catch (err) {
         console.error(err)
@@ -251,6 +249,8 @@ async function updateHeader(
                 $set: {
                     header: req.body.newHeader
                 }
+            }, {
+                new: true
             })
             .exec();
         
