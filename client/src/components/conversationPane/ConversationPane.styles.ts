@@ -26,19 +26,31 @@ export const UserProfilePic = styled.span<{pic?: string}>`
     border-radius: 50%;
     border: none;
     margin: 0 8px 0 0;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 export const Username = styled.p`
     display: inline-block;
     font-weight: lighter;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 export const UserCont = styled.span`
     display: flex;
     align-items: center;
     margin: 20px;
-
     &:hover {
         cursor: pointer;
     }
+`;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
