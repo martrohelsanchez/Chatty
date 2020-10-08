@@ -6,8 +6,8 @@ import next from 'images/next.svg';
 import * as S from './SignUp.styles';
 import {getUserByUsernameReq} from 'api/APIUtils';
 import {IsUserJustRegistered} from 'pages/appRoute/AppRoute';
-import { useDispatch } from 'react-redux';
-import { setUserInfo } from 'redux/actions/userInfoActions';
+import {useDispatch} from 'react-redux';
+import {setUserInfo} from 'redux/actions/userInfoActions';
 
 function SignUp() {
   const [usernameInput, setUsernameInput] = useState('');
@@ -135,8 +135,14 @@ function SignUp() {
           Already have an account?
         </S.ToLogIn>
         <div style={{textAlign: 'center'}}>
-          {isUsernameScreen || <S.BackBtn src={next} onClick={handleBack}></S.BackBtn>}
-          <S.NextBtn src={next} onClick={onUsernameSubmit}></S.NextBtn>
+          {isLoading ? (
+            <S.Loading />
+          ) : (
+            <>
+              {isUsernameScreen || <S.BackBtn src={next} onClick={handleBack}></S.BackBtn>}
+              <S.NextBtn src={next} onClick={onUsernameSubmit}></S.NextBtn>
+            </>
+          )}
         </div>
       </div>
     </S.SignUp>

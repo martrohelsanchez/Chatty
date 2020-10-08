@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {useHistory, Link} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
 import Loading from 'components/loading/Loading';
 import {logInReq, UserAuthRes} from 'api/APIUtils';

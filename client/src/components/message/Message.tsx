@@ -1,7 +1,7 @@
 import React from 'react'
 
 import MsgStatus from 'components/msgStatus/MsgStatus';
-import {Message as MessageType, PopulatedConversation} from 'shared/types/dbSchema';
+import {PopulatedConversation} from 'shared/types/dbSchema';
 import * as S from './Message.style';
 
 import {useSelector} from 'react-redux';

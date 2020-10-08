@@ -24,7 +24,6 @@ const MessageList = ({currConv}: MessageListProps) => {
     const messages = 'messages' in currConv ? currConv.messages : undefined;
     const {members, members_meta} = currConv;
     const currConvId = currConv._id;
-    const msgLength = messages ? messages.length : 0;
 
     useEffect(() => {
         if (messages !== undefined) {
@@ -38,7 +37,8 @@ const MessageList = ({currConv}: MessageListProps) => {
                 setErr('Sorry, something went wrong');
             });
         }
-    }, [msgLength]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currConvId, messages?.length]);
 
     //When user switches through conversations
     useEffect(()=> {
@@ -65,6 +65,7 @@ const MessageList = ({currConv}: MessageListProps) => {
             // setNumOfLoading(3);
             setErr(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currConvId]);
 
     const getMessages = async (limit: number, before: number | null) => {

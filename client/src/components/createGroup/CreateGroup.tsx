@@ -5,7 +5,6 @@ import * as S from './CreateGroup.styles';
 import GroupMembers from 'components/groupMembers/GroupMembers';
 import nextIcon from 'images/next.svg';
 import {User} from 'shared/types/dbSchema';
-import Loading from 'components/loading/Loading';
 import { createConvDocReq } from 'api/APIUtils';
 import { useSelector } from 'react-redux';
 import { rootState } from 'redux/store';

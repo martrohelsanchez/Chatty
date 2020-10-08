@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import searchIcon from 'images/search-icon.svg';
 import * as S from './Search.styles';
 import axios from 'axios';
 import {User} from 'shared/types/dbSchema';
-import { useHistory } from 'react-router-dom';
 
 interface SearchProps {
   setSearchedUsers: React.Dispatch<React.SetStateAction<User[]>>;
@@ -20,19 +18,19 @@ interface MouseEventListerner {
 const Search = ({setSearchedUsers, setIsSearching, autoFocus, className}: SearchProps) => {
     const [searchInput, setSearchInput] = useState('');
     const searchInputTimeout = useRef<number | undefined>(undefined);
-    const history = useHistory();
 
     useEffect(() => {
-        document.addEventListener(
-          "click",
-          handleSearchClose as MouseEventListerner
-        );
-        return () => {
-            document.removeEventListener(
-              "click",
-              handleSearchClose as MouseEventListerner
-            );
-        }
+      document.addEventListener(
+        "click",
+        handleSearchClose as MouseEventListerner
+      );
+      return () => {
+          document.removeEventListener(
+            "click",
+            handleSearchClose as MouseEventListerner
+          );
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSearchClose = (e: MouseEvent & {target: HTMLInputElement}) => {

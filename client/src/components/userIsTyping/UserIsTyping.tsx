@@ -13,7 +13,7 @@ function UserIsTyping({isTyping, setIsTyping}) {
             setIsTyping(0);
             setIsTyping(false);
         }
-    }, [currConvId]);
+    }, [currConvId, setIsTyping]);
 
     useEffect(() => {
         socket.on('startTyping', () => {
@@ -28,6 +28,7 @@ function UserIsTyping({isTyping, setIsTyping}) {
                 setIsTyping(false);
             }
         }) 
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return isTyping && (

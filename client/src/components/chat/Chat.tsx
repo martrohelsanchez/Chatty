@@ -68,6 +68,7 @@ const Chat = () => {
         socket.on('msgDelivered', (convId: string, msgId: string) => {
             dispatch(updateDelivered(convId, msgId));
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -77,7 +78,7 @@ const Chat = () => {
         }
 
         return () => {
-            //Stop receiving events from the previous opened conversation 
+            //Stop receiving events from previously opened conversation 
             socket.emit('leave room', currConvId);
         }
     }, [currConvId])
@@ -92,6 +93,7 @@ const Chat = () => {
                 dispatch(deleteConv(currConv._id));
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currConvId]);
 
     return (

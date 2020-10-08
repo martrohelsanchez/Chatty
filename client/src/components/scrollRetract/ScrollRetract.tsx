@@ -28,7 +28,7 @@ const ScrollRetract: React.FC<ScrollMessagesProps> = (props) => {
                 goToPrevPos(messagesContainer.current, prevScrollPos.current)
             }
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, whenChanged);
 
     const setPrevPos = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {

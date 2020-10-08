@@ -32,7 +32,8 @@ const ConversationList = () => {
                 setNumOfLoading(c => c - 1);
             })
         }
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, conversations.length]);
 
     useEffect(() => {
         setNumOfLoading(c => c + 1);
@@ -47,7 +48,7 @@ const ConversationList = () => {
     }, []);
 
     //Check if the last message of a conversation hasn't been delivered
-    const checkLastMsgDeliver = (conversations: Conversation_LastMessage[]) => {
+    function checkLastMsgDeliver (conversations: Conversation_LastMessage[]) {
         for (let conversation of conversations) {
             const {last_message, _id} = conversation;
 
@@ -72,6 +73,7 @@ const ConversationList = () => {
         if (conv.convHasCreated) {
             return <Conversation key={conv._id} conv={conv} userLastSeenDoc={userLastSeen} />
         }
+        return null;
     });
 
     return (

@@ -13,7 +13,6 @@ import {useSelector, useDispatch} from 'react-redux';
 import {rootState} from 'redux/store';
 import {updateGroupHeader, updateGroupPic} from 'redux/actions/conversationsActions';
 import {updateUserHeader, updateUserProfilePic} from 'redux/actions/userInfoActions';
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 interface CropPictureProps {
     isSettingHeader: boolean;
@@ -97,7 +96,6 @@ const CropPicture = ({isSettingHeader, imagePrev, close, group}: CropPictureProp
                 setProfilePic(URL.createObjectURL(croppedImg), imageUrl);
             }
 
-
             setIsLoading(false);
             close();
         } catch (err) {
@@ -137,6 +135,10 @@ const CropPicture = ({isSettingHeader, imagePrev, close, group}: CropPictureProp
 
     const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
+    }
+
+    if (err) {
+        close();
     }
 
     return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {useRouteMatch} from 'react-router-dom';
 
 import * as S from './MsgStatus.styles';
 import delivered from 'images/delivered.svg';
@@ -8,7 +7,7 @@ import sending from 'images/sending.svg';
 import sent from 'images/sent.svg';
 
 import {rootState} from 'redux/store';
-import {Message, PopulatedConversation} from 'shared/types/dbSchema';
+import {PopulatedConversation} from 'shared/types/dbSchema';
 import {UserInfo} from 'redux/actions/userInfoActions';
 
 interface MsgStatusProps {
@@ -25,6 +24,7 @@ const MsgStatus = ({msgIndex, currMsg, isFromUser, currConv}: MsgStatusProps) =>
     const isLastMsg = messages.length - 1 === msgIndex;
 
     //Know how many members that this is the last message they last saw
+    // eslint-disable-next-line array-callback-return
     let usersLastMsgSeen = members_meta.filter(member => {
         const seenCurrMsg = member.last_seen >= currMsg.date_sent;
         const seenNextMsg = member.last_seen > nextMsg.date_sent;

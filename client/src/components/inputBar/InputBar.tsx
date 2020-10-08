@@ -25,6 +25,7 @@ const Input = () => {
 
   useEffect(() => {
     inputRef.current?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currConv?._id]);
 
   if (currConv === undefined) {

@@ -124,7 +124,7 @@ export const updateMsgIsDeliveredReq = async (
     errCb?: (err: Error) => void
 ) => {
     try {
-        const res = await axios.patch(`/chat/conversations/${convId}/deliver`, {
+        await axios.patch(`/chat/conversations/${convId}/deliver`, {
             msgId
         })
     } catch (err) {

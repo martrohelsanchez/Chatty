@@ -63,7 +63,7 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
 
     return (
       <li className={styles.container} onClick={handleClick}>
-        <img src={searchedUser.profile_pic} className={styles.profilePicHolder}></img>
+        <img alt={`${searchedUser.username}'s profile`} src={searchedUser.profile_pic} className={styles.profilePicHolder}></img>
         <span data-testid="searchedUser" className={styles.username}>
           {searchedUser.username}
         </span>
