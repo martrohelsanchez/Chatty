@@ -14,6 +14,7 @@ import useUserJustReg from 'hooks/useUserJustReg';
 
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from '../../redux/actions/userInfoActions';
+import GroupRoute from 'pages/groupRoute/GroupRoute';
 
 export interface IsUserJustReg {
     justRegistered: boolean,
@@ -76,6 +77,9 @@ const AppRoute = () => {
                         </Route>
                         <Route path='/user'>
                             <UserRoute />
+                        </Route>
+                        <Route path='/group'>
+                            <GroupRoute />
                         </Route>
                     </Switch>
                 </IsUserJustRegistered.Provider>
