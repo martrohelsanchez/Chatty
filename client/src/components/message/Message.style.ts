@@ -10,6 +10,27 @@ export const MsgBox = styled.span<{
     padding: .5rem .8rem;
     color: ${({ theme, isFromUser }) => isFromUser ? theme.text.secondary : theme.text.primary};
     box-sizing: border-box;
+    border-radius: ${({startOfMultipMsgs, endOfMultipMsgs, isFromUser}) => {
+        if (isFromUser) {
+            if (startOfMultipMsgs && endOfMultipMsgs) {
+                return '20px';
+            } else if (startOfMultipMsgs) {
+                return '20px 20px 0 20px';
+            } else if (endOfMultipMsgs) {
+                return '20px 0 20px 20px ';
+            }
+            return '20px 0 0 20px';
+        } else {
+            if (startOfMultipMsgs && endOfMultipMsgs) {
+                return '20px';
+            } else if (startOfMultipMsgs) {
+                return '20px 20px 20px 0';
+            } else if (endOfMultipMsgs) {
+                return '0 20px 20px 20px';
+            }
+            return '0 20px 20px 0';
+        }
+    }};
 `;
 
 export const StyledMessage = styled.div<{ isFromUser: boolean }>`
