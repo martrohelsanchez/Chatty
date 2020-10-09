@@ -76,7 +76,13 @@ const CropPicture = ({isSettingHeader, imagePrev, close, group}: CropPictureProp
 
     const uploadImage = async (imageFile: Blob) => {
         const storageRef = storage.ref();
-        const imageRef = storageRef.child(`${user.userId}/${isSettingHeader ? 'header' : 'profile'}.jpg`);
+        let imageRef;
+
+        if (group) {
+            imageRef = storageRef.child(`${group.convId}/${isSettingHeader ? 'header' : 'profile'}.jpg`); 
+        } else {
+            imageRef = storageRef.child(`${user.userId}/${isSettingHeader ? 'header' : 'profile'}.jpg`);
+        }
 
        await imageRef.put(imageFile);
        return imageRef.getDownloadURL();
