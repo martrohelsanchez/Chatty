@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {useRouteMatch, useHistory} from 'react-router-dom';
 
 import * as S from './InfoPane.styles';
@@ -10,6 +10,7 @@ import trashCan from 'images/trash_can.svg';
 import videoCall from 'images/video_call.svg';
 import call from 'images/call.svg';
 import {deleteConversationReq} from 'api/APIUtils';
+import GroupMembers from 'components/groupMembers/GroupMembers';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {rootState} from 'redux/store';
@@ -23,10 +24,17 @@ const InfoPane = () => {
     const showInMobile = infoPaneMatchRoute ? infoPaneMatchRoute.isExact : false;
     const dispatch = useDispatch();
     const history = useHistory();
+    const [members, setMembers] = useState<User[]>([]);
     let convName;
     let header;
     let profilePic;
     let bio;
+
+    useEffect(() => {
+        if (currConv?.is_group_chat && typeof currConv.members[0] !== 'string') {
+            setMembers(currConv.members as User[]);
+        }
+    }, [currConv])
 
     const handleDeleteConv = () => {
         if (currConv) {
@@ -37,8 +45,16 @@ const InfoPane = () => {
         }
     }
 
-    if (currConv?.is_group_chat) {
+    const onCallClick = () => {
+        alert('Feature is not yet done');
+    }
 
+    if (currConv?.is_group_chat) {
+        header = currConv.group_header;
+        bio = currConv.group_bio;
+        if (currConv?.convHasCreated) {
+            profilePic = currConv.conversation_pic.groupPic;
+        }
     } else {
         if (currConv?.convHasCreated) {
             const kausap = (currConv.members as User[]).find(member => member._id !== user.userId);
@@ -63,42 +79,53 @@ const InfoPane = () => {
 
     return (
         <S.StyledInfoPane showInMobile={showInMobile}>
-            <UserInfo 
-                isSetUserScreen={false}
-                convName={convName} 
-                bio={bio} 
-                header={header}
-                profilePic={profilePic} 
-                group={currConv?.is_group_chat ? {convId: currConv?._id as string} : undefined}
-            />
-            {currConv?.convHasCreated ? (
-                <S.ConvActionCont onClick={handleDeleteConv}>
-                    <S.convActionLabel>
-                        Delete conversation
-                    </S.convActionLabel>
-                    <S.ConvActionIcon src={trashCan} style={{height: '20px'} } />
-                </S.ConvActionCont>
-            ) : (
-                null
-            )}
-            {currConv ? (
-                <>
-                    <S.ConvActionCont>
+            <S.Cont>
+                <UserInfo 
+                    isSetUserScreen={false}
+                    convName={convName} 
+                    bio={bio} 
+                    header={header}
+                    profilePic={profilePic} 
+                    group={currConv?.is_group_chat ? {convId: currConv?._id as string} : undefined}
+                />
+                {currConv?.convHasCreated ? (
+                    <S.ConvActionCont onClick={handleDeleteConv}>
                         <S.convActionLabel>
-                            Video call
+                            Delete conversation
                         </S.convActionLabel>
-                        <S.ConvActionIcon src={videoCall} />
+                        <S.ConvActionIcon src={trashCan} style={{height: '20px'} } />
                     </S.ConvActionCont>
-                    <S.ConvActionCont>
-                        <S.convActionLabel>
-                            Call
-                        </S.convActionLabel>
-                        <S.ConvActionIcon src={call} />
-                    </S.ConvActionCont>
-                </>
-            ) : (
-                null
-            )}
+                ) : (
+                    null
+                )}
+                {currConv ? (
+                    <>
+                        <S.ConvActionCont onClick={onCallClick}>
+                            <S.convActionLabel>
+                                Video call
+                            </S.convActionLabel>
+                            <S.ConvActionIcon src={videoCall} />
+                        </S.ConvActionCont>
+                        <S.ConvActionCont onClick={onCallClick} style={{marginBottom: '25px'}}>
+                            <S.convActionLabel>
+                                Call
+                            </S.convActionLabel>
+                            <S.ConvActionIcon src={call} />
+                        </S.ConvActionCont>
+                        {currConv.is_group_chat ? (
+                            <GroupMembers
+                                isInfoPane={true}
+                                members={members}
+                                setMembers={setMembers}
+                            />
+                        ) : (
+                            null
+                        )}
+                    </>
+                ) : (
+                    null
+                )}
+            </S.Cont>
         </S.StyledInfoPane>
     )
 }

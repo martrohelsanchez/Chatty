@@ -1,23 +1,24 @@
-import React, { useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 
 import * as S from './CreateGroup.styles';
 import GroupMembers from 'components/groupMembers/GroupMembers';
 import nextIcon from 'images/next.svg';
 import {User} from 'shared/types/dbSchema';
-import { createConvDocReq } from 'api/APIUtils';
-import { useSelector } from 'react-redux';
-import { rootState } from 'redux/store';
+import {createConvDocReq} from 'api/APIUtils';
+
+import {useSelector} from 'react-redux';
+import {rootState} from 'redux/store';
 
 const CreateGroup = () => {
     const user = useSelector((state: rootState) => state.userInfo);
     const [isLoading, setIsLoading] = useState(false);
     const [grpNameInput, setGrpNameInput] = useState('');
-    const members = useRef<User[]>([]);
+    const [members, setMembers] = useState<User[]>([]);
     const history = useHistory();
     let canProceed;
 
-    if (members.current.length > 2 && grpNameInput) {
+    if (members.length > 2 && grpNameInput) {
         canProceed = true
     } else {
         canProceed = false;
@@ -33,7 +34,7 @@ const CreateGroup = () => {
                 setIsLoading(true);
 
                 const membersId = [
-                    ...(members.current.map(member => member._id)), 
+                    ...(members.map(member => member._id)), 
                     user.userId
                 ];
                 
@@ -58,7 +59,9 @@ const CreateGroup = () => {
                     onChange={onGrpNameinputChange}
                 />
                 <GroupMembers
-                    getMembers={members}
+                    isInfoPane={false}
+                    members={members}
+                    setMembers={setMembers}
                 />
                 {isLoading ? (
                     <S.Loading />

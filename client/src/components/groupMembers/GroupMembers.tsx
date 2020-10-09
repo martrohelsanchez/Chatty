@@ -6,17 +6,14 @@ import {User} from 'shared/types/dbSchema';
 import Member from 'components/member/Member';
 
 interface GroupMembersProps {
-    getMembers?: React.MutableRefObject<User[]>;
+    members: User[];
+    setMembers: React.Dispatch<React.SetStateAction<User[]>>;
+    isInfoPane: boolean;
 }
 
-const GroupMembers = ({getMembers}: GroupMembersProps) => {
-    const [members, setMembers] = useState<User[]>([]);
+const GroupMembers = ({members, setMembers, isInfoPane}: GroupMembersProps) => {
     const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
     const [isSearching, setIsSearching] = useState(false);
-
-    if (getMembers) {
-        getMembers.current = members;
-    }
 
     const removeMember = (user: User) => {
         setMembers(
@@ -29,15 +26,15 @@ const GroupMembers = ({getMembers}: GroupMembersProps) => {
     }
 
     const memberList = members.map(member => (
-        <Member member={member} isSearchedUser={false} removeMember={removeMember} />
+        <Member key={member._id} member={member} isSearchedUser={false} removeMember={removeMember} />
     ));
 
     const searchedUserList = searchedUsers.map(user => (
-        <Member member={user} isSearchedUser={true} addAsMember={addAsMember} />
+        <Member key={user._id} member={user} isSearchedUser={true} addAsMember={addAsMember} />
     ));
 
     return (
-        <S.GroupMembers isSearching={isSearching}>
+        <S.GroupMembers isInfoPane={isInfoPane} isSearching={isSearching}>
             <p style={{fontWeight: 'bold', fontSize: '1.3rem'}}>People</p>
             {isSearching ? (
                 <>

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import search from 'components/search/Search';
 
-export const GroupMembers = styled.div<{isSearching}>`
-    background-color: ${({theme}) => theme.dark.primary};
+export const GroupMembers = styled.div<{isSearching: boolean, isInfoPane: boolean}>`
+    background-color: ${({theme, isInfoPane}) => isInfoPane ? theme.dark.secondary : theme.dark.primary};
     margin: 0 auto;
     border-radius: 10px;
     width: 90%;
