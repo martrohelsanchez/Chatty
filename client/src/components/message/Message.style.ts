@@ -36,11 +36,13 @@ export const MsgBox = styled.span<{
 export const StyledMessage = styled.div<{ isFromUser: boolean }>`
     align-self: ${({ isFromUser }) => isFromUser ? 'flex-end' : 'flex-start'};
     margin: ${({ isFromUser }) => isFromUser ? '2px 0 0 0' : '2px 30px 0 30px'}; 
-    max-width: 60%;
+    width: ${({ isFromUser }) => isFromUser ? null : '60%'};;
+    max-width: ${({isFromUser}) => isFromUser ? '60%' : null};
 `;
 
 export const UserProfilePic = styled.img`
     height: 28px;
+    width: 28px;
     border-radius: 40px;
     margin: 0 0 -7px -30px;
 `;
