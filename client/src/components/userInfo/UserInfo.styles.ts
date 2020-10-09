@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import {OuterCircle as outerCircle, ConvPic as convPic} from 'shared/styles';
 
-export const Header = styled.div<{pic: string | undefined, isSetUserScreen: boolean}>`
+export const Header = styled.div<{pic: string | undefined, isSetUserScreen: boolean, isGrp: boolean}>`
     background-color: ${({theme, isSetUserScreen}) => isSetUserScreen ? theme.dark.primary : theme.dark.secondary};
     background-image: url(${({pic}) => pic});
     background-size: cover;
@@ -12,7 +12,7 @@ export const Header = styled.div<{pic: string | undefined, isSetUserScreen: bool
     position: relative;
 
     &:hover {
-        cursor: ${({isSetUserScreen}) => isSetUserScreen ? 'pointer' : 'default'};
+        cursor: ${({isSetUserScreen, isGrp}) => isSetUserScreen || isGrp ? 'pointer' : 'default'};
     }
 `;
 
