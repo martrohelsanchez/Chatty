@@ -4,7 +4,6 @@ export const StyledInfoPane = styled.div<{ showInMobile: boolean }>`
     background-color: ${({ theme }) => theme.dark.primary};
     flex: 0 1 33.33%;
     max-width: 420px;
-    position: relative;
 
     @media all and (max-width: ${({ theme }) => theme.mobile}) {
         & {
@@ -37,4 +36,10 @@ export const ConvActionCont = styled.div`
         background-color: ${({theme}) => theme.dark.secondary};
         cursor: pointer;
     }
+`;
+
+export const Cont = styled.div`
+    height: 100%;
+    width: 100%;
+    overflow: auto;
 `;
