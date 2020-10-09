@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {Route, useRouteMatch, useHistory} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 
@@ -7,6 +7,7 @@ import InputBar from 'components/inputBar/InputBar'
 import MessageList from 'components/messages/MessageList'
 import {getConversationName, getConvPic} from 'shared/utils/helpers';
 import infoBtnIcon from 'images/info_btn.svg';
+import useWindowSize from 'hooks/useWindowChange';
 
 import {rootState} from 'redux/store';
 import {UserInfo} from 'redux/actions/userInfoActions';
@@ -17,10 +18,22 @@ const MessagePane = () => {
     const showInMobile = messagesMatchRoute ? messagesMatchRoute.isExact : false;
     const user = useSelector((state: rootState) => state.userInfo);
     const history = useHistory();
+    const convNameRef = useRef<HTMLParagraphElement>(null!);
+    const convNameContRef = useRef<HTMLDivElement>(null!);
+    let insertProfPic;
     let convPic;
+    useWindowSize();
 
     if (currConv) {
         convPic = getConvPic(currConv, user);
+    }
+
+    const convNameWidth = convNameRef.current?.getBoundingClientRect().width;
+    const convNameContWith = convNameContRef.current?.getBoundingClientRect().width;
+    if (convNameWidth > convNameContWith * .35) {
+        insertProfPic = true;
+    } else {
+        insertProfPic = false;
     }
 
     const onInfoBtnClick = () => {
@@ -32,15 +45,17 @@ const MessagePane = () => {
             <Route path='/chat/:convId'>
                 {currConv ? (
                     <>
-                        <S.ConvNameCont>
-                            <S.ConvName>
-                                {getConversationName(currConv as NonNullable<typeof currConv>, user as UserInfo)}
-                            </S.ConvName>
+                        <S.ConvNameCont ref={convNameContRef}>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <S.OuterCircle insert={insertProfPic}>
+                                    <S.ConvPic insert={insertProfPic} pic={convPic} />
+                                </S.OuterCircle>
+                                <S.ConvName ref={convNameRef}>
+                                    {getConversationName(currConv as NonNullable<typeof currConv>, user as UserInfo)}
+                                </S.ConvName>
+                            </div>
                             <S.InfoBtn src={infoBtnIcon} onClick={onInfoBtnClick} />
                         </S.ConvNameCont>
-                        <S.OuterCircle>
-                            <S.ConvPic pic={convPic} />
-                        </S.OuterCircle>
                         {currConv.convHasCreated ? (
                             <MessageList currConv={currConv} />
                         ) : (
