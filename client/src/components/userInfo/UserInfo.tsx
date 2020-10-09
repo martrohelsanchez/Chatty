@@ -127,9 +127,10 @@ const UserInfo = ({
           className='header'
           pic={header} 
           isSetUserScreen={isSetUserScreen}
+          isGrp={group ? true : false}
           onClick={onHeaderClick}
         >
-          {!header && isSetUserScreen ? (
+          {!header && (isSetUserScreen || group) ? (
             <S.Cross src={cross} />
           ) : (
             null
@@ -139,7 +140,7 @@ const UserInfo = ({
             onClick={onProfileClick}
           >
             <S.ConvPic pic={profilePic}>
-              {!profilePic && isSetUserScreen ? (
+              {!profilePic && (isSetUserScreen || group) ? (
                 <S.Cross style={{height: '25%'}} src={cross} />
               ) : (
                 null
@@ -175,7 +176,7 @@ const UserInfo = ({
       <input 
         type="file" 
         ref={fileInputRef} 
-        style={{ opacity: "0" }} 
+        style={{opacity: "0", position: 'absolute'}} 
         onChange={onFileInputChange}
         multiple
         accept="image/*"
