@@ -13,10 +13,12 @@ export const MemberCont = styled.div<{isSearchedUser}>`
 `;
 
 export const MemberProfilePic = styled.img`
-    width: 50px;
-    height: 50px;
+    width: 15%;
+    min-width: 30px;
+    max-width: 50px;
+    max-height: 50px;
     margin-right: 10px;
-    border-radius: 50%;
+    border-radius: 30px;
 `;
 
 export const Remove = styled.p`

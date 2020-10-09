@@ -34,38 +34,38 @@ export const ConvName = styled.p`
     font-size: 1.6rem;
 `;
 
-export const OuterCircle = styled(outerCircle) `
-    position: absolute;
-    margin: 50px auto 0 auto;
+export const OuterCircle = styled(outerCircle)<{ insert: boolean }>`
+    flex-shrink: 0;
+    position: ${({ insert }) => insert ? 'relative' : 'absolute'};;
+    margin: ${({insert}) => insert ? '0 20px 0 0' : '50px auto 0 auto'};
     z-index: 10;
     left: 0;
     right: 0;
-    height: 82px;
-    width: 82px;
+    height: ${({insert}) => insert ? '45px' : '82px'};
+    width: ${({ insert }) => insert ? '45px' : '82px'};
     padding-top: 0;
-
-    @media all and (max-width: ${({ theme }) => theme.mobile}) {
-        & {
-            height: 70px;
-            width: 70px;
-            margin: 60px auto 0 auto;
-        }
-    }
+    box-sizing: border-box;
 `;
 
-export const ConvPic = styled(convPic)`
-    height: 75px;
+export const ConvPic = styled(convPic)<{insert: boolean}>`
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 auto 0 auto;
+    /* height: 75px;
     width: 75px;
     z-index: 11;
     margin: 0 auto;
-    align-self: center;
+    align-self: center; */
 
-    @media all and (max-width: ${({ theme }) => theme.mobile}) {
+    /* @media all and (max-width: ${({ theme }) => theme.mobile}) {
         & {
             height: 62px;
             width: 62px;
         }
-    }
+    } */
 `;
 
 export const InfoBtn = styled.img`
