@@ -64,7 +64,18 @@ const ConversationList = () => {
     }
 
     if (numOfLoading > 0) {
-        return <Loading />
+        return (
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                height: '100vh',
+                width: '100%',
+                display: 'flex', 
+                alignItems: 'center'
+            }}>
+                <Loading style={{ margin: '0 auto' }} />
+            </div>
+        )
     } else if (err) {
         return <div>{err}</div>
     }

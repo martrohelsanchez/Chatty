@@ -122,7 +122,9 @@ const MessageList = ({currConv}: MessageListProps) => {
             onScroll={handleScroll}
         >
             {numOfLoading > 0 ? (
-                <Loading />
+                <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
+                    <Loading style={{margin: '0 auto'}} />
+                </div>
             ) : (
                 null
             )}
