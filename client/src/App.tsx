@@ -8,7 +8,7 @@ import './api/axios';
 import AppRoute from './pages/appRoute/AppRoute';
 import theme from './shared/theme';
 
-export const socket = io("http://localhost:5000/", {
+export const socket = io(process.env.REACT_APP_SERVER_URL, {
   transports: ["websocket", "polling"],
 });
 
