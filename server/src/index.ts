@@ -22,7 +22,7 @@ mongoose.connect(
   { useUnifiedTopology: true, useNewUrlParser: true }
 );
 app.use(cors({
-  origin: 'https://chitty-app.vercel.app/',
+  origin: 'https://chitty-app.vercel.app',
   credentials: true
 }));
 app.use(cookieParser());
