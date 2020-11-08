@@ -16,8 +16,7 @@ export default createGlobalStyle`
     }
 
     ::-webkit-scrollbar-thumb {
-        background: white; 
-        /* background: ${({theme}) => theme.dark.thirdly};  */
+        background: #ead3b7;
         border-radius: 10px;
     }
 `;
