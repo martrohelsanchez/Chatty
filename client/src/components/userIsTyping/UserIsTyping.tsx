@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useRouteMatch} from 'react-router-dom';
+import styled from 'styled-components';
 
-import { socket } from '../../App';
+import Typing from 'components/typing/Typing';
+import {socket} from '../../App';
 
 function UserIsTyping({isTyping, setIsTyping}) {
     const match = useRouteMatch<{convId: string}>();
@@ -32,10 +34,19 @@ function UserIsTyping({isTyping, setIsTyping}) {
     }, []);
 
     return isTyping && (
-        <div>
-            Typing...
-        </div>
+        <StyledUserIsTyping>
+            <StyledTyping forMascot={false} />
+        </StyledUserIsTyping>
     )
 }
+
+const StyledTyping = styled(Typing)`
+    margin: 10px;
+`;
+
+const StyledUserIsTyping = styled.div`
+    position: relative;
+    width: 50px;
+`;
 
 export default UserIsTyping;
