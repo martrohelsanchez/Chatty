@@ -143,7 +143,7 @@ export const getConversationByMembersReq = async (
     errCb?: (err: Error) => void
 ) => {
     try {
-        const { data } = await axios.get<{ conversation: Conversation_LastMessage | undefined}>('/chat/conversation', {
+        const { data } = await axios.get<{conversation: Conversation_LastMessage | undefined}>('/chat/conversation', {
             params: {
                 members: convMembers
             }
