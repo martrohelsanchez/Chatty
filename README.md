@@ -1,5 +1,4 @@
-# chat-app
-Still not finished
+# Chitty
 
 
 ![Chat desktop view](https://firebasestorage.googleapis.com/v0/b/chat-app-b7a6a.appspot.com/o/chitty%20mockups%2Fchat%20app%20mockup%20final-01.png?alt=media&token=2b00ab46-a825-42a9-aec8-543f929af447)
