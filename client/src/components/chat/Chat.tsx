@@ -18,8 +18,8 @@ import {Message} from 'shared/types/dbSchema';
 const StyledChat = styled.div`
     display: flex;
     background-color: #ffffff;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     color: white;
 `
 

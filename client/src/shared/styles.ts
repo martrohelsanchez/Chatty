@@ -2,14 +2,14 @@ import styled from 'styled-components';
 
 export const PrussianBlueBg = styled.div`
     background-color: ${({ theme }) => theme.dark.secondary};
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
 `;
 
 export const SherpaBlueBg = styled.div`
     background-color: ${({theme}) => theme.dark.primary};
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
 `;
 
 export const ChittyMascot = styled.div`
