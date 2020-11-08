@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 
 import * as S from './MessageList.styles';
 import Message from 'components/message/Message';
-import Loading from 'components/loading/Loading';
 import UserIsTyping from 'components/userIsTyping/UserIsTyping';
 import {seenConvReq, getMembersReq, getMembersMetaReq, getMessagesReq} from 'api/APIUtils';
 import {MergedConversation, PopulatedConversation} from 'shared/types/dbSchema';
 
 import {useDispatch} from 'react-redux';
 import {addPrevMsgs, updateLastSeen, modifyMembers, modifyMembersMeta} from 'redux/actions/conversationsActions';
+import Typing from 'components/typing/Typing';
 
 interface MessageListProps {
     currConv: MergedConversation
@@ -42,6 +42,7 @@ const MessageList = ({currConv}: MessageListProps) => {
 
     //When user switches through conversations
     useEffect(()=> {
+        setNumOfLoading(c => ++c);
         getMembersMetaReq(currConvId, currConv.members_meta_id, (data) => {
             dispatch(modifyMembersMeta(currConvId, 'set', data.members_meta));
             setNumOfLoading(c => c - 1);
@@ -49,7 +50,7 @@ const MessageList = ({currConv}: MessageListProps) => {
 
         if (typeof currConv.members[0] === 'string' && typeof currConv.members_meta === 'string') {
             //members and members_meta is not yet populated
-            setNumOfLoading(c => c + 2);
+            setNumOfLoading(c => ++c);
             getMembersReq(currConvId, currConv.members as string[], (data) => {
                 dispatch(modifyMembers(currConvId, 'set', data, ));
                 setNumOfLoading(c => c - 1);
@@ -92,7 +93,7 @@ const MessageList = ({currConv}: MessageListProps) => {
     const handleScroll = (pos: React.UIEvent<HTMLDivElement, UIEvent>) => {
         //when the user scroll to the top to get the previous msgs
         const isLoading = numOfLoading > 0;
-        if (pos.currentTarget.scrollTop < 5 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
+        if (pos.currentTarget.scrollTop === 0 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
             getMessages(30, messages[0].date_sent);
         }
     }
