@@ -27,12 +27,21 @@ export const Register = styled(Link)`
 `;
 
 export const Wrapper = styled.div`
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 513px;
 `;
 
 export const Err = styled.p`
     color: ${({theme}) => theme.cinnabar};
     text-align: center;
+`;
+
+export const LogInName = styled.p`
+    color: ${({theme}) => theme.dark.thirdly};
+    text-align: center;
+    font-size: 1.5rem;
 `;
 
 export {ChittyMascot, Input, ChittyName};
