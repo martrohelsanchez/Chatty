@@ -29,4 +29,10 @@ export const BackBtn = styled(nextBtn)`
 
 export const ToLogIn = styled(Register)``;
 
+export const Reg = styled.p`
+    color: ${({theme}) => theme.dark.thirdly};
+    text-align: center;
+    font-size: 1.5rem;
+`;
+
 export {ChittyMascot, Input, ChittyName, Err};
