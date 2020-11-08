@@ -6,6 +6,8 @@ import next from 'images/next.svg';
 import * as S from './SignUp.styles';
 import {getUserByUsernameReq} from 'api/APIUtils';
 import {IsUserJustRegistered} from 'pages/appRoute/AppRoute';
+import chittyMascot from '../../images/chitty_mascot.svg'
+
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from 'redux/actions/userInfoActions';
 
@@ -58,7 +60,9 @@ function SignUp() {
     setErr(null)
   }
 
-  const onUsernameSubmit = () => {
+  const onUsernameSubmit = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+    e.currentTarget.blur();
+
     setErr(null);
     setIsLoading(true);
     getUserByUsernameReq(usernameInput, (data) => {
@@ -99,7 +103,8 @@ function SignUp() {
         <S.ChittyName>
           Chitty
         </S.ChittyName>
-        <S.ChittyMascot/>
+        <S.ChittyMascot mascot={chittyMascot} />
+        <S.Reg>Register</S.Reg>
         <S.Err>{err}</S.Err>
         {isUsernameScreen ? (
           <S.Input
@@ -108,7 +113,7 @@ function SignUp() {
             value={usernameInput}
             placeholder='What should everyone call you?'
             onChange={onUsernameChange}
-            onKeyDown={({key}) => (key === 'Enter' ? onUsernameSubmit() : null)}
+            onKeyDown={(e) => (e.key === 'Enter' ? onUsernameSubmit(e) : null)}
           />
         ) : (
           <>
