@@ -48,7 +48,10 @@ async function getOneConversation(
     try {
         const query = req.query;
         const conversation = await Conversation.findOne({
-            members: {$all: [...query.members]}
+            members: {
+                $size: query.members.length,
+                $all: [...query.members]
+            }
         })
             .select('-__v')
             .populate({
