@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 
 export const PrussianBlueBg = styled.div`
     background-color: ${({ theme }) => theme.dark.secondary};
@@ -12,14 +12,17 @@ export const SherpaBlueBg = styled.div`
     width: 100%;
 `;
 
-export const ChittyMascot = styled.div`
-    height: 60vw;
-    max-height: 200px;
-    width: 60vw;
+export const ChittyMascot = styled.div<{mascot: string}>`
+    background-image: url(${({mascot}) => mascot});
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-top: min(100%, 200px);
+    width: 100%;
     max-width: 200px;
     margin: 0 auto 60px auto;
     border-radius: 300px;
-    background-color: ${({ theme }) => theme.dark.thirdly};
+    background-color: #ead3b7;
 `;
 
 export const UserInfoInput = styled.input`
@@ -69,4 +72,10 @@ export const ConvPic = styled.div<{ pic: string | undefined }>`
     background-image: url(${({ pic }) => pic});
     background-size: cover;
     box-sizing: border-box;
+`;
+
+export const centerHorVer = css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
