@@ -38,7 +38,7 @@ async function userSignUp(req: Request, res: Response) {
 
             res.cookie('jwt', jwtToken, {
                 httpOnly: true,
-                sameSite: true,
+                sameSite: 'lax',
                 expires: new Date(253402300000000)
             });
             res.status(200).json({
@@ -80,7 +80,7 @@ async function userLogIn(req: Request, res: Response) {
 
             res.cookie('jwt', jwtToken, {
                 httpOnly: true,
-                sameSite: true,
+                sameSite: 'lax',
                 expires: new Date(253402300000000)
             });
             res.status(200).json({
@@ -146,7 +146,7 @@ async function reAuthUser(req: Request, res: Response) {
 
         res.cookie('jwt', newJwtToken, {
             httpOnly: true,
-            sameSite: true
+            sameSite: 'lax',
         });
         res.status(200).json({
             userId: decoded.userId,
