@@ -73,6 +73,10 @@ function SignUp() {
         setIsUsernameScreen(false);
       }
       setIsLoading(false);
+    }, (err) => {
+      console.error(err);
+      setIsLoading(false);
+      setErr('Sorry, something went wrong. Please try again later');
     })
   }
 
