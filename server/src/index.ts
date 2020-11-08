@@ -21,9 +21,8 @@ mongoose.connect(
   `mongodb+srv://martrohel:${process.env.MONGODB_PASS}@cluster0-sutr8.gcp.mongodb.net/chatApp?retryWrites=true&w=majority`,
   { useUnifiedTopology: true, useNewUrlParser: true }
 );
-
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://chitty-app.vercel.app/',
   credentials: true
 }));
 app.use(cookieParser());
