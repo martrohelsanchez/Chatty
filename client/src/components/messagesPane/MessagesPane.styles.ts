@@ -21,17 +21,29 @@ export const ConvNameCont = styled.div`
     align-items: center;
     justify-content: space-between;
     background-color: ${({theme}) => theme.dark.primary};
-    margin: 20px 0 0 0;
     width: 95%;
     margin: 30px auto 0 auto;
     border-radius: 20px;
     padding: 20px 20px;
     box-sizing: border-box;
+
+    @media all and (max-width: ${({ theme }) => theme.mobile}) {
+        & {
+            margin: 5px auto 0 auto;
+            padding: 5px 10px;
+        }
+    }
 `;
 
 export const ConvName = styled.p`
     font-weight: bolder;
     font-size: 1.6rem;
+
+    @media all and (max-width: ${({ theme }) => theme.mobile}) {
+        & {
+            font-size: 1rem;
+        }
+    }
 `;
 
 export const OuterCircle = styled(outerCircle)<{ insert: boolean }>`
@@ -45,6 +57,13 @@ export const OuterCircle = styled(outerCircle)<{ insert: boolean }>`
     width: ${({ insert }) => insert ? '45px' : '82px'};
     padding-top: 0;
     box-sizing: border-box;
+
+    @media all and (max-width: ${({ theme }) => theme.mobile}) {
+        & {
+            height: ${({insert}) => insert ? '45px' : '50px'};
+            width: ${({ insert }) => insert ? '45px' : '50px'};
+        }
+    }
 `;
 
 export const ConvPic = styled(convPic)<{insert: boolean}>`
@@ -54,18 +73,6 @@ export const ConvPic = styled(convPic)<{insert: boolean}>`
     top: 50%;
     transform: translateY(-50%);
     margin: 0 auto 0 auto;
-    /* height: 75px;
-    width: 75px;
-    z-index: 11;
-    margin: 0 auto;
-    align-self: center; */
-
-    /* @media all and (max-width: ${({ theme }) => theme.mobile}) {
-        & {
-            height: 62px;
-            width: 62px;
-        }
-    } */
 `;
 
 export const InfoBtn = styled.img`
