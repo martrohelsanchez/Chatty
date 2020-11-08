@@ -55,9 +55,15 @@ const SearchedUser = ({searchedUser}: SearchedUserProps) => {
         });
     }
 
-    const findConvInRedux = (targetMembers) => {
+    const findConvInRedux = (targetMembers: string[]) => {
         return conversations.find(conv => 
-            conv.members.every(member => targetMembers.includes(member._id))
+            conv.members.every(member => {
+                if (typeof member === 'string') {
+                    return targetMembers.includes(member)
+                } else {
+                    return targetMembers.includes(member._id)
+                }
+            })
         );
     }
 
