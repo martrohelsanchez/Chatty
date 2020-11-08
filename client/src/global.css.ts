@@ -6,6 +6,17 @@ export default createGlobalStyle`
         font-family: ${({theme}) => theme.font.primary};
     }
 
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    #root {
+        height: 100%;
+        width: 100%;
+    }
+
     ::placeholder {
         color: ${({theme}) => theme.placeholderColor};
         margin-left: 10px;
