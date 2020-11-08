@@ -54,13 +54,18 @@ const ScrollRetract: React.FC<ScrollMessagesProps> = (props) => {
         return 0;
     }
     
-    const goToPrevPos = (e: HTMLDivElement, prevPos: PrevScrollPos) => {
-        e.scrollTop = (e.scrollHeight - prevPos.scrollHeight) + prevPos.scrollTop;
+    const goToPrevPos = (el: HTMLDivElement, prevPos: PrevScrollPos) => {
+        el.scrollTop = (el.scrollHeight - prevPos.scrollHeight) + prevPos.scrollTop;
     }
 
-    const scrollToBottom = (e) => {
-        if (e) {
-            e.scrollTop = e.scrollHeight;
+    const scrollToBottom = (el: HTMLDivElement | null) => {
+        if (el) {
+            setTimeout(() => {
+                el.scroll({
+                    top: el.scrollHeight,
+                    behavior: "smooth"
+                })
+            }, 500)
         }
     }
 
