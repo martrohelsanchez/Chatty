@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 axios.interceptors.request.use((config) => {
-  config.baseURL = 'http://localhost:5000';
+  config.baseURL = process.env.REACT_APP_SERVER_URL;
   config.headers['csrf-token'] = window.localStorage.getItem('csrfToken');
   config.withCredentials = true;
 
