@@ -37,6 +37,8 @@ const Conversation = ({conv, userLastSeenDoc}: ConversationProps) => {
             isRead={isRead} 
             isSelected={isSelected} 
             onClick={handleOpenConvo}
+            layout='position'
+            initial={false}
         >
             <S.ProfilePicHolder pic={convPic}></S.ProfilePicHolder>
             <S.PrevCont>

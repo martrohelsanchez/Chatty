@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import {motion} from 'framer-motion';
 
-export const Conversation = styled.div<{ isRead: boolean, isSelected: boolean }>`
+export const Conversation = styled(motion.div)<{ isRead: boolean, isSelected: boolean }>`
     display: flex;
     align-items: center;
     width: 100%;
