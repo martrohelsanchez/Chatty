@@ -153,7 +153,7 @@ function SignUp() {
           ) : (
             <>
               {isUsernameScreen || <S.BackBtn src={next} onClick={handleBack}></S.BackBtn>}
-                <S.NextBtn src={next} onClick={e => isUsernameScreen ? signUp() : onUsernameSubmit(e)}></S.NextBtn>
+                <S.NextBtn src={next} onClick={e => isUsernameScreen ? onUsernameSubmit(e) : signUp()}></S.NextBtn>
             </>
           )}
         </div>
