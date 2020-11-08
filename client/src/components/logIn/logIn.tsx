@@ -44,6 +44,7 @@ const LogIn = () => {
             if (isAuth) {
                 window.localStorage.setItem('csrfToken', csrfToken);
 
+                passInputRef.current.blur();
                 setUsernameInput('');
                 setPassInput('');
                 setLoading(false);
@@ -56,7 +57,7 @@ const LogIn = () => {
                 }));
 
                 history.push('/chat');
-            } // if isAuth is false, server send 401 status as an Error object
+            } // if isAuth is false, server sends 401 status as an Error object
         } catch (err) {
             if (!err.response) {
                 console.error(err)
@@ -108,7 +109,10 @@ const LogIn = () => {
                 Chitty
             </S.ChittyName>
             <S.Wrapper>
-                <S.ChittyMascot />
+                {/* <S.ChittyMascot mascot={chittyMascot} /> */}
+                <ChittyTyping isTyping={isTyping} />
+                <div>
+                    <S.LogInName>Log In</S.LogInName>
                     <S.Err>
                         {err}
                     </S.Err>
