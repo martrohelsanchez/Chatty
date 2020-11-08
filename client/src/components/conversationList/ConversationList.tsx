@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
 import Conversation from "components/conversation/Conversation";
-import Loading from 'components/loading/Loading';
 import {getConversationsReq, updateMsgIsDeliveredReq, getLastSeen} from 'api/APIUtils';
 
 import {rootState} from 'redux/store';
@@ -10,6 +9,7 @@ import {Conversation_LastMessage, LastSeen} from 'shared/types/dbSchema';
 import {useDispatch, useSelector} from 'react-redux';
 import {retrieveConversations} from 'redux/actions/conversationsActions';
 import {UserInfo} from 'redux/actions/userInfoActions';
+import Typing from 'components/typing/Typing';
 
 const ConversationList = () => {
     const conversations = useSelector((state: rootState) => state.conversations);
@@ -58,7 +58,7 @@ const ConversationList = () => {
                 updateMsgIsDeliveredReq(_id, last_message._id, (err) => {
                     console.error(err);
                     setErr('Something went wrong')
-                });
+                })
             }
         }
     }
@@ -71,9 +71,17 @@ const ConversationList = () => {
                 height: '100vh',
                 width: '100%',
                 display: 'flex', 
+                justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <Loading style={{ margin: '0 auto' }} />
+                <div
+                    style={{
+                        width: '20%',
+                        position: 'relative'
+                    }}
+                >
+                    <Typing forMascot={false} />
+                </div>
             </div>
         )
     } else if (err) {
@@ -88,7 +96,11 @@ const ConversationList = () => {
     });
 
     return (
-      <div>
+      <div
+        style={{
+            overflow: 'hidden'
+        }}
+      >
         {conversationList}
       </div>
     );

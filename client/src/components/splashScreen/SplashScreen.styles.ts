@@ -7,3 +7,8 @@ export const PrussianBlueBg = styled(prussian)`
     justify-content: center;
     align-items: center;
 `;
+
+export const Cont = styled.div`
+    position: relative;
+    width: 100px;
+`;

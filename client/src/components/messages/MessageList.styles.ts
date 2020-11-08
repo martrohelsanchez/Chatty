@@ -13,3 +13,9 @@ export const ScrollRetract = styled(scrollRetract)`
     margin: 0 auto;
     box-sizing: border-box;
 `;
+
+export const TypingCont = styled.div`
+    position: relative;
+    width: 75px;
+    margin: 30px 0 0 0;
+`;

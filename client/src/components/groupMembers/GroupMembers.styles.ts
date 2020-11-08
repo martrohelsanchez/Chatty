@@ -34,3 +34,9 @@ export const Search = styled(search)`
     width: 90%;
     margin: 20px auto;
 `;
+
+export const TypingCont = styled.div`
+    position: relative;
+    width: 20%;
+    margin: 0 auto;
+`;

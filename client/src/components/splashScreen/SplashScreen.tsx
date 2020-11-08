@@ -1,12 +1,14 @@
 import React from 'react';
 
-import Loading from '../loading/Loading';
+import Typing from 'components/typing/Typing'
 import * as S from './SplashScreen.styles';
 
 function SplashScreen() {
     return (
         <S.PrussianBlueBg>
-            <Loading />
+            <S.Cont>
+                <Typing forMascot={false} />
+            </S.Cont>
         </S.PrussianBlueBg>
     )
 }

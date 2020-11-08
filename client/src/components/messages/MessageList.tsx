@@ -122,8 +122,10 @@ const MessageList = ({currConv}: MessageListProps) => {
             onScroll={handleScroll}
         >
             {numOfLoading > 0 ? (
-                <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
-                    <Loading style={{margin: '0 auto'}} />
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%'}}>
+                    <S.TypingCont>
+                        <Typing forMascot={false} />
+                    </S.TypingCont>
                 </div>
             ) : (
                 null

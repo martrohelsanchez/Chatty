@@ -4,6 +4,7 @@ import * as S from './GroupMembers.styles';
 import crossIcon from 'images/cross.svg';
 import {User} from 'shared/types/dbSchema';
 import Member from 'components/member/Member';
+import Typing from 'components/typing/Typing';
 
 interface GroupMembersProps {
     members: User[];
@@ -14,6 +15,7 @@ interface GroupMembersProps {
 const GroupMembers = ({members, setMembers, isInfoPane}: GroupMembersProps) => {
     const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const removeMember = (user: User) => {
         setMembers(
@@ -42,8 +44,15 @@ const GroupMembers = ({members, setMembers, isInfoPane}: GroupMembersProps) => {
                         setIsSearching={setIsSearching} 
                         setSearchedUsers={setSearchedUsers} 
                         autoFocus={true}
+                        setIsLoading={setIsLoading}
                     />
-                    {searchedUserList}
+                    {isLoading ? (
+                        <S.TypingCont>
+                            <Typing forMascot={false} />
+                        </S.TypingCont>
+                    ) : (
+                        searchedUserList
+                    )}
                 </>
             ) : (
                 <>

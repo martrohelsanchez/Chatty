@@ -7,15 +7,16 @@ import {User} from 'shared/types/dbSchema';
 interface SearchProps {
   setSearchedUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setIsSearching: React.Dispatch<React.SetStateAction<boolean>>;
-  autoFocus: boolean;
+  autoFocus?: boolean;
   className?: string;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface MouseEventListerner {
     (this: Document, ev: MouseEvent): void;
 };
 
-const Search = ({setSearchedUsers, setIsSearching, autoFocus, className}: SearchProps) => {
+const Search = ({setSearchedUsers, setIsSearching, autoFocus, className, setIsLoading}: SearchProps) => {
     const [searchInput, setSearchInput] = useState('');
     const searchInputTimeout = useRef<number | undefined>(undefined);
 
@@ -58,16 +59,23 @@ const Search = ({setSearchedUsers, setIsSearching, autoFocus, className}: Search
       setIsSearching(true);
     };
 
+    const setLoading = (bool: boolean) => {
+      if (setIsLoading) setIsLoading(bool);
+    }
+
     const handleSearchInput = ({target}: React.ChangeEvent<HTMLInputElement>) => {
         clearTimeout(searchInputTimeout.current);
         searchInputTimeout.current = setTimeout( async () => {
           if (target.value) {
+            setLoading(true);
+
             const {data} = await axios.get<{users: User[]}>('/chat/search', {
                 params: {
                     searchInput: target.value
                 }
             });
 
+            setLoading(false);
             setSearchedUsers(data.users);
           }
         }, 700);

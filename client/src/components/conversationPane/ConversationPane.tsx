@@ -19,6 +19,7 @@ export interface StyledContactsPaneProps {
 
 const ContactsPane = () => { 
   const [isSearching, setIsSearching] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const match = useRouteMatch();
   const showInMobile = match.isExact;
@@ -56,11 +57,15 @@ const ContactsPane = () => {
           setSearchedUsers={setSearchedUsers}
           setIsSearching={setIsSearching}
           autoFocus={false}
+          setIsLoading={setIsSearchLoading}
         />
         <S.CreateGrp src={createGrpIcon} onClick={directToGroupRoute} />
       </S.SearchCont>
       {isSearching ? (
-        <SearchedUserList searchedUsers={searchedUsers} />
+        <SearchedUserList 
+          searchedUsers={searchedUsers} 
+          isSearching={isSearchLoading}
+        />
       ) : (
         <ConversationList />
       )}
