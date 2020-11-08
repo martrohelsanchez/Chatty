@@ -28,6 +28,8 @@ function SignUp() {
       return null;
     } 
 
+    setIsLoading(true);
+
     axios.post<{
       userId: string,
       username: string,
@@ -52,10 +54,12 @@ function SignUp() {
                 history.push(`/user/${data.userId}`)
             } else {
                 setErr('User already exists')
+                setIsLoading(false);
             }
         })
         .catch(err => {
             setErr('Sorry, something went wrong. Please try again later')
+            setIsLoading(false);
         })
     setErr(null)
   }
