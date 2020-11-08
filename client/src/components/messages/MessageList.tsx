@@ -59,7 +59,7 @@ const MessageList = ({currConv}: MessageListProps) => {
 
         if (messages === undefined) {
             //get the initial messages if there are no messages yet in current conversation
-            getMessages(23, null);
+            getMessages(15, null);
         } 
         return () => {
             moreMsgAtDb.current = true;
@@ -94,7 +94,7 @@ const MessageList = ({currConv}: MessageListProps) => {
         //when the user scroll to the top to get the previous msgs
         const isLoading = numOfLoading > 0;
         if (pos.currentTarget.scrollTop === 0 && !isLoading && moreMsgAtDb.current && messages !== undefined) {
-            getMessages(23, messages[0].date_sent);
+            getMessages(15, messages[0].date_sent);
         }
     }
 
