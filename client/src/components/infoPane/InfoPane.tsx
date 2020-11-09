@@ -37,6 +37,11 @@ const InfoPane = () => {
     }, [currConv])
 
     const handleDeleteConv = () => {
+        if(process.env.REACT_APP_ALLOW_DELECTION === 'false') {
+            alert('The creator turned off conversation deletion for now')
+            return null;
+        }
+
         if (currConv) {
             deleteConversationReq(currConv?._id, (data) => {
                 dispatch(deleteConv(data.deletedConv));
