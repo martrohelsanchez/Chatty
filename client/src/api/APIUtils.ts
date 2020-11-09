@@ -13,12 +13,14 @@ export interface UserAuthRes extends Omit<User, '_id'> {
 
 export async function logInReq(
     username: string, 
+    password: string,
     cb?: (UserAuthRes) => void, 
     errCb?: (err: Error) => void
 ) {
     try {
         const {data} = await axios.post<UserAuthRes>('/user/logIn', {
-            username: username.trim()
+            username: username.trim(),
+            password
         }, {
             withCredentials: true
         });
