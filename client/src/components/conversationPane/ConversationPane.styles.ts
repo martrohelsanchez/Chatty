@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import {StyledContactsPaneProps} from './ConversationPane';
 
 export const StyledContactsPane = styled.div<StyledContactsPaneProps>`
+    position: relative;
     background-color: ${({ theme }) => theme.dark.primary};
     flex: 0 1 25%;
     max-width: 420px;
