@@ -2,7 +2,7 @@
 
 export interface IProcessEnv {
     REACT_APP_SERVER_URL: string;
-    REACT_APP_ALLOW_DELECTION: 'true' | 'false';
+    REACT_APP_ALLOW_DELETION: 'true' | 'false';
 }
 
 declare global {
