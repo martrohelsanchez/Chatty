@@ -176,7 +176,7 @@ const UserInfo = ({
       <input 
         type="file" 
         ref={fileInputRef} 
-        style={{opacity: "0", position: 'absolute'}} 
+        style={{opacity: "0", position: 'absolute', top: '-10px'}} 
         onChange={onFileInputChange}
         multiple
         accept="image/*"
