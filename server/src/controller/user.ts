@@ -83,6 +83,16 @@ async function userLogIn(req: Request, res: Response) {
                 process.env.JWT_KEY
             );
 
+            if (process.env.NODE_ENV === 'production') {
+                const isSamePass = await bcrypt.compare(req.body.password, user.password);
+
+                if (!isSamePass) {
+                    return res.status(401).json({
+                        isAuth: false,
+                    });
+                }
+            }
+
             res.cookie('jwt', jwtToken, {
                 httpOnly: true,
                 sameSite: 'none',
