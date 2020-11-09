@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import CsrfTokenGen from 'csrf';
+import bcrypt from 'bcrypt';
 import {Request, Response} from 'express';
 
 import User from '../model/user';
