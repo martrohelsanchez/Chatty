@@ -18,10 +18,14 @@ async function userSignUp(req: Request, res: Response) {
         const isUserTaken = findUser === null ? false : true;
 
         if (!isUserTaken) {
+            const hashedPass = await bcrypt.hash(req.body.password, 10);
+
             const user = await User.create({
                 username: req.body.username,
-                password: req.body.password
+                //Store the password hashed
+                password: hashedPass
             });
+            
             const csrfToken = csrfTokenGen.create(process.env.CSRF_TOKEN_KEY);
             const jwtToken = jwt.sign({
                 userId: user._id,
