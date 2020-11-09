@@ -68,7 +68,7 @@ const ConversationList = () => {
     if (numOfLoading > 0) {
         return (
             <div style={{
-                height: '100vh',
+                height: '100%',
                 width: '100%',
                 display: 'flex', 
                 justifyContent: 'center',
@@ -76,7 +76,8 @@ const ConversationList = () => {
             }}>
                 <div
                     style={{
-                        width: '10%',
+                        width: '20%',
+                        margin: '-50px',
                         position: 'relative'
                     }}
                 >
