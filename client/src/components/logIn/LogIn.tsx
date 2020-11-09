@@ -5,7 +5,7 @@ import Loading from 'components/loading/Loading';
 import {logInReq, UserAuthRes} from 'api/APIUtils';
 import * as S from './Login.styles';
 import next from 'images/next.svg'
-import ChittyTyping from 'components/chittyTyping/ChittyTyping';
+import chittyMascot from 'images/chitty_mascot.svg'
 
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from 'redux/actions/userInfoActions';
@@ -109,8 +109,7 @@ const LogIn = () => {
                 Chitty
             </S.ChittyName>
             <S.Wrapper>
-                {/* <S.ChittyMascot mascot={chittyMascot} /> */}
-                <ChittyTyping isTyping={isTyping} />
+                <S.ChittyMascot mascot={chittyMascot} />
                 <div>
                     <S.LogInName>Log In</S.LogInName>
                     <S.Err>
