@@ -122,7 +122,7 @@ async function userLogIn(req: Request, res: Response) {
     }
 }
 
-//Generate new csrf and jwt token to authenticate user
+//Generate new csrf and jwt token to reauthenticate user
 // POST /user/reAuth
 async function reAuthUser(req: Request, res: Response) {
     try {
