@@ -14,7 +14,7 @@ const csrfTokenGen = new CsrfTokenGen({saltLength: 8, secretLength: 18});
 async function userSignUp(req: Request, res: Response) {
     try {
         const findUser = await User
-                .findOne({ username: req.body.username })
+                .findOne({username: req.body.username})
                 .exec()
         const isUserTaken = findUser === null ? false : true;
 
