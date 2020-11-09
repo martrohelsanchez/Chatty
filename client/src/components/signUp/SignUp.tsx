@@ -6,7 +6,7 @@ import next from 'images/next.svg';
 import * as S from './SignUp.styles';
 import {getUserByUsernameReq} from 'api/APIUtils';
 import {IsUserJustRegistered} from 'pages/appRoute/AppRoute';
-import chittyMascot from '../../images/chitty_mascot.svg'
+import chittyMascot from 'images/chitty_mascot.svg'
 
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from 'redux/actions/userInfoActions';
