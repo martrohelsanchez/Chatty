@@ -30,7 +30,7 @@ const LogIn = () => {
         try {
             setLoading(true);
 
-            const data = await logInReq(usernameInput.trim());
+            const data = await logInReq(usernameInput.trim(), passInput);
             const {
                 csrfToken, 
                 userId, 
