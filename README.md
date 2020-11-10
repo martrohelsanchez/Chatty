@@ -1,8 +1,12 @@
 # Chitty
 <img src="https://firebasestorage.googleapis.com/v0/b/chat-app-b7a6a.appspot.com/o/logo.png?alt=media&token=500e7811-ee41-451e-995a-e60beb1f775d" height="300px" />
 <br />
-Technologies used: 
-<br/>
+Chitty is a full stack chat app created with MERN stack. It was built with scalability in mind. It can handle millions of messages in a single conversation; around 200 members inside a chat room; and thousands of conversations on a single user. Thanks to scalable database design and pagination. The API is also secured from XSS and CSRF attacks. 
+<br />
+<br />
+<p>Username: John</p>
+<p>Password: trialBalance</p>
+<h3>Technologies used</h3> 
 <ul>
   <li>Typescript</li>
   <li>React.js</li>
