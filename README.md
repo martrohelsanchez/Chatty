@@ -2,7 +2,7 @@
 <img src="https://firebasestorage.googleapis.com/v0/b/chat-app-b7a6a.appspot.com/o/chitty_logo.png?alt=media&token=8f4cfc7a-41d8-43f9-8663-b19eedab3e5d" height="300px" />
 https://chitty-app.vercel.app/
 <br />
-Chitty is a full stack chat app created with MERN stack. It was built with scalability in mind. It can handle millions of messages in a single conversation; around 200 members inside a chat room; and thousands of conversations on a single user. Thanks to scalable database design and pagination. The API is also secured from XSS and CSRF attacks. 
+Chatty is a full stack chat app created with MERN stack. It was built with scalability in mind. It can handle millions of messages in a single conversation; around 200 members inside a chat room; and thousands of conversations on a single user. Thanks to scalable database design and pagination. The API is also secured from XSS and CSRF attacks. 
 <br />
 <br />
 <p>Username: John</p>
