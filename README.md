@@ -1,4 +1,4 @@
-# Chitty
+# Chatty
 <img src="https://firebasestorage.googleapis.com/v0/b/chat-app-b7a6a.appspot.com/o/chitty_logo.png?alt=media&token=8f4cfc7a-41d8-43f9-8663-b19eedab3e5d" height="300px" />
 https://chitty-app.vercel.app/
 <br />
